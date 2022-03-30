@@ -1,0 +1,36 @@
+version: '3'
+services:
+  frontend:
+    build: 
+      context: frontend
+      target: dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./frontend:/usr/src/app"
+    restart: always
+
+  backend:
+    build: 
+      context: backend
+      target: dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - "backend_node_modules:/usr/src/app/node_modules"
+      - "./backend:/usr/src/app"
+    restart: always
+
+  db:
+    image: mariadb:10
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_DATABASE=mysql
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
+    volumes:
+      - "./db:/var/lib/mysql"
+volumes:
+  backend_node_modules: {}
