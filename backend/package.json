@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r dotenv/config ./bin/www",
-    "dev": "DEBUG=backend:server,backend:socket nodemon -r dotenv/config ./src/index.ts"
+    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register ./src/index.ts",
+    "dev": "DEBUG=backend:server,backend:socket* nodemon -r tsconfig-paths/register -r dotenv/config ./src/index.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^6.1.2",
     "app-root-path": "^3.0.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
@@ -38,8 +39,8 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2",
     "prisma": "^3.12.0",
-    "source-map-support": "^0.5.21",
     "ts-node": "^10.7.0",
+    "tsconfig-paths": "^3.14.1",
     "typescript": "^4.6.3"
   }
 }

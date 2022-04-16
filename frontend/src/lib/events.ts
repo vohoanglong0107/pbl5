@@ -1,6 +1,4 @@
-import { Socket } from "socket.io";
-import Game from "@/game/Game";
-import User from "@/game/User";
+import { User } from "@/components/user";
 
 export interface ServerToClientEvents {
   "game:user:connected": (user: User) => void;
@@ -15,19 +13,3 @@ export interface ClientToServerEvents {
   "game:start": () => void;
   "game:user:connect": UserConnectEvent;
 }
-
-export interface InterServerEvents {
-  ping(): void;
-}
-
-export interface SocketData {
-  sessionID: string;
-  game: Game;
-}
-
-export type SocketType = Socket<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData
->;
