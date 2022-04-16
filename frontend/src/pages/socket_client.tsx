@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
 import socket from "@/lib/socket";
-import OnlinePanel from "@/components/online_panel";
-import ChatMessages from "@/components/chat_messages";
+import OnlinePanel from "@/src/components/online_panel";
+import ChatMessages from "@/src/components/chat_messages";
 
 const User: NextPage = () => {
   const [message, setMessage] = useState("");

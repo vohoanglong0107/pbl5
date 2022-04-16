@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Palette+Mosaic&display=swap');
+
+.topContainer {
+    display: inline-flex;
+
+}
+
+.name {
+    font-family: 'Palette Mosaic', cursive;
+    font-size: 25px;
+    color: #FFD365;
+
+}
