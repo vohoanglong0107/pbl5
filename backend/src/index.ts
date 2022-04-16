@@ -13,9 +13,9 @@ import {
   InterServerEvents,
   SocketData,
 } from "./events";
-import registerCookieHandler from "./handlers/CookieHandler";
-import registerConnectHandler from "./handlers/ConnectHandler";
-import { COOKIE_NAME } from "./contants";
+import registerHandler from "./handlers";
+import { COOKIE_NAME } from "./constants";
+import getGame from "./middlewares/getGame";
 
 const debugLog = debug("backend:server");
 
@@ -44,7 +44,6 @@ server.on("listening", onListening);
  * Create socket.io server.
  */
 
-debugLog(`Frontend domain: ${process.env.FRONTEND_DOMAIN}`);
 const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || "localhost";
 
 const io = new Server<
@@ -67,9 +66,8 @@ const io = new Server<
   },
 });
 
-registerCookieHandler(io);
-registerConnectHandler(io);
-
+registerHandler(io);
+io.use(getGame);
 /**
  * Normalize a port into a number, string, or false.
  */

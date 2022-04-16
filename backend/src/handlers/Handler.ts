@@ -20,6 +20,9 @@ type SocketIOSocket = Socket<
   SocketData
 >;
 
-export type Handler = (io: SocketIOServer, socket: SocketIOSocket) => void;
+export type SocketHandler = (
+  io: SocketIOServer,
+  socket: SocketIOSocket
+) => void;
 
 export type IOHandler = (io: SocketIOServer) => void;

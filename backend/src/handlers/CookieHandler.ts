@@ -1,7 +1,7 @@
 import cookie from "cookie";
 import debug from "debug";
 import http from "http";
-import { COOKIE_NAME } from "../contants";
+import { COOKIE_NAME } from "../constants";
 import { IOHandler } from "./Handler";
 import sessionStore, { Session } from "../sessionStore";
 
