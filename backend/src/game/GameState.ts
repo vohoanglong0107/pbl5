@@ -1,6 +1,5 @@
 import Interactive from "./Interactive";
 import Deck from "./Deck";
-import Card from "./Card";
 
 export default class GameState implements Interactive {
   deck: Deck = new Deck();
