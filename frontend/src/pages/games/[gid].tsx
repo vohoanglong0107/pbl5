@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button, Container } from "@mui/material";
-import socket from "@/lib/socket";
+import socket from "@/src/lib/socket";
 
 const Game: NextPage = () => {
   const router = useRouter();
