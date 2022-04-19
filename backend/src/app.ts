@@ -5,9 +5,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 
 import { stream } from "./utils/logger";
-import indexRouter from "./routes/index";
-import usersRouter from "./routes/users";
-import gamesRouter from "./routes/games";
+import { registerRoutes } from "./route";
 
 morgan.token("date", (req, res, tz) => {
   return new Date().toLocaleString("en-US", {
@@ -35,8 +33,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/games", gamesRouter);
+registerRoutes(app);
 
 export default app;
