@@ -1,23 +1,8 @@
-import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import Head from "next/head";
-import Image from "next/image";
-import styles from "@/styles/Home.module.css";
-import socket from "@/lib/socket";
-import { Container, Grid } from "@mui/material";
-import TopNav from "@/components/TopNav";
-import Stack from "@mui/material/Stack";
+import homepageImage from "@/assets/homepage.jpg";
+import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
-import PlayButton from "@/components/PlayButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import Avatar from "@mui/material/Avatar";
-import { blue } from "@mui/material/colors";
+import type { NextPage } from "next";
+import { useState } from "react";
 import Options from "../components/RoomOption";
 
 const choices = ["Create room", "Join room", "Join random"];
@@ -36,22 +21,42 @@ const User: NextPage = () => {
   };
 
   return (
-    <div className={styles.body}>
-      <div className={styles.container}>
-        <Button className={styles.explodeButton} onClick={handleClickOpen}>
-          Explode now!
-        </Button>
-        <Options
-          selectedValue={selectedValue}
-          open={open}
-          onClose={handleClose}
-          choices={choices}
-        />
-        <a target="_blank" href="/create-game" rel="noopener noreferrer">
-          <Button className={styles.explodeButton}>Create game</Button>
-        </a>
-      </div>
-    </div>
+    <Container
+      sx={{
+        backgroundImage: `url(${homepageImage.src})`,
+        backgroundSize: "cover",
+        minHeight: "100vh",
+        backgroundPosition: "center",
+      }}
+      maxWidth={false}
+    >
+      <Button
+        sx={{
+          position: "absolute",
+          bottom: "1rem",
+          marginLeft: "auto",
+          marginRight: "auto",
+          left: "40%",
+          width: "200px",
+          backgroundColor: "black",
+          color: "white",
+          fontWeight: "bold",
+          fontFamily: "Roboto",
+        }}
+        onClick={handleClickOpen}
+      >
+        Explode now!
+      </Button>
+      <Options
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+        choices={choices}
+      />
+      {/* <a target="_blank" href="/create-game" rel="noopener noreferrer">
+        <Button className={styles.explodeButton}>Create game</Button>
+      </a> */}
+    </Container>
   );
 };
 
