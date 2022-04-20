@@ -7,7 +7,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { gameId } = await fetch("http://localhost:8000/games/create", {
+  const { gameId } = await fetch("http://localhost:8000/api/game/create", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
