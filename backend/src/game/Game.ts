@@ -5,10 +5,12 @@ import GameState from "./GameState";
 import GameSetting from "./GameSetting";
 import User from "./User";
 
+type UserWithConnectionCount = User & { num_connections: number };
+
 export default class Game {
   id: string = uuidv4();
   players: Player[] = [];
-  connectedUsers: Map<string, User & { num_connections: number }> = new Map<
+  connectedUsers: Map<string, UserWithConnectionCount> = new Map<
     string,
     User & { num_connections: number }
   >();

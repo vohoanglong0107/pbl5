@@ -12,5 +12,5 @@ export default function registerRoutes(app: Application) {
   // rule router
   app.use("/api/rule", RuleRouter);
   // game router
-  app.use("/api/card", GameRouter);
+  app.use("/api/game", GameRouter);
 }

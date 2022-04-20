@@ -1,5 +1,6 @@
 import { Socket } from "socket.io";
 import Game from "@/game/Game";
+import GameModel from "@/game/GameModel";
 import User from "@/game/User";
 
 export interface ServerToClientEvents {
@@ -7,9 +8,7 @@ export interface ServerToClientEvents {
   "game:user:disconnected": (user: User) => void;
 }
 
-export type UserConnectEvent = (
-  populateConnectedUsersIds: (connectedUsersIds: string[]) => void
-) => void;
+export type UserConnectEvent = (getGame: (game: GameModel) => void) => void;
 
 export interface ClientToServerEvents {
   "game:start": () => void;
