@@ -8,11 +8,6 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
   }
 );
 
-socket.on("connect_error", (err) => {
-  console.log("Socket connection error");
-  console.log(err);
-});
-
 socket.onAny((event, ...args) => {
   console.log(event, args);
 });
