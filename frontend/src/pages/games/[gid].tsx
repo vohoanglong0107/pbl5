@@ -1,33 +1,43 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Container } from "@mui/material";
-import socket from "@/src/lib/socket";
+import { gameConnected } from "@/components/game/gamesSlice";
+import { RootState } from "@/lib/store";
+import socket from "@/lib/socket";
+import ConnectedUsersPanel from "@/components/user/ConnectedUsersPanel";
 
 const Game: NextPage = () => {
   const router = useRouter();
   const [gameId, setGameId] = useState("");
+  const dispatch = useDispatch();
   useEffect(() => {
     if (router.query.gid) {
       const gid = router.query.gid as string;
       setGameId(gid);
-      socket.connect();
       console.log("game ID: ", gid);
-      socket.emit("game:join", gid);
-      return () => {
-        socket.disconnect();
-      };
+      socket.auth = { gameId: gid };
+      socket.connect();
+      socket.emit("game:user:connect", (game) => {
+        dispatch(gameConnected(game));
+      });
     }
   }, [router]);
-
-  return (
-    <Container sx={{ display: "flex", flexDirection: "row" }}>
-      <Container sx={{ flex: 1 }}>
-        <h1>{gameId}</h1>
-        <Button onClick={() => socket.emit("game:start", gameId)}>Start</Button>
+  const game = useSelector((state: RootState) => state.game.game);
+  if (game) {
+    return (
+      <Container sx={{ display: "flex", flexDirection: "row" }}>
+        <Container sx={{ flex: 1 }}>
+          <h1>{gameId}</h1>
+          <Button onClick={() => socket.emit("game:start")}>Start</Button>
+        </Container>
+        <ConnectedUsersPanel />
       </Container>
-    </Container>
-  );
+    );
+  } else {
+    return <h1>Waiting</h1>;
+  }
 };
 
 export default Game;
