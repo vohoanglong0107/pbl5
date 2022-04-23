@@ -1,8 +1,8 @@
 import Player from "../Player";
-import Interactive from "../Interactive";
+import GameState from "../GameState";
 
 export default interface Command {
   source: Player;
-  target: Interactive;
+  target: GameState;
   execute(): void;
 }

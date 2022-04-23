@@ -1,20 +1,20 @@
-import Player from "./Player";
-import GameState from "./GameState";
-import GameSetting from "./GameSetting";
-import User from "./User";
-import Game from "./Game";
-import { GameStarted } from "./Game";
+import PlayerModel from "./Player";
+import GameState from "../game/GameState";
+import GameSetting from "../game/GameSetting";
+import User from "../game/User";
+import Game from "../game/Game";
+import { GameStarted } from "../game/Game";
 
 export default class GameModel {
   id: string;
-  players: Player[];
+  players: PlayerModel[];
   connectedUsers: User[];
   gameStarted: GameStarted;
   currentGameState: GameState;
   gameSetting: GameSetting;
   constructor(game: Game) {
     this.id = game.id;
-    this.players = game.players;
+    this.players = game.players.map((player) => new PlayerModel(player));
     this.connectedUsers = Array.from(game.connectedUsers.values()).map(
       ({ num_connections, ...rest }) => rest
     );

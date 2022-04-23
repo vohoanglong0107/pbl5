@@ -1,61 +1,50 @@
-import ConnectedUsersPanel from "@/components/user/ConnectedUsersPanel";
-import PlayerSlot from "@/components/player/PlayerSlot";
 import Deck from "@/components/game/Deck";
+import { GameStarted } from "@/components/game/Game";
+import HandPanel from "@/components/hand/HandPanel";
+import PlayerSlot from "@/components/player/PlayerSlot";
+import ConnectedUsersPanel from "@/components/user/ConnectedUsersPanel";
+import { userConnected } from "@/components/user/userSlice";
 import socket from "@/lib/socket";
-import { RootState } from "@/lib/store";
-import { Button, Container, Box, Grid } from "@mui/material";
+import { useGame, useUser } from "@/lib/store";
+import { Box, Button, Container, Grid } from "@mui/material";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { GameStarted } from "@/components/game/Game";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import GameBoard from "@/components/game/GameBoard";
 
 const Game: NextPage = () => {
   const router = useRouter();
-  const [gameId, setGameId] = useState("");
+  const dispatch = useDispatch();
   useEffect(() => {
     if (router.query.gid) {
       const gid = router.query.gid as string;
-      setGameId(gid);
       console.log("game ID: ", gid);
       socket.auth = { gameId: gid };
       socket.connect();
-      socket.emit("user:connect");
+      socket.emit("user:connect", (user) => {
+        dispatch(userConnected(user));
+      });
     }
   }, [router]);
-  const game = useSelector((state: RootState) => state.game.game);
-  if (game) {
-    const playerSlots = game.players.map((player) => {
-      return (
-        <Grid key={player.id} item xs={4}>
-          <PlayerSlot player={player} width="100%" height="100%" />
-        </Grid>
-      );
-    });
-    while (playerSlots.length < 8) {
-      playerSlots.push(
-        <Grid key={playerSlots.length} item xs={4}>
-          <PlayerSlot width="100%" height="100%" />
-        </Grid>
-      );
-    }
-    const middleGrid = (
-      <Grid item xs={4} display="flex" alignItems="center">
-        {game.gameStarted === GameStarted.STARTED ? (
-          <Deck />
-        ) : (
-          <Button onClick={() => socket.emit("game:start")}>Start</Button>
-        )}
-      </Grid>
-    );
+  const game = useGame();
+  const user = useUser();
+  if (game && user) {
+    const self = game.players.find((p) => p.id == user.id);
     return (
-      <Container sx={{ display: "flex", flexDirection: "row" }}>
-        <Grid container sx={{ flex: 8 }}>
-          {playerSlots.slice(0, 4)}
-          {middleGrid}
-          {playerSlots.slice(4)}
-        </Grid>
-        <Box sx={{ flex: 1 }}>
+      <Container
+        sx={{
+          display: "grid",
+          gridTemplateRows: "repeat(12, 1fr)",
+          gridTemplateColumns: "repeat(12, 1fr)",
+          height: "100vh",
+        }}
+      >
+        <GameBoard game={game} />
+        <Box sx={{ gridArea: "10 / 1 / 13 / 10" }}>
+          <HandPanel hand={self ? self.hand : []} />
+        </Box>
+        <Box sx={{ gridArea: "1 / 10 / 13 / 13" }}>
           <ConnectedUsersPanel />
         </Box>
       </Container>

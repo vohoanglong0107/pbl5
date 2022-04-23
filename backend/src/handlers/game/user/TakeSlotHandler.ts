@@ -1,6 +1,6 @@
 import debug from "debug";
 import { SocketHandler } from "@/handlers/Handler";
-import GameModel from "@/game/GameModel";
+import GameModel from "@/model/Game";
 
 const debugLog = debug("backend:socket:user");
 

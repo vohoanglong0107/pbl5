@@ -21,7 +21,7 @@ export default class Game {
     User & { num_connections: number }
   >();
   gameStarted: GameStarted = GameStarted.NOT_STARTED;
-  currentGameState: GameState = new GameState();
+  currentGameState: GameState = new GameState(this.players);
   gameSetting: GameSetting = new GameSetting();
   connectUser(userId: string): void {
     let user = this.connectedUsers.get(userId);
@@ -56,8 +56,11 @@ export default class Game {
       }
     }
   }
+  getPlayer(userId: string): Player | undefined {
+    return this.players.find((player) => player.id === userId);
+  }
   startGame() {
     this.gameStarted = GameStarted.STARTED;
-    this.currentGameState = new GameState();
+    this.currentGameState = new GameState(this.players);
   }
 }

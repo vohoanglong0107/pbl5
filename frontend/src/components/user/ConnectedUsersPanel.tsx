@@ -1,11 +1,9 @@
-import { Typography, Box } from "@mui/material";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/store";
+import { useGame } from "@/lib/store";
+import { Box, Typography } from "@mui/material";
 
 export default function ConnectedUsersPanel() {
-  const users = useSelector(
-    (state: RootState) => state.game.game!.connectedUsers
-  );
+  const game = useGame()!;
+  const users = game.connectedUsers;
   return (
     <Box>
       <Typography variant="h6" color="inherit" noWrap>
