@@ -7,6 +7,12 @@ import User from "./User";
 
 type UserWithConnectionCount = User & { num_connections: number };
 
+export enum GameStarted {
+  NOT_STARTED = 0,
+  STARTED = 1,
+  FINISHED = 2,
+}
+
 export default class Game {
   id: string = uuidv4();
   players: Player[] = [];
@@ -14,6 +20,7 @@ export default class Game {
     string,
     User & { num_connections: number }
   >();
+  gameStarted: GameStarted = GameStarted.NOT_STARTED;
   currentGameState: GameState = new GameState();
   gameSetting: GameSetting = new GameSetting();
   connectUser(userId: string): void {
@@ -34,7 +41,23 @@ export default class Game {
       user.num_connections -= 1;
       if (user.num_connections <= 0) {
         this.connectedUsers.delete(userId);
+        this.players = this.players.filter((player) => player.id !== userId);
       }
     }
+  }
+  letUserTakeSlot(userId: string): void {
+    let user = this.connectedUsers.get(userId);
+    if (user) {
+      if (
+        !this.players.find((player) => player.id === userId) &&
+        this.players.length < this.gameSetting.max_players
+      ) {
+        this.players.push(new Player(userId, user.username));
+      }
+    }
+  }
+  startGame() {
+    this.gameStarted = GameStarted.STARTED;
+    this.currentGameState = new GameState();
   }
 }

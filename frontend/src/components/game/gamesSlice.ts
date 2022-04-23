@@ -16,31 +16,15 @@ const gamesSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    gameConnected(state, action: PayloadAction<Game>) {
+    gameUpdated(state, action: PayloadAction<Game>) {
       state.game = action.payload;
     },
-    gameConnectedError(state, action: PayloadAction<string>) {
+    gameConnectedError(state, action) {
       state.hasError = true;
-    },
-    userConnected(state, action: PayloadAction<User>) {
-      console.log(`user connected ${JSON.stringify(action.payload)}`);
-      state.game!.connectedUsers.push(action.payload);
-    },
-    userDisconnected(state, action: PayloadAction<User>) {
-      console.log(`user disconnected ${JSON.stringify(action.payload)}`);
-      state.game!.connectedUsers = state.game!.connectedUsers.filter(
-        (user) => user.id !== action.payload.id
-      );
     },
   },
 });
 
 export default gamesSlice.reducer;
-export const selectError = (state: StateType) => state.hasError;
 
-export const {
-  gameConnected,
-  gameConnectedError,
-  userConnected,
-  userDisconnected,
-} = gamesSlice.actions;
+export const { gameUpdated, gameConnectedError } = gamesSlice.actions;

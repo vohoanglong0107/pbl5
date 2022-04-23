@@ -1,10 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { gamesSlice } from "@/components/game";
-import {
-  userConnected,
-  userDisconnected,
-  gameConnectedError,
-} from "@/components/game/gamesSlice";
+import { gameUpdated, gameConnectedError } from "@/components/game/gamesSlice";
 import socket from "./socket";
 const store = configureStore({
   reducer: {
@@ -17,14 +13,24 @@ export default store;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-socket.on("game:user:connected", (user) => {
-  console.log("Socket connected");
-  store.dispatch(userConnected(user));
+socket.on("game:started", (game) => {
+  console.log("Game started");
+  store.dispatch(gameUpdated(game));
 });
 
-socket.on("game:user:disconnected", (user) => {
+socket.on("user:connected", (game) => {
+  console.log("Socket connected");
+  store.dispatch(gameUpdated(game));
+});
+
+socket.on("user:disconnected", (game) => {
   console.log("Socket disconnected");
-  store.dispatch(userDisconnected(user));
+  store.dispatch(gameUpdated(game));
+});
+
+socket.on("user:took-slot", (game) => {
+  console.log("Socket disconnected");
+  store.dispatch(gameUpdated(game));
 });
 
 socket.on("connect_error", (err) => {

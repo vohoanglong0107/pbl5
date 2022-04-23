@@ -1,8 +1,11 @@
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+import {
+  Dialog,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText,
+  Link,
+} from "@mui/material";
 
 export interface SimpleDialogProps {
   open: boolean;
@@ -26,14 +29,23 @@ function Options(props: SimpleDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>Explode with your kittens!</DialogTitle>
       <List sx={{ pt: 0 }}>
-        {choices.map((choice) => (
-          <ListItem
-            button
-            onClick={() => handleListItemClick(choice)}
-            key={choice}
+        {choices.map((choice, id) => (
+          <Link
+            key={id}
+            target="_blank"
+            href="/create-game"
+            rel="noopener noreferrer"
+            underline="none"
+            color="inherit"
           >
-            <ListItemText primary={choice} />
-          </ListItem>
+            <ListItem
+              button
+              onClick={() => handleListItemClick(choice)}
+              key={choice}
+            >
+              <ListItemText primary={choice} />
+            </ListItem>
+          </Link>
         ))}
       </List>
     </Dialog>
