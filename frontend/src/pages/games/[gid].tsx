@@ -1,6 +1,6 @@
 import ConnectedUsersPanel from "@/components/user/ConnectedUsersPanel";
 import PlayerSlot from "@/components/player/PlayerSlot";
-import { Deck } from "@/components/game/Deck";
+import Deck from "@/components/game/Deck";
 import socket from "@/lib/socket";
 import { RootState } from "@/lib/store";
 import { Button, Container, Box, Grid } from "@mui/material";
