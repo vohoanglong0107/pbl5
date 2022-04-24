@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useState, KeyboardEvent, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 const CreateGame: NextPage = () => {
