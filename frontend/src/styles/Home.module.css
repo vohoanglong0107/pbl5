@@ -4,7 +4,7 @@
 /* ======= top ======= */
 
 .body {
-  background-image: url('../src/assets/homepage.jpg');
+  background-image: url('../assets/homepage.jpg');
   background-size: cover;
   height: 100vh;
   margin: 0;

@@ -45,8 +45,3 @@ const TopNav = () => {
 };
 
 export default TopNav;
-
-/*<div className={styles.topContainer}>
-      <Image src={logo} width={50} height={50} alt="no" />
-      <h3 className={styles.name}>Exploding kittenssss</h3>
-    </div>*/

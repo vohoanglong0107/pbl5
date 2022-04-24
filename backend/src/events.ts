@@ -1,19 +1,18 @@
 import { Socket } from "socket.io";
 import Game from "@/game/Game";
-import User from "@/game/User";
+import GameModel from "@/game/GameModel";
 
 export interface ServerToClientEvents {
-  "game:user:connected": (user: User) => void;
-  "game:user:disconnected": (user: User) => void;
+  "game:started": (game: GameModel) => void;
+  "user:connected": (game: GameModel) => void;
+  "user:disconnected": (game: GameModel) => void;
+  "user:took-slot": (game: GameModel) => void;
 }
-
-export type UserConnectEvent = (
-  populateConnectedUsersIds: (connectedUsersIds: string[]) => void
-) => void;
 
 export interface ClientToServerEvents {
   "game:start": () => void;
-  "game:user:connect": UserConnectEvent;
+  "user:connect": () => void;
+  "user:take-slot": () => void;
 }
 
 export interface InterServerEvents {
