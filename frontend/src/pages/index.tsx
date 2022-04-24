@@ -1,6 +1,6 @@
 import homepageImage from "@/assets/homepage.jpg";
 import Options from "@/components/RoomOption";
-import TopNav from "@/components/top_nav";
+import TopNav from "@/components/TopNav";
 import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import type { NextPage } from "next";
