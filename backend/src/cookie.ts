@@ -1,9 +1,9 @@
 import cookie from "cookie";
-import debug from "debug";
+import debugModule from "debug";
 import { IncomingMessage } from "http";
 import sessionStore from "./sessionStore";
 import { COOKIE_NAME } from "@/constants";
-const debugLog = debug("backend:cookie");
+const debug = debugModule("backend:cookie");
 
 const registerCookie = (headers: any, req: IncomingMessage) => {
   if (req.headers.cookie) {
@@ -21,7 +21,7 @@ const registerCookie = (headers: any, req: IncomingMessage) => {
       headers["Set-Cookie"] = renewedCookie;
       // for cookie to be able to be accessed later in connectHandler
       req.headers.cookie = renewedCookie;
-      debugLog("send renewed cookie: ", renewedCookie);
+      debug("send renewed cookie: ", renewedCookie);
       return;
     }
   }
@@ -35,6 +35,6 @@ const registerCookie = (headers: any, req: IncomingMessage) => {
   sessionStore.setSession(session);
   // for cookie to be able to be accessed later in connectHandler
   req.headers.cookie = headers["Set-Cookie"][0];
-  debugLog("send new cookie: ", sentCookie);
+  debug("send new cookie: ", sentCookie);
 };
 export default registerCookie;

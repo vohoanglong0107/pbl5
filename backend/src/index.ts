@@ -2,13 +2,13 @@
  * Module dependencies.
  */
 
-import debug from "debug";
+import debugModule from "debug";
 import http from "http";
 import app from "./app";
 import logger from "./utils/logger";
 import registerCookie from "./cookie";
 
-const debugLog = debug("backend:server");
+const debug = debugModule("backend:server");
 
 /**
  * Get port from environment and store in Express.
@@ -86,5 +86,5 @@ function onError(error: NodeJS.ErrnoException) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr!.port}`;
-  debugLog(`Listening on ${bind}`);
+  debug(`Listening on ${bind}`);
 }

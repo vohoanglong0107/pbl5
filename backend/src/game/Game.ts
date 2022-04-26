@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import { faker } from "@faker-js/faker";
-import debug from "debug";
+import debugModule from "debug";
 import Player from "./Player";
 import GameState from "./GameState";
 import GameSetting from "./GameSetting";
 import User from "./User";
 import { ServerType } from "@/events";
 import GameModel from "@/model/Game";
-const debugLog = debug("backend:socket:game");
+const debug = debugModule("backend:socket:game");
 
 type UserWithConnectionCount = User & { num_connections: number };
 
@@ -45,7 +45,7 @@ export default class Game {
   }
   disconnectUser(userId: string): void {
     let user = this.connectedUsers.get(userId);
-    debugLog(`Disconnecting user ${JSON.stringify(user)}`);
+    debug(`Disconnecting user ${JSON.stringify(user)}`);
     if (user) {
       user.num_connections -= 1;
       if (user.num_connections <= 0) {
@@ -91,9 +91,7 @@ export default class Game {
     } else if (event === "draw-card") {
       const player = this.getPlayer(clientId);
       if (!player) {
-        debugLog(
-          `${clientId} tried to draw card but is not in game ${this.id}`
-        );
+        debug(`${clientId} tried to draw card but is not in game ${this.id}`);
       } else {
         this.handleUserDrawCard(player);
         this.broadcast("drew-card", new GameModel(this));
@@ -102,15 +100,13 @@ export default class Game {
       const player = this.getPlayer(clientId);
       const cardIds = data[0] as string[];
       if (!player) {
-        debugLog(
-          `${clientId} tried to play card but is not in game ${this.id}`
-        );
+        debug(`${clientId} tried to play card but is not in game ${this.id}`);
       } else {
         this.handleUserPlayCard(player, cardIds);
         this.broadcast("played-card", new GameModel(this));
       }
     } else {
-      debugLog(`${clientId} tried to send unknown event ${event}`);
+      debug(`${clientId} tried to send unknown event ${event}`);
     }
   }
   handleUserDrawCard(player: Player): void {
@@ -118,12 +114,12 @@ export default class Game {
     this.currentGameState.advanceTurn();
   }
   handleUserPlayCard(player: Player, cardIds: string[]): void {
-    debugLog(`${player.id} played those card: ${cardIds}`);
+    debug(`${player.id} played those card: ${cardIds}`);
   }
   private broadcast(event: string, ...data: any[]): void {
     event = `game:${event}`;
     this.io.to(this.id).emit(event, ...data);
-    // debugLog(
+    // debug(
     //   `broadcasted ${event} to ${this.id} with data ${JSON.stringify(data)}`
     // );
   }
