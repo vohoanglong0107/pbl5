@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import Game from "@/game/Game";
 import GameModel from "@/model/Game";
 import User from "./game/User";
@@ -9,6 +9,8 @@ export interface ServerToClientEvents {
   "user:disconnected": (game: GameModel) => void;
   "user:took-slot": (game: GameModel) => void;
   "user:drew-card": (game: GameModel) => void;
+  "user:played-card": (game: GameModel) => void;
+  [key: string]: (...args: any) => void;
 }
 
 export interface ClientToServerEvents {
@@ -16,6 +18,8 @@ export interface ClientToServerEvents {
   "user:connect": (getUser: (user: User) => void) => void;
   "user:take-slot": () => void;
   "user:draw-card": () => void;
+  "user:play-card": (cardIds: string[]) => void;
+  [key: string]: (...args: any) => void;
 }
 
 export interface InterServerEvents {
@@ -28,6 +32,13 @@ export interface SocketData {
 }
 
 export type SocketType = Socket<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>;
+
+export type ServerType = Server<
   ClientToServerEvents,
   ServerToClientEvents,
   InterServerEvents,

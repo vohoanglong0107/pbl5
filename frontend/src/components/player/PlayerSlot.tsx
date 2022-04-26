@@ -11,7 +11,7 @@ interface PlayerSlotProps {
 const PlayerSlot = ({ player, width, height }: PlayerSlotProps) => {
   const handlePlayerClick = () => {
     if (!player) {
-      socket.emit("user:take-slot");
+      socket.emit("game:take-slot");
     }
   };
   return (

@@ -1,10 +1,15 @@
+import { ServerType } from "@/events";
 import Game from "./Game";
 
 export class GameManager {
+  private io: ServerType;
+
   games: Map<string, Game> = new Map();
-  constructor() {}
+  constructor(io: ServerType) {
+    this.io = io;
+  }
   createGame() {
-    const game = new Game();
+    const game = new Game(this.io);
     this.games.set(game.id, game);
     return game.id;
   }
@@ -13,6 +18,4 @@ export class GameManager {
   }
 }
 
-const gameManager = new GameManager();
-
-export default gameManager;
+export default GameManager;

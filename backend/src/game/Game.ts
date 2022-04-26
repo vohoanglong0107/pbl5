@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import { faker } from "@faker-js/faker";
+import debug from "debug";
 import Player from "./Player";
 import GameState from "./GameState";
 import GameSetting from "./GameSetting";
 import User from "./User";
+import { ServerType } from "@/events";
+import GameModel from "@/model/Game";
+const debugLog = debug("backend:socket:game");
 
 type UserWithConnectionCount = User & { num_connections: number };
 
@@ -14,6 +18,7 @@ export enum GameStarted {
 }
 
 export default class Game {
+  private io: ServerType;
   id: string = uuidv4();
   players: Player[] = [];
   connectedUsers: Map<string, UserWithConnectionCount> = new Map<
@@ -23,6 +28,9 @@ export default class Game {
   gameStarted: GameStarted = GameStarted.NOT_STARTED;
   currentGameState: GameState = new GameState(this.players);
   gameSetting: GameSetting = new GameSetting();
+  constructor(io: ServerType) {
+    this.io = io;
+  }
   connectUser(userId: string): void {
     let user = this.connectedUsers.get(userId);
     if (!user) {
@@ -37,6 +45,7 @@ export default class Game {
   }
   disconnectUser(userId: string): void {
     let user = this.connectedUsers.get(userId);
+    debugLog(`Disconnecting user ${JSON.stringify(user)}`);
     if (user) {
       user.num_connections -= 1;
       if (user.num_connections <= 0) {
@@ -45,7 +54,7 @@ export default class Game {
       }
     }
   }
-  letUserTakeSlot(userId: string): void {
+  reserveSlot(userId: string): void {
     let user = this.connectedUsers.get(userId);
     if (user) {
       if (
@@ -62,5 +71,64 @@ export default class Game {
   startGame() {
     this.gameStarted = GameStarted.STARTED;
     this.currentGameState = new GameState(this.players);
+  }
+  handleUserEvent(clientId: string, event: string, ...data: any[]): void {
+    // TODO: might move connect and disconnect to a separate handler
+    if (event === "connected") {
+      const callback = data[0];
+      this.connectUser(clientId);
+      callback(this.connectedUsers.get(clientId));
+      this.broadcast("connected", new GameModel(this));
+    } else if (event === "disconnect") {
+      this.disconnectUser(clientId);
+      this.broadcast("disconnected", new GameModel(this));
+    } else if (event === "start") {
+      this.startGame();
+      this.broadcast("started", new GameModel(this));
+    } else if (event === "take-slot") {
+      this.reserveSlot(clientId);
+      this.broadcast("took-slot", new GameModel(this));
+    } else if (event === "draw-card") {
+      const player = this.getPlayer(clientId);
+      if (!player) {
+        debugLog(
+          `${clientId} tried to draw card but is not in game ${this.id}`
+        );
+      } else {
+        this.handleUserDrawCard(player);
+        this.broadcast("drew-card", new GameModel(this));
+      }
+    } else if (event === "play-card") {
+      const player = this.getPlayer(clientId);
+      const cardIds = data[0] as string[];
+      if (!player) {
+        debugLog(
+          `${clientId} tried to play card but is not in game ${this.id}`
+        );
+      } else {
+        this.handleUserPlayCard(player, cardIds);
+        this.broadcast("played-card", new GameModel(this));
+      }
+    } else {
+      debugLog(`${clientId} tried to send unknown event ${event}`);
+    }
+  }
+  handleUserDrawCard(player: Player): void {
+    player.draw(this.currentGameState.deck);
+    this.currentGameState.advanceTurn();
+  }
+  handleUserPlayCard(player: Player, cardIds: string[]): void {
+    debugLog(`${player.id} played those card: ${cardIds}`);
+  }
+  private broadcast(event: string, ...data: any[]): void {
+    event = `game:${event}`;
+    this.io.to(this.id).emit(event, ...data);
+    // debugLog(
+    //   `broadcasted ${event} to ${this.id} with data ${JSON.stringify(data)}`
+    // );
+  }
+  private sendTo(clientId: string, event: string, ...data: any[]): void {
+    event = `game:${event}`;
+    this.io.to(clientId).emit(event, ...data);
   }
 }

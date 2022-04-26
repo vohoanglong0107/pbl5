@@ -11,27 +11,22 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
 );
 
 socket.on("game:started", (game) => {
-  console.log("Game started");
   store.dispatch(gameUpdated(game));
 });
 
-socket.on("user:connected", (game) => {
-  console.log("Socket connected");
+socket.on("game:connected", (game) => {
   store.dispatch(gameUpdated(game));
 });
 
-socket.on("user:disconnected", (game) => {
-  console.log("Socket disconnected");
+socket.on("game:disconnected", (game) => {
   store.dispatch(gameUpdated(game));
 });
 
-socket.on("user:took-slot", (game) => {
-  console.log("User took slot");
+socket.on("game:took-slot", (game) => {
   store.dispatch(gameUpdated(game));
 });
 
-socket.on("user:drew-card", (game) => {
-  console.log("User drew card");
+socket.on("game:drew-card", (game) => {
   store.dispatch(gameUpdated(game));
 });
 
