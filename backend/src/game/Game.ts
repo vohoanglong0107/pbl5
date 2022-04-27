@@ -7,14 +7,17 @@ import GameSetting from "./GameSetting";
 import User from "./User";
 import { ServerType } from "@/events";
 import GameModel from "@/model/Game";
+import CommandFactory from "./command/CommandFactory";
+import { Commands } from "./command/Commands";
+
 const debug = debugModule("backend:socket:game");
 
 type UserWithConnectionCount = User & { num_connections: number };
 
 export enum GameStarted {
-  NOT_STARTED = 0,
-  STARTED = 1,
-  FINISHED = 2,
+  NOT_STARTED,
+  STARTED,
+  FINISHED,
 }
 
 export default class Game {
@@ -28,6 +31,7 @@ export default class Game {
   gameStarted: GameStarted = GameStarted.NOT_STARTED;
   currentGameState: GameState = new GameState(this.players);
   gameSetting: GameSetting = new GameSetting();
+  private commandFactory = new CommandFactory(this.currentGameState);
   constructor(io: ServerType) {
     this.io = io;
   }
@@ -71,6 +75,10 @@ export default class Game {
   startGame() {
     this.gameStarted = GameStarted.STARTED;
     this.currentGameState = new GameState(this.players);
+    this.commandFactory = new CommandFactory(this.currentGameState);
+    debug(
+      `peek top card ${JSON.stringify(this.currentGameState.deck.peek(1))}`
+    );
   }
   handleUserEvent(clientId: string, event: string, ...data: any[]): void {
     // TODO: might move connect and disconnect to a separate handler
@@ -94,7 +102,6 @@ export default class Game {
         debug(`${clientId} tried to draw card but is not in game ${this.id}`);
       } else {
         this.handleUserDrawCard(player);
-        this.broadcast("drew-card", new GameModel(this));
       }
     } else if (event === "play-card") {
       const player = this.getPlayer(clientId);
@@ -103,18 +110,54 @@ export default class Game {
         debug(`${clientId} tried to play card but is not in game ${this.id}`);
       } else {
         this.handleUserPlayCard(player, cardIds);
-        this.broadcast("played-card", new GameModel(this));
       }
     } else {
       debug(`${clientId} tried to send unknown event ${event}`);
     }
   }
   handleUserDrawCard(player: Player): void {
-    player.draw(this.currentGameState.deck);
-    this.currentGameState.advanceTurn();
+    const card = this.currentGameState.deck.draw();
+    debug(`${player.id} drew card ${JSON.stringify(card)}`);
+    if (card.commandId === Commands.EXPLODE) {
+      const command = this.commandFactory.create(player, [card]);
+      command.execute();
+      this.currentGameState.advanceTurn();
+      this.broadcast("played-card", new GameModel(this));
+    } else {
+      player.draw(card);
+
+      this.currentGameState.advanceTurn();
+      this.broadcast("drew-card", new GameModel(this));
+    }
+    debug(
+      `peek top card ${JSON.stringify(this.currentGameState.deck.peek(1))}`
+    );
+    this.checkGameOver();
   }
   handleUserPlayCard(player: Player, cardIds: string[]): void {
     debug(`${player.id} played those card: ${cardIds}`);
+    try {
+      const cards = cardIds.map((cardId) => player.hand.get(cardId)!);
+      const command = this.commandFactory.create(player, cards);
+      command.execute();
+      player.hand.remove(cardIds);
+      this.broadcast("played-card", new GameModel(this));
+    } catch (error) {
+      // TODO add to frontend events
+      debug(`${player.id} tried to play invalid card ${error}`);
+      if (error instanceof Error)
+        this.sendTo(player.id, "cant-play-card", error.message);
+      else this.sendTo(player.id, "cant-play-card", "Unknown error");
+    }
+  }
+  checkGameOver(): void {
+    if (this.currentGameState.isGameOver()) {
+      this.gameStarted = GameStarted.FINISHED;
+      this.broadcast("over", new GameModel(this));
+    }
+  }
+  overGame(): void {
+    this.gameStarted = GameStarted.FINISHED;
   }
   private broadcast(event: string, ...data: any[]): void {
     event = `game:${event}`;

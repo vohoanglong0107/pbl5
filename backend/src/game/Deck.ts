@@ -1,12 +1,10 @@
 import Card from "./Card";
+import mockDB from "./MockDB";
 
 export default class Deck {
   cards: Card[];
   constructor() {
-    this.cards = [];
-    for (let i = 0; i < 42; i++) {
-      this.cards.push(new Card(i.toString()));
-    }
+    this.cards = [...mockDB.desks.cards];
   }
 
   peek(num: number): Card[] {
@@ -18,6 +16,7 @@ export default class Deck {
 
   draw(): Card {
     const card = this.cards.pop();
+    // Should never happen in a real game as they should have all exploded by now.
     if (!card) {
       throw new Error("No more cards");
     }

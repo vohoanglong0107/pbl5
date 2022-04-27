@@ -89,9 +89,9 @@ io.on("connection", (socket) => {
   const sessionID = socket.data.sessionID!;
   const game = socket.data.game!;
   socket.join(game.id);
+  socket.join(sessionID);
   socket.on("disconnect", () => {
-    game.disconnectUser(sessionID);
-    io.to(game.id).emit("game:disconnected", new GameModel(game));
+    game.handleUserEvent(sessionID, "disconnect");
   });
 });
 

@@ -9,10 +9,21 @@ interface GameBoardProps {
 }
 
 const GameBoard = ({ game }: GameBoardProps) => {
-  const playerSlots = game.players.map((player) => {
+  console.log("GameBoard", game);
+  const currentPlayerIndex = game.currentGameState.currentPlayerIndex;
+
+  const playerSlots = game.players.map((player, index) => {
     return (
       <Grid key={player.id} item xs={4}>
-        <PlayerSlot player={player} width="100%" height="100%" />
+        <PlayerSlot
+          player={player}
+          width="100%"
+          height="100%"
+          isCurrentTurn={
+            currentPlayerIndex === index &&
+            game.gameStarted === GameStarted.STARTED
+          }
+        />
       </Grid>
     );
   });

@@ -30,6 +30,19 @@ socket.on("game:drew-card", (game) => {
   store.dispatch(gameUpdated(game));
 });
 
+socket.on("game:played-card", (game) => {
+  store.dispatch(gameUpdated(game));
+});
+
+socket.on("game:over", (game) => {
+  alert("Game over");
+  store.dispatch(gameUpdated(game));
+});
+
+socket.on("game:cant-play-card", (error) => {
+  alert(error);
+});
+
 // FIXME: Handle connection errors
 socket.on("connect_error", (err) => {});
 
