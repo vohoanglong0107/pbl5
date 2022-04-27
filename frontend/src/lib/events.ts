@@ -1,14 +1,21 @@
 import { Game } from "@/components/game";
+import User from "@/components/user/User";
 
 export interface ServerToClientEvents {
   "game:started": (game: Game) => void;
-  "user:connected": (game: Game) => void;
-  "user:disconnected": (game: Game) => void;
-  "user:took-slot": (game: Game) => void;
+  "game:connected": (game: Game) => void;
+  "game:disconnected": (game: Game) => void;
+  "game:took-slot": (game: Game) => void;
+  "game:drew-card": (game: Game) => void;
+  "game:played-card": (game: Game) => void;
+  [key: string]: (...args: any) => void;
 }
 
 export interface ClientToServerEvents {
   "game:start": () => void;
-  "user:connect": () => void;
-  "user:take-slot": () => void;
+  "game:connect": (getUser: (user: User) => void) => void;
+  "game:take-slot": () => void;
+  "game:draw-card": () => void;
+  "game:play-card": (cardIds: string[]) => void;
+  [key: string]: (...args: any) => void;
 }

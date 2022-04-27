@@ -2,22 +2,13 @@
  * Module dependencies.
  */
 
-import debug from "debug";
+import debugModule from "debug";
 import http from "http";
-import { Server } from "socket.io";
 import app from "./app";
 import logger from "./utils/logger";
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData,
-} from "./events";
-import registerHandler from "./handlers";
-import { COOKIE_NAME } from "./constants";
-import getGame from "./middlewares/getGame";
+import registerCookie from "./cookie";
 
-const debugLog = debug("backend:server");
+const debug = debugModule("backend:server");
 
 /**
  * Get port from environment and store in Express.
@@ -31,6 +22,8 @@ app.set("port", port);
  */
 
 const server = http.createServer(app);
+app.locals.io.attach(server);
+app.locals.io.engine.on("initial_headers", registerCookie);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -40,34 +33,6 @@ server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
 
-/**
- * Create socket.io server.
- */
-
-const FRONTEND_DOMAIN = process.env.FRONTEND_DOMAIN || "localhost";
-
-const io = new Server<
-  ClientToServerEvents,
-  ServerToClientEvents,
-  InterServerEvents,
-  SocketData
->(server, {
-  cors: {
-    origin: `http://${FRONTEND_DOMAIN}:3000`,
-    credentials: true,
-  },
-  cookie: {
-    name: COOKIE_NAME,
-    path: "/",
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 1),
-  },
-});
-
-registerHandler(io);
-io.use(getGame);
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -121,5 +86,5 @@ function onError(error: NodeJS.ErrnoException) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr!.port}`;
-  debugLog(`Listening on ${bind}`);
+  debug(`Listening on ${bind}`);
 }

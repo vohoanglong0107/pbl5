@@ -1,2 +1,2 @@
 export type { default as Game } from "./Game";
-export { default as gamesSlice } from "./gamesSlice";
+export { default as gameSlice } from "./gameSlice";
