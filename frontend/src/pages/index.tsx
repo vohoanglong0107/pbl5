@@ -1,6 +1,5 @@
 import homepageImage from "@/assets/homepage.jpg";
 import Options from "@/components/RoomOption";
-import TopNav from "@/components/TopNav";
 import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import type { NextPage } from "next";
@@ -31,7 +30,6 @@ const User: NextPage = () => {
       }}
       maxWidth={false}
     >
-      <TopNav />
       <Button
         sx={{
           position: "absolute",
@@ -55,9 +53,6 @@ const User: NextPage = () => {
         onClose={handleClose}
         choices={choices}
       />
-      {/* <a target="_blank" href="/create-game" rel="noopener noreferrer">
-        <Button className={styles.explodeButton}>Create game</Button>
-      </a> */}
     </Container>
   );
 };
