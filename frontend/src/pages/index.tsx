@@ -1,9 +1,10 @@
 import homepageImage from "@/assets/homepage.jpg";
+import Options from "@/components/RoomOption";
+import TopNav from "@/components/TopNav";
 import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import type { NextPage } from "next";
 import { useState } from "react";
-import Options from "../components/RoomOption";
 
 const choices = ["Create room", "Join room", "Join random"];
 
@@ -30,6 +31,7 @@ const User: NextPage = () => {
       }}
       maxWidth={false}
     >
+      <TopNav />
       <Button
         sx={{
           position: "absolute",
