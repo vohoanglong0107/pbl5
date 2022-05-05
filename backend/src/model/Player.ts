@@ -1,13 +1,12 @@
-import Player from "@/game/Player";
 import Card from "@/game/Card";
-import UserModel from "./User";
+import User from "./User";
 
-export default class PlayerModel extends UserModel {
+export default class Player extends User {
   hand: Card[];
   exploded: boolean;
-  constructor(player: Player) {
-    super(player);
-    this.hand = player.hand.cards;
-    this.exploded = player.exploded;
+  constructor(id: string, username: string, cards: Card[], exploded: boolean) {
+    super(id, username);
+    this.hand = cards;
+    this.exploded = exploded;
   }
 }

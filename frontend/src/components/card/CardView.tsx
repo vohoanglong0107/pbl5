@@ -43,6 +43,8 @@ interface CardViewProps {
 const CardView = ({ card, onSelect }: CardViewProps) => {
   const [isSelected, setIsSelected] = useState(false);
   const [animation, setAnimation] = useState("");
+  // reset hand selected status
+  onSelect && onSelect(isSelected);
   const select = () => {
     if (isSelected) {
       setAnimation(`${unselectCardAnimation} 0.5s`);

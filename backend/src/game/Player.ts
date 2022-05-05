@@ -1,8 +1,8 @@
 import Hand from "./Hand";
-import User from "./User";
 import Card from "./Card";
+import PlayerModel from "@/model/Player";
 
-export default class Player implements User {
+export default class Player {
   id: string;
   username: string;
   hand: Hand = new Hand();
@@ -17,5 +17,13 @@ export default class Player implements User {
   reset() {
     this.hand.clear();
     this.exploded = false;
+  }
+  encode(): PlayerModel {
+    return new PlayerModel(
+      this.id,
+      this.username,
+      this.hand.cards,
+      this.exploded
+    );
   }
 }

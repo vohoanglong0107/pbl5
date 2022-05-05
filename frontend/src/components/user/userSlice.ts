@@ -1,23 +1,29 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
 import User from "./User";
+import apiSlice from "../apiSlice";
+import { socketClient } from "@/lib/SocketClient";
 
 type StateType = User | null;
 
-const initialState: StateType = null as StateType;
-
-const userSlice = createSlice({
-  name: "user",
-  initialState,
-  reducers: {
-    userConnected(state, action: PayloadAction<User>) {
-      return action.payload;
-    },
-    usernameChanged(state, action: PayloadAction<string>) {
-      state!.username = action.payload;
-    },
-  },
+const userApiSlice = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    getUser: builder.query<User, void>({
+      queryFn: () => ({ data: { id: "0", username: "null" } }),
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        const updateCachedDataWithUser = (user: User) => {
+          updateCachedData((draft) => user);
+        };
+        try {
+          await cacheDataLoaded;
+          socketClient.on("game:connect", updateCachedDataWithUser);
+        } catch {}
+        await cacheEntryRemoved;
+        socketClient.off("game:connect", updateCachedDataWithUser);
+      },
+    }),
+  }),
 });
 
-export default userSlice.reducer;
-export const { userConnected, usernameChanged } = userSlice.actions;
+export const { useGetUserQuery } = userApiSlice;

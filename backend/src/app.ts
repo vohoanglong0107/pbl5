@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import { Server } from "socket.io";
 
-import { stream } from "./utils/logger";
+import { stream } from "./util/logger";
 import { registerRoutes } from "./route";
 import {
   ClientToServerEvents,
@@ -17,8 +17,6 @@ import {
 } from "@/events";
 import { COOKIE_NAME, FRONTEND_DOMAIN } from "@/constants";
 import GameManager from "@/game/GameManager";
-import registerGameHandler from "./middleware/registerGameHandler";
-import GameModel from "./model/Game";
 
 morgan.token("date", (req, res, tz) => {
   return new Date().toLocaleString("en-US", {
@@ -66,34 +64,11 @@ const io = new Server<
     secure: true,
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 1),
   },
+  pingTimeout: 2000,
+  pingInterval: 3000,
 });
 
 const gameManager = new GameManager(io);
-
-io.use((socket, next) => {
-  socket.data.sessionID = cookie.parse(socket.client.request.headers.cookie!)[
-    COOKIE_NAME
-  ];
-  const gameId = socket.handshake.auth.gameId as string;
-  const game = gameManager.getGame(gameId);
-  if (game) {
-    socket.data.game = game;
-    socket.use(registerGameHandler(socket));
-    next();
-  } else {
-    next(new Error("Game not found"));
-  }
-});
-
-io.on("connection", (socket) => {
-  const sessionID = socket.data.sessionID!;
-  const game = socket.data.game!;
-  socket.join(game.id);
-  socket.join(sessionID);
-  socket.on("disconnect", () => {
-    game.handleUserEvent(sessionID, "disconnect");
-  });
-});
 
 app.locals.io = io;
 app.locals.gameManager = gameManager;
