@@ -1,18 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
-import { faker } from "@faker-js/faker";
 import debugModule from "debug";
 import Player from "./Player";
 import GameState from "./GameState";
 import GameSetting from "./GameSetting";
 import User from "./User";
-import { ServerType } from "@/events";
 import GameModel from "@/model/Game";
 import CommandFactory from "./command/CommandFactory";
 import { Commands } from "./command/Commands";
+import { Acknowledgement } from "./UserEvent";
+import Card from "./Card";
 
 const debug = debugModule("backend:socket:game");
-
-type UserWithConnectionCount = User & { num_connections: number };
 
 export enum GameStarted {
   NOT_STARTED,
@@ -21,153 +19,181 @@ export enum GameStarted {
 }
 
 export default class Game {
-  private io: ServerType;
   id: string = uuidv4();
-  players: Player[] = [];
-  connectedUsers: Map<string, UserWithConnectionCount> = new Map<
-    string,
-    User & { num_connections: number }
-  >();
+  connectedUsers: Map<string, User> = new Map<string, User>();
   gameStarted: GameStarted = GameStarted.NOT_STARTED;
-  currentGameState: GameState = new GameState(this.players);
+  currentGameState: GameState | undefined = undefined;
   gameSetting: GameSetting = new GameSetting();
-  private commandFactory = new CommandFactory(this.currentGameState);
-  constructor(io: ServerType) {
-    this.io = io;
+  private commandFactory: CommandFactory | undefined = undefined;
+  seats = Array<User | undefined>(this.gameSetting.max_players).fill(undefined);
+  constructor() {}
+  getUser(userId: string): User | undefined {
+    return this.connectedUsers.get(userId);
   }
-  connectUser(userId: string): void {
-    let user = this.connectedUsers.get(userId);
-    if (!user) {
-      this.connectedUsers.set(userId, {
-        id: userId,
-        username: faker.name.findName(),
-        num_connections: 1,
+  onConnect(user: User) {
+    this.connectedUsers.set(user.id, user);
+    this.broadcast("connected");
+  }
+  // TODO: add graceful disconnection
+  onDisconnect(user: User) {
+    this.connectedUsers.delete(user.id);
+    this.currentGameState?.removePlayer(user.id);
+    this.removeUserFromSeat(user);
+    this.broadcast("disconnected");
+
+    this.checkGameOver();
+  }
+
+  handleUserEvent(user: User, event: string, ...args: any[]): void {
+    const data = args.slice(0, -1);
+    const ack = args[args.length - 1] as Acknowledgement;
+    try {
+      let res: unknown;
+      switch (event) {
+        case "start":
+          res = this.startGame();
+          break;
+        case "take-seat":
+          const seatId = data[0] as number;
+          res = this.reserveSeat(user, seatId);
+          break;
+        case "draw-card": {
+          res = this.handleUserDrawCard(user);
+          break;
+        }
+        case "play-card": {
+          const cardIds = data[0] as string[];
+          res = this.handleUserPlayCard(user, cardIds);
+          break;
+        }
+        default:
+          debug(`${user.id} tried to send unknown event ${event}`);
+          throw new Error(`Unknown event ${event}`);
+      }
+      if (!res) res = null;
+      ack({
+        data: res,
       });
-    } else {
-      user.num_connections += 1;
-    }
-  }
-  disconnectUser(userId: string): void {
-    let user = this.connectedUsers.get(userId);
-    debug(`Disconnecting user ${JSON.stringify(user)}`);
-    if (user) {
-      user.num_connections -= 1;
-      if (user.num_connections <= 0) {
-        this.connectedUsers.delete(userId);
-        this.players = this.players.filter((player) => player.id !== userId);
+    } catch (error) {
+      let errorMessage: string;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        debug(`Unrecognized error type ${error}`);
+        errorMessage = error as string;
       }
+      ack({
+        error: errorMessage,
+      });
     }
   }
-  reserveSlot(userId: string): void {
-    let user = this.connectedUsers.get(userId);
-    if (user) {
-      if (
-        !this.players.find((player) => player.id === userId) &&
-        this.players.length < this.gameSetting.max_players
-      ) {
-        this.players.push(new Player(userId, user.username));
-      }
+  reserveSeat(user: User, seatId: number): void {
+    if (seatId >= this.gameSetting.max_players) {
+      throw new Error(`Seat ${seatId} is out of range`);
     }
+    this.removeUserFromSeat(user);
+    this.seats[seatId] = user;
+    this.broadcast("took-seat");
   }
-  getPlayer(userId: string): Player | undefined {
-    return this.players.find((player) => player.id === userId);
+  // TODO: refactor this and remove Player
+  removeUserFromSeat(user: User) {
+    let userIndex = this.seats.findIndex((seat) => seat?.id === user.id);
+    if (userIndex === -1) {
+      return;
+    }
+    this.seats[userIndex] = undefined;
   }
   startGame() {
-    this.gameStarted = GameStarted.STARTED;
-    this.currentGameState = new GameState(this.players);
-    this.commandFactory = new CommandFactory(this.currentGameState);
-    debug(
-      `peek top card ${JSON.stringify(this.currentGameState.deck.peek(1))}`
-    );
-  }
-  handleUserEvent(clientId: string, event: string, ...data: any[]): void {
-    // TODO: might move connect and disconnect to a separate handler
-    if (event === "connected") {
-      const callback = data[0];
-      this.connectUser(clientId);
-      callback(this.connectedUsers.get(clientId));
-      this.broadcast("connected", new GameModel(this));
-    } else if (event === "disconnect") {
-      this.disconnectUser(clientId);
-      this.broadcast("disconnected", new GameModel(this));
-    } else if (event === "start") {
-      this.startGame();
-      this.broadcast("started", new GameModel(this));
-    } else if (event === "take-slot") {
-      this.reserveSlot(clientId);
-      this.broadcast("took-slot", new GameModel(this));
-    } else if (event === "draw-card") {
-      const player = this.getPlayer(clientId);
-      if (!player) {
-        debug(`${clientId} tried to draw card but is not in game ${this.id}`);
-      } else {
-        this.handleUserDrawCard(player);
-      }
-    } else if (event === "play-card") {
-      const player = this.getPlayer(clientId);
-      const cardIds = data[0] as string[];
-      if (!player) {
-        debug(`${clientId} tried to play card but is not in game ${this.id}`);
-      } else {
-        this.handleUserPlayCard(player, cardIds);
-      }
-    } else {
-      debug(`${clientId} tried to send unknown event ${event}`);
+    const numActivePlayers = this.seats.filter((seat) => seat).length;
+    if (numActivePlayers <= 1) {
+      throw new Error("Not enough player to start game");
     }
+    this.gameStarted = GameStarted.STARTED;
+    const players = this.seats.map((user) => {
+      if (user) {
+        const player = new Player(user.id, user.username);
+        user.player = player;
+        return player;
+      } else {
+        return user;
+      }
+    });
+    this.currentGameState = new GameState(players);
+    this.commandFactory = new CommandFactory(this.currentGameState);
+    this.broadcast("started");
   }
-  handleUserDrawCard(player: Player): void {
-    const card = this.currentGameState.deck.draw();
+  handleUserDrawCard(user: User): void {
+    const player = user.player;
+    if (!player) {
+      debug(
+        `${user.id} tried to draw card but is not playing in game ${this.id}`
+      );
+      throw new Error(`User not in play`);
+    }
+    const card = this.currentGameState!.deck.draw();
     debug(`${player.id} drew card ${JSON.stringify(card)}`);
     if (card.commandId === Commands.EXPLODE) {
-      const command = this.commandFactory.create(player, [card]);
-      command.execute();
-      this.currentGameState.advanceTurn();
-      this.broadcast("played-card", new GameModel(this));
+      this.handlePlayerPlayCard(player, [card]);
+      this.currentGameState!.advanceTurn();
+      this.broadcast("played-card");
     } else {
       player.draw(card);
 
-      this.currentGameState.advanceTurn();
-      this.broadcast("drew-card", new GameModel(this));
+      this.currentGameState!.advanceTurn();
+      this.broadcast("drew-card");
     }
-    debug(
-      `peek top card ${JSON.stringify(this.currentGameState.deck.peek(1))}`
-    );
     this.checkGameOver();
   }
-  handleUserPlayCard(player: Player, cardIds: string[]): void {
+  handleUserPlayCard(user: User, cardIds: string[]): void {
+    const player = user.player;
+
+    if (!player) {
+      debug(
+        `${user.id} tried to play card but is not playing in game ${this.id}`
+      );
+      throw new Error(`User not in play`);
+    }
+
     debug(`${player.id} played those card: ${cardIds}`);
     try {
       const cards = cardIds.map((cardId) => player.hand.get(cardId)!);
-      const command = this.commandFactory.create(player, cards);
-      command.execute();
+      this.handlePlayerPlayCard(player, cards);
       player.hand.remove(cardIds);
-      this.broadcast("played-card", new GameModel(this));
+      this.broadcast("played-card");
     } catch (error) {
-      // TODO add to frontend events
       debug(`${player.id} tried to play invalid card ${error}`);
-      if (error instanceof Error)
-        this.sendTo(player.id, "cant-play-card", error.message);
-      else this.sendTo(player.id, "cant-play-card", "Unknown error");
+      throw error;
     }
   }
+  handlePlayerPlayCard(player: Player, cards: Card[]): void {
+    const command = this.commandFactory!.create(player, cards);
+    command.execute();
+  }
   checkGameOver(): void {
-    if (this.currentGameState.isGameOver()) {
+    if (this.currentGameState!.isGameOver()) {
       this.gameStarted = GameStarted.FINISHED;
-      this.broadcast("over", new GameModel(this));
+      this.broadcast("over");
     }
   }
   overGame(): void {
     this.gameStarted = GameStarted.FINISHED;
   }
-  private broadcast(event: string, ...data: any[]): void {
-    event = `game:${event}`;
-    this.io.to(this.id).emit(event, ...data);
-    // debug(
-    //   `broadcasted ${event} to ${this.id} with data ${JSON.stringify(data)}`
-    // );
+  private broadcast(event: string): void {
+    for (const user of this.connectedUsers.values()) {
+      user.emit(event, this.encode());
+    }
   }
-  private sendTo(clientId: string, event: string, ...data: any[]): void {
-    event = `game:${event}`;
-    this.io.to(clientId).emit(event, ...data);
+  encode(): GameModel {
+    const connectedUsers = [...this.connectedUsers.values()].map((user) =>
+      user.encode()
+    );
+    return new GameModel(
+      this.id,
+      connectedUsers,
+      this.gameStarted,
+      this.currentGameState?.encode(),
+      this.gameSetting,
+      this.seats
+    );
   }
 }

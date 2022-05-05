@@ -1,30 +1,37 @@
 import { GameStarted } from "@/components/game/Game";
+import { Game } from "../game";
 import Card from "@/components/card/Card";
 import CardView from "@/components/card/CardView";
-import socket from "@/lib/socket";
-import { useGame, useUser } from "@/lib/store";
 import { Box, Button, Stack } from "@mui/material";
+import { useGetUserQuery } from "../user/userSlice";
+import { useDrawCardMutation, usePlayCardMutation } from "../game/gameSlice";
 
-const HandPanel = ({ hand }: { hand: Card[] }) => {
-  const game = useGame()!;
-  const user = useUser()!;
+const HandPanel = ({ game }: { game: Game }) => {
+  const { data: user } = useGetUserQuery();
+  const [drawCard] = useDrawCardMutation();
+  const [playCard] = usePlayCardMutation();
   const isDisabled = game.gameStarted !== GameStarted.STARTED;
-  const currentTurn = game.currentGameState.currentPlayerIndex;
-  const currentPlayer = game.players[currentTurn];
-  const isMyTurn = currentPlayer?.id === user.id;
-  const drawCard = () => {
-    socket.emit("game:draw-card");
-  };
-  const playCard = (cards: Card[]) => {
-    socket.emit(
-      "game:play-card",
-      cards.map((card) => card.id)
-    );
-  };
-  const selectedCards = hand.map((card) => false);
   if (isDisabled) {
     return <></>;
   }
+  const currentTurn = game.currentGameState!.currentPlayerIndex;
+  const currentPlayer = game.currentGameState!.players[currentTurn];
+  const isMyTurn = currentPlayer?.id === user?.id;
+  const self = game.currentGameState!.players.find(
+    (p) => p && p.id === user?.id
+  );
+  const hand = self ? self.hand : [];
+  const handleDrawCard = () => {
+    drawCard();
+  };
+  const handlePlayCard = (cards: Card[]) => {
+    playCard(cards.map((card) => card.id))
+      .unwrap()
+      .catch((err) => alert(err));
+  };
+  const selectedCards = hand.map((card) => false);
+  console.log(selectedCards);
+
   return (
     <Box
       width="100%"
@@ -53,7 +60,7 @@ const HandPanel = ({ hand }: { hand: Card[] }) => {
           gridArea: "1 / 11 / 3 / 12",
           backgroundColor: "blue",
         }}
-        onClick={drawCard}
+        onClick={handleDrawCard}
         disabled={!isMyTurn}
       >
         Draw
@@ -64,7 +71,7 @@ const HandPanel = ({ hand }: { hand: Card[] }) => {
           backgroundColor: "blue",
         }}
         onClick={() =>
-          playCard(hand.filter((_, index) => selectedCards[index]))
+          handlePlayCard(hand.filter((_, index) => selectedCards[index]))
         }
         disabled={!isMyTurn}
       >

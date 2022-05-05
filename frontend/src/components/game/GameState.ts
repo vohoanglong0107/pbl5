@@ -4,7 +4,8 @@ import { Player } from "../player";
 export default interface GameState {
   deck: Card[];
   discardPile: Card[];
-  players: Player[];
+  turn: number;
+  players: Array<Player | undefined>;
   currentPlayerIndex: number;
   currentPlayerNumTurn: number;
   direction: number;

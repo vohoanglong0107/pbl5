@@ -1,10 +1,11 @@
-import { useGame, useUser } from "@/lib/store";
+import { useGetUserQuery } from "../user/userSlice";
+import { Game } from "../game";
 import { Box, Typography } from "@mui/material";
 
-export default function ConnectedUsersPanel() {
-  const game = useGame()!;
+export default function ConnectedUsersPanel({ game }: { game: Game }) {
   const users = game.connectedUsers;
-  const user = useUser();
+  const { data: user } = useGetUserQuery();
+
   return (
     <Box
       display={"flex"}

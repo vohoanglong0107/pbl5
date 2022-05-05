@@ -5,7 +5,7 @@
 import debugModule from "debug";
 import http from "http";
 import app from "./app";
-import logger from "./utils/logger";
+import logger from "./util/logger";
 import registerCookie from "./cookie";
 
 const debug = debugModule("backend:server");

@@ -1,6 +1,8 @@
 import { Game } from "@/components/game";
 import User from "@/components/user/User";
 
+import { XOR } from "@/util/type";
+
 export interface ServerToClientEvents {
   "game:started": (game: Game) => void;
   "game:connected": (game: Game) => void;
@@ -18,4 +20,10 @@ export interface ClientToServerEvents {
   "game:draw-card": () => void;
   "game:play-card": (cardIds: string[]) => void;
   [key: string]: (...args: any) => void;
+}
+
+export type AckResponse = XOR<{ error: string }, { data: unknown }>;
+
+export interface Acknowledgement {
+  (response: AckResponse): void;
 }
