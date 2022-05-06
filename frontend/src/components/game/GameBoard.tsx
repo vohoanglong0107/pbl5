@@ -21,7 +21,7 @@ const ResponsiveRoundBoard = () => {
 
 const WaitingGameBoard = ({ game }: GameBoardProps) => {
   const [startGame] = useStartGameMutation();
-  const max_players = game.gameSetting.max_players;
+  const max_players = game.gameSetting.maxPlayers;
   const userSeats = game.seats.map((seat, index) => {
     return (
       <Grid key={index} item xs={4}>
@@ -60,7 +60,7 @@ const WaitingGameBoard = ({ game }: GameBoardProps) => {
 
 const InPlayGameBoard = ({ game }: GameBoardProps) => {
   const currentPlayerIndex = game.currentGameState?.currentPlayerIndex;
-  const max_players = game.gameSetting.max_players;
+  const max_players = game.gameSetting.maxPlayers;
   const playerSlots = game.currentGameState!.players.map((player, index) => {
     return (
       <Grid key={index} item xs={4}>

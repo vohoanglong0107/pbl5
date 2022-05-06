@@ -25,7 +25,7 @@ export default class Game {
   currentGameState: GameState | undefined = undefined;
   gameSetting: GameSetting = new GameSetting();
   private commandFactory: CommandFactory | undefined = undefined;
-  seats = Array<User | undefined>(this.gameSetting.max_players).fill(undefined);
+  seats = Array<User | undefined>(this.gameSetting.maxPlayers).fill(undefined);
   constructor() {}
   getUser(userId: string): User | undefined {
     return this.connectedUsers.get(userId);
@@ -88,7 +88,7 @@ export default class Game {
     }
   }
   reserveSeat(user: User, seatId: number): void {
-    if (seatId >= this.gameSetting.max_players) {
+    if (seatId >= this.gameSetting.maxPlayers) {
       throw new Error(`Seat ${seatId} is out of range`);
     }
     this.removeUserFromSeat(user);
