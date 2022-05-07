@@ -14,9 +14,8 @@ const HandPanel = ({ game }: { game: Game }) => {
   if (isDisabled) {
     return <></>;
   }
-  const currentTurn = game.currentGameState!.currentPlayerIndex;
-  const currentPlayer = game.currentGameState!.players[currentTurn];
-  const isMyTurn = currentPlayer?.id === user?.id;
+  const currentPlayerId = game.currentGameState!.currentPlayerId;
+  const isMyTurn = currentPlayerId === user?.id;
   const self = game.currentGameState!.players.find(
     (p) => p && p.id === user?.id
   );
@@ -30,7 +29,6 @@ const HandPanel = ({ game }: { game: Game }) => {
       .catch((err) => alert(err));
   };
   const selectedCards = hand.map((card) => false);
-  console.log(selectedCards);
 
   return (
     <Box

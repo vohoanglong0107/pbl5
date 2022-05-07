@@ -1,15 +1,13 @@
-import GameState from "./GameState";
-import GameSetting from "@/game/GameSetting";
-import User from "./User";
-import { GameStarted } from "@/game/Game";
+import Card from "@/game/Card";
+import Player from "./Player";
 
 export default class Game {
   constructor(
-    public id: string,
-    public connectedUsers: User[],
-    public gameStarted: GameStarted,
-    public currentGameState: GameState | undefined,
-    public gameSetting: GameSetting,
-    public seats: Array<User | undefined>
+    public deck: Card[],
+    public discardPile: Card[],
+    public players: Player[],
+    public currentPlayerId: string,
+    public currentPlayerNumTurn: number,
+    public direction: number = 1
   ) {}
 }

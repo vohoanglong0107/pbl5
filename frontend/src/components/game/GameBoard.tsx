@@ -4,6 +4,9 @@ import PlayerSlot from "@/components/player/PlayerSlot";
 import UserSeat from "../user/UserSeat";
 import { useStartGameMutation } from "./gameSlice";
 import { Button, Grid } from "@mui/material";
+import { User } from "../user";
+import { Player } from "../player";
+import { useGetUserQuery } from "../user/userSlice";
 
 interface GameBoardProps {
   game: Game;
@@ -19,23 +22,33 @@ const ResponsiveRoundBoard = () => {
   //   - max_players % 4 == 3 => Both side and bottom get plus 1 player
 };
 
+function getSeat<UsersType extends User[] | Player[]>(
+  game: Game,
+  users: UsersType
+) {
+  type UserType = UsersType[number];
+  const seats = Array<UserType | undefined>(game.gameSetting.maxPlayers);
+  seats.fill(undefined);
+  for (const user of users) {
+    if (user.seat !== undefined) {
+      seats[user.seat] = user;
+    }
+  }
+
+  return seats;
+}
+
 const WaitingGameBoard = ({ game }: GameBoardProps) => {
   const [startGame] = useStartGameMutation();
   const max_players = game.gameSetting.maxPlayers;
-  const userSeats = game.seats.map((seat, index) => {
+  const seats = getSeat(game, game.connectedUsers);
+  const userSeats = seats.map((seat, index) => {
     return (
       <Grid key={index} item xs={4}>
         <UserSeat user={seat} width="100%" height="100%" seatId={index} />
       </Grid>
     );
   });
-  while (userSeats.length < max_players) {
-    userSeats.push(
-      <Grid key={userSeats.length} item xs={4}>
-        <UserSeat width="100%" height="100%" seatId={userSeats.length} />
-      </Grid>
-    );
-  }
   const middleGrid = (
     <Grid item xs={4} display="flex" alignItems="center">
       <Button
@@ -59,27 +72,21 @@ const WaitingGameBoard = ({ game }: GameBoardProps) => {
 };
 
 const InPlayGameBoard = ({ game }: GameBoardProps) => {
-  const currentPlayerIndex = game.currentGameState?.currentPlayerIndex;
+  const currentPlayerId = game.currentGameState?.currentPlayerId;
   const max_players = game.gameSetting.maxPlayers;
-  const playerSlots = game.currentGameState!.players.map((player, index) => {
+  const slots = getSeat(game, game.currentGameState!.players);
+  const playerSlots = slots.map((player, index) => {
     return (
       <Grid key={index} item xs={4}>
         <PlayerSlot
           player={player}
           width="100%"
           height="100%"
-          isCurrentTurn={currentPlayerIndex === index}
+          isCurrentTurn={currentPlayerId === player?.id}
         />
       </Grid>
     );
   });
-  while (playerSlots.length < max_players) {
-    playerSlots.push(
-      <Grid key={playerSlots.length} item xs={4}>
-        <PlayerSlot width="100%" height="100%" />
-      </Grid>
-    );
-  }
   const middleGrid = (
     <Grid item xs={4} display="flex" alignItems="center">
       <Deck />

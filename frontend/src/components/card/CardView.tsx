@@ -14,7 +14,7 @@ const CardToolTip = ({ card }: CardToolTipProps) => {
         backgroundColor: "yellow",
       }}
     >
-      {card.id}
+      {card.commandId}
     </Paper>
   );
 };

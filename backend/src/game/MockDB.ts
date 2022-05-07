@@ -1,4 +1,4 @@
-import { Commands } from "./command/Commands";
+import { CardCommands } from "./command/CardCommands";
 import Card from "./Card";
 
 class MockDB {
@@ -7,7 +7,7 @@ class MockDB {
     cards: [
       {
         id: "0",
-        commandId: Commands.EXPLODE,
+        commandId: CardCommands.EXPLODE,
       },
     ],
   };
@@ -15,20 +15,20 @@ class MockDB {
     for (let i = 1; i < 5; i++) {
       this.desks.cards.push({
         id: `${i}`,
-        commandId: Commands.EXPLODE,
+        commandId: CardCommands.EXPLODE,
       });
     }
 
     for (let i = 5; i < 8; i++) {
       this.desks.cards.push({
         id: `${i}`,
-        commandId: Commands.DEFUSE,
+        commandId: CardCommands.DEFUSE,
       });
     }
     for (let i = 8; i < 16; ++i) {
       this.desks.cards.push({
         id: `${i}`,
-        commandId: Commands.SKIP,
+        commandId: CardCommands.SKIP,
       });
     }
   }

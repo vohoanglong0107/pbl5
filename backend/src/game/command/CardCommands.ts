@@ -1,4 +1,4 @@
-export enum Commands {
+export enum CardCommands {
   DEFUSE,
   EXPLODE,
   SKIP,

@@ -3,11 +3,15 @@ import { SocketType } from "@/events";
 import Player from "./Player";
 import UserModel from "@/model/User";
 
+export enum UserEvent {
+  CONNECT = "user:connect",
+}
 export default class User {
   id: string;
   username: string;
   connections = new Map<string, SocketType>();
-  player: Player | undefined;
+  player?: Player;
+  seat?: number;
   constructor(id: string, socket: SocketType) {
     this.id = id;
     this.username = faker.name.findName();
@@ -15,7 +19,7 @@ export default class User {
   }
   addConnection(socket: SocketType): void {
     this.connections.set(socket.id, socket);
-    this.emit("connect", this.encode());
+    this.emit(UserEvent.CONNECT, this.encode());
   }
   removeConnection(socket: SocketType): void {
     this.connections.delete(socket.id);
@@ -24,12 +28,11 @@ export default class User {
     return this.connections.size === 0;
   }
   emit(event: string, ...data: any[]): void {
-    event = `game:${event}`;
     for (let socket of this.connections.values()) {
       socket.emit(event, ...data);
     }
   }
   encode(): UserModel {
-    return new UserModel(this.id, this.username);
+    return new UserModel(this.id, this.username, this.seat);
   }
 }

@@ -17,10 +17,10 @@ const userApiSlice = apiSlice.injectEndpoints({
         };
         try {
           await cacheDataLoaded;
-          socketClient.on("game:connect", updateCachedDataWithUser);
+          socketClient.on("user:connect", updateCachedDataWithUser);
         } catch {}
         await cacheEntryRemoved;
-        socketClient.off("game:connect", updateCachedDataWithUser);
+        socketClient.off("user:connect", updateCachedDataWithUser);
       },
     }),
   }),

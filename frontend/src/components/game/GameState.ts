@@ -5,8 +5,8 @@ export default interface GameState {
   deck: Card[];
   discardPile: Card[];
   turn: number;
-  players: Array<Player | undefined>;
-  currentPlayerIndex: number;
+  players: Player[];
+  currentPlayerId: string;
   currentPlayerNumTurn: number;
   direction: number;
 }

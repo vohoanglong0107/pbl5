@@ -14,7 +14,7 @@ export default class Deck {
     this.cards = this.cards.sort(() => Math.random() - 0.5);
   }
 
-  draw(): Card {
+  deal(): Card {
     const card = this.cards.pop();
     // Should never happen in a real game as they should have all exploded by now.
     if (!card) {

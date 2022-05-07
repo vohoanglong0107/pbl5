@@ -1,9 +1,9 @@
 import Command from "./Command";
-import GameState from "../GameState";
+import GameEntity from "../GameEntity";
 
 export default class Skip implements Command {
-  constructor(public gameState: GameState) {}
+  constructor(public gameEntity: GameEntity) {}
   execute(): void {
-    this.gameState.advanceTurn();
+    this.gameEntity.currentPlayerNumberOfTurns--;
   }
 }
