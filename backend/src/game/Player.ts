@@ -7,9 +7,11 @@ export default class Player {
   username: string;
   hand: Hand = new Hand();
   exploded = false;
-  constructor(id: string, username: string) {
+  seat: number;
+  constructor(id: string, username: string, seat: number) {
     this.id = id;
     this.username = username;
+    this.seat = seat;
   }
   draw(card: Card) {
     this.hand.add(card);
@@ -23,7 +25,8 @@ export default class Player {
       this.id,
       this.username,
       this.hand.cards,
-      this.exploded
+      this.exploded,
+      this.seat
     );
   }
 }

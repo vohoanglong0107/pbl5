@@ -24,35 +24,18 @@ const gameApiSlice = apiSlice.injectEndpoints({
           await cacheDataLoaded;
           socketClient.connect({ gameId });
 
-          for (const event of [
-            "game:started",
-            "game:connected",
-            "game:disconnected",
-            "game:took-seat",
-            "game:played-card",
-            "game:drew-card",
-            "game:over",
-          ]) {
-            console.log(`patch data in in event ${event}`);
-            socketClient.on(event, updateCachedDataWithGame);
-          }
+          socketClient.on("room:state-changed", updateCachedDataWithGame);
         } catch {
           // no-op when cacheEntryRemoved resolve after cacheEntryRemoved
         }
         await cacheEntryRemoved;
-        for (const event in [
-          "game:started",
-          "game:connected",
-          "game:disconnected",
-        ]) {
-          socketClient.off(event, updateCachedDataWithGame);
-        }
+        socketClient.off("room:state-changed", updateCachedDataWithGame);
       },
     }),
     startGame: builder.mutation<unknown, void>({
       queryFn: () => {
         return socketClient
-          .emit("game:start")
+          .emit("room:start-game")
           .then((data) => ({ data: data }))
           .catch((error) => ({ error: error }));
       },
@@ -60,7 +43,7 @@ const gameApiSlice = apiSlice.injectEndpoints({
     takeSeat: builder.mutation<unknown, number>({
       queryFn: (seatId) => {
         return socketClient
-          .emit("game:take-seat", seatId)
+          .emit("room:take-seat", seatId)
           .then((data) => ({ data: data }))
           .catch((error) => ({ error: error }));
       },

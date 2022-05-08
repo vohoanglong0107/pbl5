@@ -3,4 +3,5 @@ import { User } from "../user";
 export default interface Player extends User {
   hand: Card[];
   exploded: boolean;
+  seat: number;
 }

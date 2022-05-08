@@ -1,25 +1,27 @@
 import debugModule from "debug";
 import { ServerType, SocketType } from "@/events";
 import cookie from "cookie";
-import Game from "./Game";
+import Room from "./Room";
 import User from "./User";
 const debug = debugModule("backend:socket:event");
 import { COOKIE_NAME } from "@/constants";
+import { Event } from "socket.io";
+import Game from "./Game";
 
 export class GameManager {
   private io: ServerType;
 
-  games: Map<string, Game> = new Map();
+  games: Map<string, Room> = new Map();
   constructor(io: ServerType) {
     this.io = io;
     this.setUp();
   }
   createGame() {
-    const game = new Game();
+    const game = new Room();
     this.games.set(game.id, game);
     return game.id;
   }
-  getGame(id: string): Game | undefined {
+  getGame(id: string): Room | undefined {
     return this.games.get(id);
   }
   setUp() {
@@ -29,31 +31,13 @@ export class GameManager {
       ];
       socket.data.sessionID = sessionID;
       const gameId = socket.handshake.auth.gameId as string;
-      const game = this.getGame(gameId);
-      if (game) {
-        socket.data.game = game;
-        socket.use((event, next) => {
-          let [eventType, ...data] = event;
-          debug(`user ${sessionID} send an event ${eventType} `);
-          if (eventType.startsWith("game:")) {
-            const userEvent = eventType.replace(/^(game:)/, "");
-            const user = game.getUser(sessionID);
-            if (!user) {
-              next(new Error("User not in this game"));
-              debug(
-                `user ${sessionID} try to send an event ${eventType} to game ${game.id} \
-                but not connected to mentioned game`
-              );
-              return;
-            } else {
-              game.handleUserEvent(user, userEvent, ...data);
-            }
-          }
-          next();
-        });
+      try {
+        this.registerGameHandler(socket, gameId);
         next();
-      } else {
-        next(new Error("Game not found"));
+      } catch (error) {
+        if (error instanceof Error) next(error);
+        else if (typeof error === "string") next(new Error(error));
+        else throw error;
       }
     });
     this.io.on("connection", (socket) => {
@@ -86,6 +70,38 @@ export class GameManager {
       }
       debug(`User ${sessionID} disconnect from game ${game.id}`);
     });
+  }
+  registerGameHandler(socket: SocketType, gameId: string) {
+    const sessionID = socket.data.sessionID!;
+    const game = this.getGame(gameId);
+    if (!game) throw new Error(`Game ${gameId} not found`);
+    socket.data.game = game;
+    socket.use((event, next) => {
+      try {
+        this.redirectEventToGameHandler(game, event, sessionID);
+        next();
+      } catch (error) {
+        if (error instanceof Error) next(error);
+        else if (typeof error === "string") next(new Error(error));
+        else throw error;
+      }
+    });
+  }
+  redirectEventToGameHandler(game: Room, event: Event, userId: string) {
+    let [eventType, ...data] = event;
+    debug(`user ${userId} send an event ${eventType} `);
+    if (Room.isRoomEvent(eventType) || Game.isGameEvent(eventType)) {
+      const user = game.getUser(userId);
+      if (user) {
+        game.handleUserEvent(user, eventType, ...data);
+      } else {
+        debug(
+          `user ${userId} try to send an event ${eventType} to game ${game.id} \
+              but not connected to mentioned game`
+        );
+        throw new Error("User not in this game");
+      }
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import Game from "@/game/Game";
-import GameModel from "@/model/Game";
+import Room from "@/game/Room";
+import GameModel from "@/model/Room";
 import User from "./game/User";
 
 export interface ServerToClientEvents {
@@ -28,7 +28,7 @@ export interface InterServerEvents {
 
 export interface SocketData {
   sessionID: string;
-  game: Game;
+  game: Room;
 }
 
 export type SocketType = Socket<
