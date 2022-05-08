@@ -1,11 +1,11 @@
-import Game from "../Game";
 import Player from "../Player";
 import Command from "./Command";
+import GameEntity from "../GameEntity";
 
 export default class Cat implements Command {
   constructor(
     public source: Player,
-    public game: Game,
+    public gameEntity: GameEntity,
     public target: Player
   ) {}
   execute(): void {

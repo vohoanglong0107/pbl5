@@ -6,7 +6,7 @@ import Cat from "./Cat";
 import Skip from "./Skip";
 import { CardCommands } from "./CardCommands";
 import Player from "../Player";
-import Game from "../Game";
+import GameEntity from "../GameEntity";
 
 export type CommandCreationInfo = {
   source: Player;
@@ -14,7 +14,7 @@ export type CommandCreationInfo = {
 };
 
 export default class CardConverter {
-  constructor(public game: Game) {}
+  constructor(public gameEntity: GameEntity) {}
   public convert(
     cards: Card[],
     commandCreationInfo: CommandCreationInfo
@@ -31,13 +31,13 @@ export default class CardConverter {
     const { source, target } = commandCreationInfo;
     switch (card.commandId) {
       case CardCommands.DEFUSE:
-        return new Defuse(source, this.game.gameEntity);
+        return new Defuse(source, this.gameEntity);
       case CardCommands.EXPLODE:
-        return new Explode(source, this.game.gameEntity);
+        return new Explode(source, this.gameEntity);
       case CardCommands.SKIP:
-        return new Skip(this.game.gameEntity);
+        return new Skip(this.gameEntity);
       case CardCommands.CAT:
-        return new Cat(source, this.game, target!);
+        return new Cat(source, this.gameEntity, target!);
       default:
         throw new Error(`Unknown command id: ${card.commandId}`);
     }

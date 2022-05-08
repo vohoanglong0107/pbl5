@@ -1,4 +1,5 @@
 import debugModule from "debug";
+import EventEmitter from "events";
 import GameEntity from "./GameEntity";
 import Player from "./Player";
 import GameModel from "@/model/Game";
@@ -11,30 +12,37 @@ export enum GameEvent {
   DRAW_CARD = "game:draw-card",
 }
 
-export default class Game {
+export default class Game extends EventEmitter {
   gameEntity: GameEntity;
   players: Player[];
   currentPlayer!: Player;
   private cardConverter: CardConverter;
-  private currentTimer: NodeJS.Timeout | null = null;
-  constructor(players: Player[]) {
+  private currentTimer!: NodeJS.Timeout;
+  private turnTime: number;
+  constructor(players: Player[], turnTime: number) {
+    super();
     this.players = players;
+    this.turnTime = turnTime;
     this.gameEntity = new GameEntity();
-    this.cardConverter = new CardConverter(this);
+    this.cardConverter = new CardConverter(this.gameEntity);
     for (let player of players) {
       player?.reset();
     }
     this.start();
   }
   start() {
-    this.startTurn();
     this.currentPlayer = this.nextPlayer();
+    this.startTurn();
   }
   startTurn() {
+    if (this.isOver()) return this.over();
     this.updateFromGameEntity();
-    // this.currentTimer = setTimeout(() => {
-    //   this.endTurn();
-    // });
+
+    this.currentTimer = setTimeout(() => {
+      this.endTurn();
+    }, this.turnTime);
+    this.emit("start-turn");
+    debug(`Player ${this.currentPlayer.id} is starting turn`);
   }
   updateFromGameEntity() {
     if (this.gameEntity.nextPlayer === null) {
@@ -45,19 +53,23 @@ export default class Game {
     } else if (this.gameEntity.nextPlayer === true) {
       this.passTurnToNextPlayer();
     } else {
-      const currentPlayer = this.getPlayer(this.gameEntity.nextPlayer);
-      if (!currentPlayer) {
+      const nextPlayer = this.getPlayer(this.gameEntity.nextPlayer);
+      if (!nextPlayer) {
         throw new Error(`Player ${this.gameEntity.nextPlayer} is not in game`);
       }
-      this.currentPlayer = currentPlayer;
+      this.currentPlayer = nextPlayer;
     }
   }
-  endTurn() {
-    this.handlePlayerDrawCard(this.currentPlayer);
+  endTurn(draw: boolean = true) {
+    clearTimeout(this.currentTimer);
+    if (draw) this.handlePlayerDrawCard(this.currentPlayer);
+    debug(`Player ${this.currentPlayer.id} is ending turn`);
+    this.startTurn();
   }
   passTurnToNextPlayer() {
     this.currentPlayer = this.nextPlayer(this.currentPlayer);
   }
+  // TODO: add direction
   nextPlayer(player?: Player) {
     let currentSeat = player === undefined ? -1 : player.seat;
     let playersAfterCurrentSeat = this.players.filter(
@@ -69,7 +81,14 @@ export default class Game {
       );
     }
 
-    return playersAfterCurrentSeat.sort((a, b) => a.seat - b.seat)[0];
+    const rankedCandidates = playersAfterCurrentSeat.sort(
+      (a, b) => a.seat - b.seat
+    );
+    if (rankedCandidates.length === 0) {
+      throw new Error("No player left");
+    }
+
+    return rankedCandidates[0];
   }
 
   handlePlayerEvent(player: Player, event: GameEvent, ...data: any[]) {
@@ -84,7 +103,7 @@ export default class Game {
         res = this.handlePlayerDrawCard(player);
         break;
     }
-    this.startTurn();
+    this.endTurn(false);
     return res;
   }
   handlePlayerDrawCard(player: Player) {
@@ -103,9 +122,13 @@ export default class Game {
       throw error;
     }
   }
-  isGameOver(): boolean {
+  isOver(): boolean {
     let remainingPlayers = this.players.filter((player) => !player.exploded);
     return remainingPlayers.length <= 1;
+  }
+  over() {
+    clearTimeout(this.currentTimer);
+    this.emit("over");
   }
   // TODO: handle abruption disconnect
   //  e.g. disconnect while in turn or when performing special action
@@ -118,8 +141,12 @@ export default class Game {
     }
     this.players = this.players.filter((player) => player.id !== playerId);
     if (player.id === this.currentPlayer?.id) {
-      this.passTurnToNextPlayer();
+      this.handleCurrentPlayerBeingRemoved();
     }
+  }
+  handleCurrentPlayerBeingRemoved() {
+    this.gameEntity.nextPlayer = true;
+    this.endTurn(false);
   }
   getPlayer(playerId: string): Player | undefined {
     return this.players.find((player) => player.id === playerId);

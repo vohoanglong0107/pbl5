@@ -41,8 +41,6 @@ export default class Room {
     this.connectedUsers.delete(user.id);
     this.game?.removePlayer(user.id);
     this.broadcastStateChanged();
-
-    this.checkGameOver();
   }
 
   handleUserEvent(user: User, event: string, ...args: any[]): void {
@@ -95,7 +93,6 @@ export default class Room {
       throw new Error(`User not in game`);
     }
     const res = this.game!.handlePlayerEvent(player, event, ...data);
-    this.checkGameOver();
     return res;
   }
   reserveSeat(user: User, seatId: number): void {
@@ -128,12 +125,20 @@ export default class Room {
       user.player = player;
       return player;
     });
-    this.game = new Game(players);
+
+    this.game = this.setUpNewGame(players);
   }
-  checkGameOver(): void {
-    if (this.game?.isGameOver()) {
+  setUpNewGame(players: Player[]) {
+    const game = new Game(players, this.roomSetting.turnTime);
+    game.on("start-turn", () => {
+      this.broadcastStateChanged();
+    });
+    game.on("over", () => {
       this.overGame();
-    }
+      this.broadcastStateChanged();
+      debug(`Game ${this.id} is over`);
+    });
+    return game;
   }
   overGame(): void {
     this.gameStarted = GameStarted.FINISHED;
