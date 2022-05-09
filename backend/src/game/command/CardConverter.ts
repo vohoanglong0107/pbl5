@@ -7,6 +7,7 @@ import Skip from "./Skip";
 import { CardCommands } from "./CardCommands";
 import Player from "../Player";
 import GameEntity from "../GameEntity";
+import DrawFromBottom from "./DrawFromBottom";
 
 export type CommandCreationInfo = {
   source: Player;
@@ -36,6 +37,8 @@ export default class CardConverter {
         return new Explode(source, this.gameEntity);
       case CardCommands.SKIP:
         return new Skip(this.gameEntity);
+      case CardCommands.DRAW_FROM_BOTTOM:
+        return new DrawFromBottom(source, this.gameEntity);
       case CardCommands.CAT:
         return new Cat(source, this.gameEntity, target!);
       default:

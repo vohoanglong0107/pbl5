@@ -3,4 +3,5 @@ export enum CardCommands {
   EXPLODE,
   SKIP,
   CAT,
+  DRAW_FROM_BOTTOM,
 }
