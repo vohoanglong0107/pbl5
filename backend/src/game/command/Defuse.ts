@@ -1,4 +1,4 @@
-import Command from "./Command";
+import Command, { Response } from "./Command";
 import Player from "../Player";
 import GameEntity from "../GameEntity";
 
@@ -9,7 +9,7 @@ import GameEntity from "../GameEntity";
 //  - If user doesn't have a defuse card, player is exploded (check before prompting)
 export default class Defuse implements Command {
   constructor(public source: Player, public gameEntity: GameEntity) {}
-  execute(): void {
+  execute(): Response {
     throw new Error("Defuse should not be played directly (for now))");
   }
 }

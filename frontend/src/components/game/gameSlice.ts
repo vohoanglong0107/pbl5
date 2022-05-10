@@ -2,6 +2,19 @@ import apiSlice from "../apiSlice";
 import { socketClient } from "@/lib/SocketClient";
 import Game from "./Game";
 
+export interface Response {
+  type: number;
+  data: unknown;
+}
+
+export enum CardCommands {
+  DEFUSE,
+  EXPLODE,
+  SKIP,
+  CAT,
+  SEE_THE_FUTURE,
+}
+
 const gameApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createGame: builder.mutation<{ gameId: string }, void>({
@@ -56,11 +69,11 @@ const gameApiSlice = apiSlice.injectEndpoints({
           .catch((error) => ({ error: error }));
       },
     }),
-    playCard: builder.mutation<unknown, string[]>({
+    playCard: builder.mutation<Response, string[]>({
       queryFn: (cardIds) => {
         return socketClient
           .emit("game:play-card", cardIds)
-          .then((data) => ({ data: data }))
+          .then((data) => ({ data: data as Response }))
           .catch((error) => ({ error: error }));
       },
     }),

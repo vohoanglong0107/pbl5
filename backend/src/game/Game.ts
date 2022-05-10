@@ -115,8 +115,9 @@ export default class Game extends EventEmitter {
       debug(`${player.id} tried to play card ${cardIds}`);
       const cards = cardIds.map((cardId) => player.hand.get(cardId)!);
       const command = this.cardConverter.convert(cards, { source: player });
-      command.execute();
+      const response = command.execute();
       player.hand.remove(cardIds);
+      return response;
     } catch (error) {
       debug(`${player.id} tried to play invalid card ${error}`);
       throw error;

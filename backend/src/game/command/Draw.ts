@@ -8,7 +8,7 @@ const debug = debugModule("backend:socket:game");
 
 export default class Draw implements Command {
   constructor(public source: Player, public gameEntity: GameEntity) {}
-  execute(): void {
+  execute() {
     const card = this.gameEntity.deal();
     debug(`${this.source.id} drew card ${JSON.stringify(card)}`);
     if (card.commandId === CardCommands.EXPLODE) {
@@ -18,5 +18,10 @@ export default class Draw implements Command {
       this.source.draw(card);
     }
     this.gameEntity.currentPlayerNumberOfTurns--;
+    // TODO: What should i do for this command type?
+    return {
+      type: 999,
+      data: card,
+    };
   }
 }

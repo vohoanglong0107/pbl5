@@ -31,6 +31,12 @@ class MockDB {
         commandId: CardCommands.SKIP,
       });
     }
+    for (let i = 40; i < 64; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.SEE_THE_FUTURE,
+      });
+    }
   }
   getCard(id: string): Card | undefined {
     return this.desks.cards.find((card) => card.id === id);

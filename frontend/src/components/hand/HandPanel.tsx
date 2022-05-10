@@ -1,15 +1,24 @@
-import { GameStarted } from "@/components/game/Game";
-import { Game } from "../game";
 import Card from "@/components/card/Card";
 import CardView from "@/components/card/CardView";
+import { GameStarted } from "@/components/game/Game";
 import { Box, Button, Stack } from "@mui/material";
+import { useState } from "react";
+import { Game } from "../game";
+import {
+  useDrawCardMutation,
+  usePlayCardMutation,
+  Response,
+  CardCommands,
+} from "../game/gameSlice";
 import { useGetUserQuery } from "../user/userSlice";
-import { useDrawCardMutation, usePlayCardMutation } from "../game/gameSlice";
+import FutureDialog from "./FutureDialog";
 
 const HandPanel = ({ game }: { game: Game }) => {
   const { data: user } = useGetUserQuery();
   const [drawCard] = useDrawCardMutation();
   const [playCard] = usePlayCardMutation();
+  const [futureOpen, setFutureOpen] = useState(false);
+  const [futureCards, setFutureCards] = useState<Card[]>([]);
   const isDisabled = game.gameStarted !== GameStarted.STARTED;
   if (isDisabled) {
     return <></>;
@@ -26,10 +35,16 @@ const HandPanel = ({ game }: { game: Game }) => {
   const handlePlayCard = (cards: Card[]) => {
     playCard(cards.map((card) => card.id))
       .unwrap()
+      .then((response) => handleResponse(response))
       .catch((err) => alert(err));
   };
   const selectedCards = hand.map((card) => false);
-
+  const handleResponse = (response: Response) => {
+    if (response.type === CardCommands.SEE_THE_FUTURE) {
+      setFutureOpen(true);
+      setFutureCards(response.data as Card[]);
+    }
+  };
   return (
     <Box
       width="100%"
@@ -38,6 +53,13 @@ const HandPanel = ({ game }: { game: Game }) => {
       gridTemplateColumns={"repeat(12, 1fr)"}
       gridTemplateRows={"repeat(12, 1fr)"}
     >
+      <FutureDialog
+        open={futureOpen}
+        onClose={() => {
+          setFutureOpen(false);
+        }}
+        cards={futureCards}
+      ></FutureDialog>
       <Stack
         direction={"row"}
         border="1px solid brown"

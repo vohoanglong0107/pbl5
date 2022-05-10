@@ -1,10 +1,13 @@
-import Command from "./Command";
-import Game from "../Game";
-import Player from "../Player";
+import Command, { Response } from "./Command";
+import GameEntity from "../GameEntity";
+import { CardCommands } from "./CardCommands";
 
-export default class SeeTheFutureCommand implements Command {
-  constructor(public source: Player, public gameState: Game) {}
-  execute(): void {
-    throw new Error("Not implemented");
+export default class SeeTheFuture implements Command {
+  constructor(public gameEntity: GameEntity) {}
+  execute(): Response {
+    return {
+      type: CardCommands.SEE_THE_FUTURE,
+      data: this.gameEntity.deck.peek(3).reverse(),
+    };
   }
 }

@@ -3,4 +3,5 @@ export enum CardCommands {
   EXPLODE,
   SKIP,
   CAT,
+  SEE_THE_FUTURE,
 }
