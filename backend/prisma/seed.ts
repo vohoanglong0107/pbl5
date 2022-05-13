@@ -1,4 +1,4 @@
-import { Card, Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import * as fs from "fs";
 import * as path from "path";
 import { parse } from 'csv-parse';
@@ -7,62 +7,38 @@ import e from "cors";
 const prisma = new PrismaClient()
 
 async function main() {
-    type MasterCard = {
-        Prompt: string
-        Mechanic: string
-        Set: string
-        Sheet: number
-        Picture: string
-        other: string
-    };
 
     (() => {
-        const csvFilePath = path.resolve(`../backend/data/Exploding Kittens Card List - Master Card List.csv`);
+        const csvFilePath = path.resolve(`../backend/data/MasterCardList.csv`);
 
-        const headers = ['Prompt', 'Mechanic', 'Set', 'Sheet', 'Picture', `Cards with paw prints are marked with " * "`];
+        const headers = ['promt', 'mechanic', 'set', 'sheet', 'picture', 'originLink'];
 
         const fileContent = fs.readFileSync(csvFilePath, { encoding: 'utf-8' });
 
         parse(fileContent, {
+
             delimiter: ',',
             columns: headers,
-        }, (error, result: MasterCard[]) => {
 
+        }, async (error, result) => {
 
             if (error) {
                 console.error(error);
             }
 
-            // console.log("Result", result);
+            let datas: Array<{ name: string, imgUrl: string, description: string }> = new Array();
 
-            // for (let i = 0; i < result.length; i++) {
-            //     CardArr.push({ id: 0, name: result[i].Mechanic, description: result[i].Prompt, imgUrl: result[i].Picture })
-            //     console.log(result[i].Mechanic)
-            // }
-
-            let xx = 0;
-
-            result.forEach(async element => {
-                await prisma.card.create({
-                    data: {
-                        name: element.Mechanic,
-                        description: element.Prompt,
-                        imgUrl: element.Picture
-                    },
-                })
-                console.log(xx++)
+            for (let i = 1; i < result.length; i++) {
+                datas.push({ name: result[i]['mechanic'], description: result[i]['promt'], imgUrl: result[i]['originLink'] })
             }
 
-            );
+            await prisma.card.createMany({
+                data: datas
+            })
 
         });
+
     })();
-
-    // console.log(CardArr)
-
-    // const createMany = await prisma.card.createMany({
-    //     data: CardArr
-    // })
 
 }
 
