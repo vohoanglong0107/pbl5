@@ -29,7 +29,16 @@ async function main() {
             let datas: Array<{ name: string, imgUrl: string, description: string }> = new Array();
 
             for (let i = 1; i < result.length; i++) {
-                datas.push({ name: result[i]['mechanic'], description: result[i]['promt'], imgUrl: result[i]['originLink'] })
+                if (result[i]['mechanic'] == 'See the Future 3x' ||
+                    result[i]['mechanic'] == 'See the Future 5x' ||
+                    result[i]['mechanic'] == 'Defuse' ||
+                    result[i]['mechanic'] == 'Shuffle' ||
+                    result[i]['mechanic'] == 'Attack 2x' ||
+                    result[i]['mechanic'] == 'Attack 3x' ||
+                    result[i]['mechanic'] == 'Skip' ||
+                    result[i]['mechanic'] == 'Super Skip') {
+                    datas.push({ name: result[i]['mechanic'], description: result[i]['promt'], imgUrl: result[i]['originLink'] })
+                }
             }
 
             await prisma.card.createMany({
