@@ -49,6 +49,30 @@ class MockDB {
         commandId: CardCommands.DRAW_FROM_BOTTOM,
       });
     }
+    for (let i = 72; i < 80; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.ATTACK,
+      });
+    }
+    for (let i = 80; i < 88; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.REVERSE,
+      });
+    }
+    for (let i = 88; i < 96; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.SHUFFLE,
+      });
+    }
+    for (let i = 96; i < 104; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.TARGET_ATTACK,
+      });
+    }
   }
   getCard(id: string): Card | undefined {
     return this.desks.cards.find((card) => card.id === id);

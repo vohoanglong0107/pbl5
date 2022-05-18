@@ -322,7 +322,7 @@ class PlayState implements GameState {
   }
   private endTurn(draw: boolean = true) {
     clearTimeout(this.currentTimer);
-    if (draw) this.handlePlayerDrawCard();
+    if (draw) this.currentPlayerDrawCard();
     debug(`Player ${this.currentPlayer.id} is ending turn`);
     this.startTurn();
   }
@@ -382,6 +382,7 @@ class PlayState implements GameState {
             this.currentPlayer
           )
         );
+        // not calling endturn here to not start new turn (and endturn, ..., blowing the stack trace)
       } else {
         const res = this.cardConverter.play();
         this.endTurn(false);
@@ -393,9 +394,12 @@ class PlayState implements GameState {
     }
   }
   private handlePlayerDrawCard() {
+    this.currentPlayerDrawCard();
+    this.endTurn(false);
+  }
+  private currentPlayerDrawCard() {
     const command = new Draw(this.currentPlayer, this.gameEntity);
     command.execute();
-    this.endTurn(false);
   }
   removePlayer(playerId: string) {
     this.playerManager.removePlayer(playerId);
