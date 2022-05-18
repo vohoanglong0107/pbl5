@@ -1,8 +1,8 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import GamePlay from "@/components/game/GamePlay";
+import { socketClient } from "@/lib/SocketClient";
+import RoomLayout from "@/components/room/RoomLayout";
 
 const ConnectingPage = () => <h1>Getting room ID</h1>;
 
@@ -13,10 +13,13 @@ const Game: NextPage = () => {
     if (router.query.gid) {
       const gid = router.query.gid as string;
       setGameId(gid);
+      socketClient.connect({
+        gameId: gid,
+      });
     }
   }, [router]);
   if (!gameId) return <ConnectingPage />;
-  return <GamePlay gameId={gameId} />;
+  return <RoomLayout />;
 };
 
 export default Game;

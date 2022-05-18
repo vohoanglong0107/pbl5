@@ -1,25 +1,12 @@
 import { Dialog, DialogTitle, Stack, Paper } from "@mui/material";
 import Card from "../card/Card";
+import CardInfo from "../card/CardInfo";
 
 interface FutureDialogProps {
   open: boolean;
   onClose: () => void;
   cards: Card[];
 }
-
-const CardView = ({ card }: { card: Card }) => {
-  return (
-    <Paper
-      sx={{
-        width: "60px",
-        height: "100px",
-        backgroundColor: "brown",
-      }}
-    >
-      {card.id}
-    </Paper>
-  );
-};
 
 export default function FutureDialog({
   open,
@@ -38,7 +25,7 @@ export default function FutureDialog({
       </DialogTitle>
       <Stack direction={"row"} border="1px solid brown">
         {cards.map((card) => (
-          <CardView key={card.id} card={card} />
+          <CardInfo key={card.id} card={card} />
         ))}
       </Stack>
     </Dialog>

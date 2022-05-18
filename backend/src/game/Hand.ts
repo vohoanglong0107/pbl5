@@ -8,7 +8,8 @@ export default class Hand {
   get(cardId: string): Card | undefined {
     return this.cards.find((card) => card.id === cardId);
   }
-  remove(cardIds: string[]) {
+  remove(Card: Card[]) {
+    const cardIds = Card.map((card) => card.id);
     this.cards = this.cards.filter((card) => !cardIds.includes(card.id));
   }
   clear() {

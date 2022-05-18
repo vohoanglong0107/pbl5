@@ -2,7 +2,6 @@ import Card from "@/game/Card";
 import Command from "./Command";
 import Defuse from "./Defuse";
 import Explode from "./Explode";
-import Cat from "./Cat";
 import Skip from "./Skip";
 import { CardCommands } from "./CardCommands";
 import Player from "../Player";
@@ -15,45 +14,60 @@ export type CommandCreationInfo = {
   target?: Player;
 };
 
+//TODO: rename to Card Handler
 export default class CardConverter {
+  private cards?: Card[];
+  private commandId?: CardCommands;
+  private source?: Player;
+  private target?: Player;
   constructor(public gameEntity: GameEntity) {}
-  public convert(
-    cards: Card[],
-    commandCreationInfo: CommandCreationInfo
-  ): Command {
-    if (cards.length === 0) {
-      throw new Error("You must select at least one card");
-    }
-    if (cards.length === 1) {
-      return this.createFromSingleCard(cards[0], commandCreationInfo);
-    }
-    return this.createFromMultipleCards(cards, commandCreationInfo);
+  public isTargetRequired(): boolean {
+    return this.commandId === CardCommands.STEAL;
   }
-  private createFromSingleCard(
-    card: Card,
-    commandCreationInfo: CommandCreationInfo
-  ): Command {
-    const { source, target } = commandCreationInfo;
-    switch (card.commandId) {
+  public setCards(cards: Card[]) {
+    this.checkCardsValid(cards);
+    this.cards = cards;
+    this.commandId = this.convertCardsToCommand(cards);
+    return this;
+  }
+  public setSource(source: Player) {
+    this.source = source;
+    return this;
+  }
+  public setTarget(target: Player) {
+    this.target = target;
+    return this;
+  }
+  public play(): unknown {
+    if (this.cards === undefined || this.commandId === undefined)
+      throw new Error("Cards haven't set yet");
+    if (this.source === undefined) throw new Error("Source hasn't set yet");
+    if (this.isTargetRequired() && this.target === undefined)
+      throw new Error("Target hasn't set yet");
+    const command = this.convert(this.commandId);
+    const res = command.execute();
+    this.source.hand.remove(this.cards);
+    return res;
+  }
+  private convert(commandId: CardCommands): Command {
+    switch (commandId) {
       case CardCommands.DEFUSE:
-        return new Defuse(source, this.gameEntity);
+        return new Defuse(this.source!, this.gameEntity);
       case CardCommands.EXPLODE:
-        return new Explode(source, this.gameEntity);
+        return new Explode(this.source!, this.gameEntity);
       case CardCommands.SKIP:
         return new Skip(this.gameEntity);
       case CardCommands.SEE_THE_FUTURE:
         return new SeeTheFuture(this.gameEntity);
-      case CardCommands.CAT:
-        return new Cat(source, this.gameEntity, target!);
+      case CardCommands.STEAL:
+        return new Steal(this.source!, this.gameEntity, this.target!);
       default:
-        throw new Error(`Unknown command id: ${card.commandId}`);
+        throw new Error(`Unknown command id: ${this.commandId}`);
     }
   }
-  private createFromMultipleCards(
-    cards: Card[],
-    commandCreationInfo: CommandCreationInfo
-  ): Command {
-    const { source, target } = commandCreationInfo;
+  private checkCardsValid(cards: Card[]) {
+    if (cards.length === 0)
+      throw new Error("You must select at least one card");
     const commandId = cards[0].commandId;
     const checkAllCardSameCommand = (): boolean => {
       return cards.every((card) => card.commandId === commandId);
@@ -61,21 +75,18 @@ export default class CardConverter {
     if (!checkAllCardSameCommand()) {
       throw new Error("You must select cards with the same mechanic");
     }
+  }
+  private convertCardsToCommand(cards: Card[]): CardCommands {
+    const commandId = cards[0].commandId;
     switch (cards.length) {
+      case 1:
+        return commandId;
       case 2:
-        return new Steal(source, this.gameEntity, target!);
+        return CardCommands.STEAL;
       case 5:
         throw new Error("Unimplemented");
       default:
         throw new Error("You can only play 2 or 5 cards");
-    }
-  }
-  isTargetRequired(card: Card): boolean {
-    switch (card.commandId) {
-      case CardCommands.CAT:
-        return true;
-      default:
-        return false;
     }
   }
 }

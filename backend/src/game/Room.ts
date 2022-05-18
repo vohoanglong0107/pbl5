@@ -9,26 +9,20 @@ import { Acknowledgement } from "./UserEvent";
 
 const debug = debugModule("backend:socket:game");
 
-export enum GameStarted {
-  NOT_STARTED,
-  STARTED,
-  FINISHED,
-}
-
 export enum RoomEvent {
-  CONNECT = "room:connect",
-  START_GAME = "room:start-game",
-  TAKE_SEAT = "room:take-seat",
   STATE_CHANGED = "room:state-changed",
 }
 
 export default class Room {
-  id: string = uuidv4();
-  connectedUsers: Map<string, User> = new Map<string, User>();
-  gameStarted: GameStarted = GameStarted.NOT_STARTED;
-  game?: Game;
-  roomSetting: RoomSetting = new RoomSetting();
-  constructor() {}
+  public id: string = uuidv4();
+  private connectedUsers: Map<string, User> = new Map<string, User>();
+  private roomSetting: RoomSetting = new RoomSetting();
+  private game: Game = new Game(this.roomSetting.gameSetting);
+  constructor() {
+    this.game.eventTracker.on("game:state-changed", () => {
+      this.broadcastStateChanged();
+    });
+  }
   getUser(userId: string): User | undefined {
     return this.connectedUsers.get(userId);
   }
@@ -39,7 +33,7 @@ export default class Room {
   // TODO: add graceful disconnection
   onDisconnect(user: User) {
     this.connectedUsers.delete(user.id);
-    this.game?.removePlayer(user.id);
+    this.game.removePlayer(user.id);
     this.broadcastStateChanged();
   }
 
@@ -75,73 +69,22 @@ export default class Room {
       });
     }
   }
-  handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
+  private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
-      case RoomEvent.START_GAME:
-        return this.startGame();
-      case RoomEvent.TAKE_SEAT:
-        const seatId = data[0] as number;
-        return this.reserveSeat(user, seatId);
     }
   }
-  handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
-    const player = user.player;
+  private handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
+    let player = this.game.getPlayer(user.id);
     if (!player) {
-      debug(
-        `${user.id} tried to perform a game event but is not playing in game ${this.id}`
-      );
-      throw new Error(`User not in game`);
-    }
-    const res = this.game!.handlePlayerEvent(player, event, ...data);
-    return res;
-  }
-  reserveSeat(user: User, seatId: number): void {
-    if (seatId >= this.roomSetting.maxPlayers) {
-      throw new Error(`Seat ${seatId} is out of range`);
-    }
-    if (this.isSeatVacant(seatId)) {
-      user.seat = seatId;
-    } else {
-      throw new Error(`Seat ${seatId} is not vacant`);
-    }
-  }
-  isSeatVacant(seatId: number): boolean {
-    for (const user of this.connectedUsers.values()) {
-      if (user.seat === seatId) {
-        return false;
+      if (event === GameEvent.TAKE_SEAT)
+        player = this.game.addPlayer(user.id, user.username);
+      else {
+        debug(`${user.id} tried to send event ${event} without taking seat`);
+        throw new Error(`Player ${user.username} is not in the game`);
       }
     }
-    return true;
-  }
-  startGame() {
-    const users = Array.from(this.connectedUsers.values());
-    let usersInPlay = users.filter((user) => user.seat);
-    if (usersInPlay.length <= 1) {
-      throw new Error("Not enough player to start game");
-    }
-    this.gameStarted = GameStarted.STARTED;
-    const players = usersInPlay.map((user) => {
-      const player = new Player(user.id, user.username, user.seat!);
-      user.player = player;
-      return player;
-    });
-
-    this.game = this.setUpNewGame(players);
-  }
-  setUpNewGame(players: Player[]) {
-    const game = new Game(players, this.roomSetting.turnTime);
-    game.on("start-turn", () => {
-      this.broadcastStateChanged();
-    });
-    game.on("over", () => {
-      this.overGame();
-      this.broadcastStateChanged();
-      debug(`Game ${this.id} is over`);
-    });
-    return game;
-  }
-  overGame(): void {
-    this.gameStarted = GameStarted.FINISHED;
+    const res = this.game.handlePlayerEvent(player, event, ...data);
+    return res;
   }
   private broadcastStateChanged(): void {
     this.connectedUsers.forEach((user) =>
@@ -155,8 +98,7 @@ export default class Room {
     return new RoomModel(
       this.id,
       connectedUsers,
-      this.gameStarted,
-      this.game?.encode(),
+      this.game.encode(),
       this.roomSetting
     );
   }

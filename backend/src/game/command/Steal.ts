@@ -13,12 +13,11 @@ export default class Steal implements Command {
     const randomCardIndex = Math.floor(
       Math.random() * this.target.hand.cards.length
     );
-    const stoleCard = this.target.hand.cards[randomCardIndex];
-    this.source.hand.cards.push(stoleCard);
-    this.target.hand.cards.splice(randomCardIndex, 1);
+    const stolenCard = this.target.hand.cards.splice(randomCardIndex, 1);
+    this.source.hand.cards.push(...stolenCard);
     return {
       type: CardCommands.CAT,
-      data: stoleCard,
+      data: stolenCard,
     };
   }
 }

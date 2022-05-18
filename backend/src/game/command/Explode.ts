@@ -20,7 +20,7 @@ export default class Explode implements Command {
       const defuseCard = this.source.hand.cards.find(
         (card) => card.commandId === CardCommands.DEFUSE
       )!;
-      this.source.hand.remove([defuseCard.id]);
+      this.source.hand.remove([defuseCard]);
     }
     return {
       type: CardCommands.EXPLODE,

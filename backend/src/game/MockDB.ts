@@ -25,16 +25,22 @@ class MockDB {
         commandId: CardCommands.DEFUSE,
       });
     }
-    for (let i = 24; i < 40; ++i) {
+    for (let i = 24; i < 32; ++i) {
       this.desks.cards.push({
         id: `${i}`,
         commandId: CardCommands.SKIP,
       });
     }
-    for (let i = 40; i < 64; ++i) {
+    for (let i = 32; i < 48; ++i) {
       this.desks.cards.push({
         id: `${i}`,
         commandId: CardCommands.SEE_THE_FUTURE,
+      });
+    }
+    for (let i = 48; i < 64; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.CAT,
       });
     }
   }

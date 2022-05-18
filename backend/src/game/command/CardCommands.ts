@@ -4,4 +4,5 @@ export enum CardCommands {
   SKIP,
   CAT,
   SEE_THE_FUTURE,
+  STEAL,
 }
