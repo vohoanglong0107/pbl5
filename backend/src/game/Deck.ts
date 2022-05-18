@@ -22,4 +22,11 @@ export default class Deck {
     }
     return card;
   }
+
+  getBottomCard(): Card {
+    const card = this.cards.splice(0, 1)[0];
+    if (!card)
+      throw new Error("No more cards! Stop drawingggggggg");
+    return card;
+  }
 }

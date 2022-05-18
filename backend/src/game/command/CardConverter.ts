@@ -8,6 +8,11 @@ import Player from "../Player";
 import GameEntity from "../GameEntity";
 import SeeTheFuture from "./SeeTheFuture";
 import Steal from "./Steal";
+import DrawFromBottom from "./DrawFromBottom";
+import Attack from "./Attack";
+import Shuffle from "./Shuffle";
+import Reverse from "./Reverse";
+import TargetAttack from "./TargetAttack";
 
 export type CommandCreationInfo = {
   source: Player;
@@ -22,7 +27,10 @@ export default class CardConverter {
   private target?: Player;
   constructor(public gameEntity: GameEntity) {}
   public isTargetRequired(): boolean {
-    return this.commandId === CardCommands.STEAL;
+    return (
+      this.commandId === CardCommands.STEAL ||
+      this.commandId === CardCommands.TARGET_ATTACK
+    );
   }
   public setCards(cards: Card[]) {
     this.checkCardsValid(cards);
@@ -61,6 +69,16 @@ export default class CardConverter {
         return new SeeTheFuture(this.gameEntity);
       case CardCommands.STEAL:
         return new Steal(this.source!, this.gameEntity, this.target!);
+      case CardCommands.DRAW_FROM_BOTTOM:
+        return new DrawFromBottom(this.source!, this.gameEntity);
+      case CardCommands.ATTACK:
+        return new Attack(this.gameEntity);
+      case CardCommands.TARGET_ATTACK:
+        return new TargetAttack(this.gameEntity, this.target!);
+      case CardCommands.REVERSE:
+        return new Reverse(this.gameEntity);
+      case CardCommands.SHUFFLE:
+        return new Shuffle(this.gameEntity);
       default:
         throw new Error(`Unknown command id: ${this.commandId}`);
     }

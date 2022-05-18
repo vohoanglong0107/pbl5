@@ -43,6 +43,12 @@ class MockDB {
         commandId: CardCommands.CAT,
       });
     }
+    for (let i = 64; i < 72; ++i) {
+      this.desks.cards.push({
+        id: `${i}`,
+        commandId: CardCommands.DRAW_FROM_BOTTOM,
+      });
+    }
   }
   getCard(id: string): Card | undefined {
     return this.desks.cards.find((card) => card.id === id);

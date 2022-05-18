@@ -5,4 +5,9 @@ export enum CardCommands {
   CAT,
   SEE_THE_FUTURE,
   STEAL,
+  DRAW_FROM_BOTTOM,
+  ATTACK,
+  REVERSE,
+  SHUFFLE,
+  TARGET_ATTACK,
 }
