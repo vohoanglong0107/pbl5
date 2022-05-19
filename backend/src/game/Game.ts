@@ -306,9 +306,11 @@ class PlayState implements GameState {
       }
     } else if (this.gameEntity.nextPlayer === true) {
       this.passTurnToNextPlayer();
+      this.gameEntity.nextPlayer = null;
     } else {
       const nextPlayer = this.gameEntity.nextPlayer;
       this.passTurnToNextPlayer(nextPlayer);
+      this.gameEntity.nextPlayer = null;
     }
   }
   private passTurnToNextPlayer(nextPlayer?: Player) {
