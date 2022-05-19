@@ -1,13 +1,17 @@
 import User from "./User";
 import apiSlice from "../apiSlice";
 import { socketClient } from "@/lib/SocketClient";
+import { createSelector } from "@reduxjs/toolkit";
 
-type StateType = User | null;
+const initialState: User = {
+  id: "",
+  username: "",
+};
 
 const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query<User, void>({
-      queryFn: () => ({ data: { id: "0", username: "null" } }),
+      queryFn: () => ({ data: initialState }),
       async onCacheEntryAdded(
         arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
@@ -27,3 +31,7 @@ const userApiSlice = apiSlice.injectEndpoints({
 });
 
 export const { useGetUserQuery } = userApiSlice;
+export const selectUser = createSelector(
+  userApiSlice.endpoints.getUser.select(),
+  (userResult) => userResult.data ?? initialState
+);

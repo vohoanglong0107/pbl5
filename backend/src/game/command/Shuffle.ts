@@ -1,13 +1,13 @@
 import Command, { Response } from "./Command";
-import GameEntity from "../GameEntity";
 import { CardCommands } from "./CardCommands";
+import GameEntity from "../GameEntity";
 
-export default class SeeTheFuture implements Command {
+export default class Shuffle implements Command {
   constructor(public gameEntity: GameEntity) {}
   execute(): Response {
+    this.gameEntity.deck.shuffle();
     return {
-      type: CardCommands.SEE_THE_FUTURE,
-      data: this.gameEntity.deck.peek(3).reverse(),
+      type: CardCommands.SHUFFLE,
     };
   }
 }

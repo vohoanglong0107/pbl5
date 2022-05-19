@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useCreateGameMutation } from "@/components/game/gameSlice";
+import { useCreateRoomMutation } from "@/components/room/roomSlice";
 
 const CreateGame: NextPage = () => {
   const router = useRouter();
 
-  const [createGame, createGameResponse] = useCreateGameMutation();
+  const [createGame, createGameResponse] = useCreateRoomMutation();
 
   useEffect(() => {
     createGame()

@@ -1,5 +1,5 @@
 import Player from "../Player";
-import Command from "./Command";
+import Command, { Response } from "./Command";
 import GameEntity from "../GameEntity";
 
 export default class Cat implements Command {
@@ -8,7 +8,7 @@ export default class Cat implements Command {
     public gameEntity: GameEntity,
     public target: Player
   ) {}
-  execute(): void {
+  execute(): Response {
     throw new Error("Not implemented");
   }
 }

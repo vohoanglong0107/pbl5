@@ -1,9 +1,10 @@
 import { useGetUserQuery } from "../user/userSlice";
-import { Game } from "../game";
 import { Box, Typography } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectConnectedUsers } from "@/lib/selector";
 
-export default function ConnectedUsersPanel({ game }: { game: Game }) {
-  const users = game.connectedUsers;
+export default function ConnectedUsersPanel() {
+  const users = useSelector(selectConnectedUsers);
   const { data: user } = useGetUserQuery();
 
   return (

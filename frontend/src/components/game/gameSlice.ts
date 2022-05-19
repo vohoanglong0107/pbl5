@@ -1,41 +1,35 @@
 import apiSlice from "../apiSlice";
 import { socketClient } from "@/lib/SocketClient";
 import Game from "./Game";
+import { IdleState } from "./GameState";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface Response {
+  type: number;
+  data: unknown;
+}
+
+export enum CardCommands {
+  DEFUSE,
+  EXPLODE,
+  SKIP,
+  CAT,
+  SEE_THE_FUTURE,
+}
+
+export const initialState: Game = {
+  currentState: {
+    type: "IdleState",
+  } as IdleState,
+  players: [],
+};
 
 const gameApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    createGame: builder.mutation<{ gameId: string }, void>({
-      query: () => ({
-        url: "/game/create",
-        method: "POST",
-      }),
-    }),
-
-    getGame: builder.query<Game, string>({
-      query: (gameId) => `/game/${gameId}`,
-      async onCacheEntryAdded(
-        gameId,
-        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
-      ) {
-        const updateCachedDataWithGame = (game: Game) => {
-          updateCachedData((draft) => game);
-        };
-        try {
-          await cacheDataLoaded;
-          socketClient.connect({ gameId });
-
-          socketClient.on("room:state-changed", updateCachedDataWithGame);
-        } catch {
-          // no-op when cacheEntryRemoved resolve after cacheEntryRemoved
-        }
-        await cacheEntryRemoved;
-        socketClient.off("room:state-changed", updateCachedDataWithGame);
-      },
-    }),
     startGame: builder.mutation<unknown, void>({
       queryFn: () => {
         return socketClient
-          .emit("room:start-game")
+          .emit("game:start")
           .then((data) => ({ data: data }))
           .catch((error) => ({ error: error }));
       },
@@ -43,7 +37,7 @@ const gameApiSlice = apiSlice.injectEndpoints({
     takeSeat: builder.mutation<unknown, number>({
       queryFn: (seatId) => {
         return socketClient
-          .emit("room:take-seat", seatId)
+          .emit("game:take-seat", seatId)
           .then((data) => ({ data: data }))
           .catch((error) => ({ error: error }));
       },
@@ -56,10 +50,18 @@ const gameApiSlice = apiSlice.injectEndpoints({
           .catch((error) => ({ error: error }));
       },
     }),
-    playCard: builder.mutation<unknown, string[]>({
+    playCard: builder.mutation<Response, string[]>({
       queryFn: (cardIds) => {
         return socketClient
           .emit("game:play-card", cardIds)
+          .then((data) => ({ data: data as Response }))
+          .catch((error) => ({ error: error }));
+      },
+    }),
+    targetPlayer: builder.mutation<unknown, string>({
+      queryFn: (playerId) => {
+        return socketClient
+          .emit("game:target-player", playerId)
           .then((data) => ({ data: data }))
           .catch((error) => ({ error: error }));
       },
@@ -68,10 +70,25 @@ const gameApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useCreateGameMutation,
-  useGetGameQuery,
   useStartGameMutation,
   useTakeSeatMutation,
   useDrawCardMutation,
   usePlayCardMutation,
+  useTargetPlayerMutation,
 } = gameApiSlice;
+
+const gameSlice = createSlice({
+  name: "game",
+  initialState,
+  reducers: {
+    gameUpdated(state, action: PayloadAction<Game>) {
+      return action.payload;
+    },
+  },
+});
+
+export default gameSlice;
+
+export const { gameUpdated } = gameSlice.actions;
+export const selectCurrentState = (state: Game) => state.currentState;
+export const selectPlayers = (state: Game) => state.players;

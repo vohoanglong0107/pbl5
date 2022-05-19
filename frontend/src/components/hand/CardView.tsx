@@ -1,23 +1,7 @@
 import { Paper, Tooltip, keyframes } from "@mui/material";
-import { useState } from "react";
-import Card from "./Card";
-
-interface CardToolTipProps {
-  card: Card;
-}
-const CardToolTip = ({ card }: CardToolTipProps) => {
-  return (
-    <Paper
-      sx={{
-        width: "120px",
-        height: "200px",
-        backgroundColor: "yellow",
-      }}
-    >
-      {card.commandId}
-    </Paper>
-  );
-};
+import { useEffect, useState } from "react";
+import Card from "../card/Card";
+import CardInfo from "../card/CardInfo";
 
 const selectCardAnimation = keyframes`
   from {
@@ -38,24 +22,29 @@ const unselectCardAnimation = keyframes`
 `;
 interface CardViewProps {
   card: Card;
-  onSelect?: (isSelected: boolean) => void;
+  selected: boolean;
+  setSelected: (selected: boolean) => void;
 }
-const CardView = ({ card, onSelect }: CardViewProps) => {
-  const [isSelected, setIsSelected] = useState(false);
+const CardView = ({ card, selected, setSelected }: CardViewProps) => {
   const [animation, setAnimation] = useState("");
-  // reset hand selected status
-  onSelect && onSelect(isSelected);
-  const select = () => {
-    if (isSelected) {
-      setAnimation(`${unselectCardAnimation} 0.5s`);
-    } else {
+  const [localSelectedStatus, setLocalSelectedStatus] = useState(false);
+  useEffect(() => {
+    if (selected) {
       setAnimation(`${selectCardAnimation} 0.5s`);
+    } else if (localSelectedStatus) {
+      setAnimation(`${unselectCardAnimation} 0.5s`);
     }
-    setIsSelected(!isSelected);
-    onSelect && onSelect(!isSelected);
+  }, [selected, localSelectedStatus]);
+  // Can't combine these 2 into one or stack blow up
+  useEffect(() => {
+    setLocalSelectedStatus(selected);
+  }, [selected]);
+  const select = () => {
+    setLocalSelectedStatus(selected);
+    setSelected(!selected);
   };
   return (
-    <Tooltip title={<CardToolTip card={card} />}>
+    <Tooltip title={<CardInfo card={card} />}>
       <Paper
         sx={{
           width: "60px",

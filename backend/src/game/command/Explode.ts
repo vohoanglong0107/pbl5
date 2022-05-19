@@ -5,7 +5,7 @@ import { CardCommands } from "./CardCommands";
 
 export default class Explode implements Command {
   constructor(public source: Player, public gameEntity: GameEntity) {}
-  execute(): void {
+  execute() {
     if (this.source.exploded) {
       // Should never happened as client can't draw anymore before defusing
       throw new Error("Player is already exploding");
@@ -20,7 +20,10 @@ export default class Explode implements Command {
       const defuseCard = this.source.hand.cards.find(
         (card) => card.commandId === CardCommands.DEFUSE
       )!;
-      this.source.hand.remove([defuseCard.id]);
+      this.source.hand.remove([defuseCard]);
     }
+    return {
+      type: CardCommands.EXPLODE,
+    };
   }
 }

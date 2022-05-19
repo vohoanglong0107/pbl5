@@ -1,6 +1,5 @@
 import { faker } from "@faker-js/faker";
 import { SocketType } from "@/events";
-import Player from "./Player";
 import UserModel from "@/model/User";
 
 export enum UserEvent {
@@ -9,9 +8,7 @@ export enum UserEvent {
 export default class User {
   id: string;
   username: string;
-  connections = new Map<string, SocketType>();
-  player?: Player;
-  seat?: number;
+  private connections = new Map<string, SocketType>();
   constructor(id: string, socket: SocketType) {
     this.id = id;
     this.username = faker.name.findName();
@@ -33,6 +30,6 @@ export default class User {
     }
   }
   encode(): UserModel {
-    return new UserModel(this.id, this.username, this.seat);
+    return new UserModel(this.id, this.username);
   }
 }
