@@ -1,5 +1,5 @@
 import { Paper, Tooltip, keyframes } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "../card/Card";
 import CardInfo from "../card/CardInfo";
 
@@ -27,12 +27,20 @@ interface CardViewProps {
 }
 const CardView = ({ card, selected, setSelected }: CardViewProps) => {
   const [animation, setAnimation] = useState("");
-  const select = () => {
+  const [localSelectedStatus, setLocalSelectedStatus] = useState(false);
+  useEffect(() => {
     if (selected) {
-      setAnimation(`${unselectCardAnimation} 0.5s`);
-    } else {
       setAnimation(`${selectCardAnimation} 0.5s`);
+    } else if (localSelectedStatus) {
+      setAnimation(`${unselectCardAnimation} 0.5s`);
     }
+  }, [selected, localSelectedStatus]);
+  // Can't combine these 2 into one or stack blow up
+  useEffect(() => {
+    setLocalSelectedStatus(selected);
+  }, [selected]);
+  const select = () => {
+    setLocalSelectedStatus(selected);
     setSelected(!selected);
   };
   return (
