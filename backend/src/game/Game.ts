@@ -124,7 +124,7 @@ interface GameState {
   handlePlayerEvent: (player: Player, event: string, ...data: any[]) => unknown;
   onEntry: () => void;
   onExit: () => void;
-  removePlayer: (playerId: string) => void;
+  onRemovePlayer: (playerId: string) => void;
   encode: () => GameStateModel;
 }
 
@@ -199,9 +199,7 @@ class IdleState implements GameState {
     this.eventTracker.emit("game:state-changed");
   }
   onExit() {}
-  removePlayer(playerId: string) {
-    this.playerManager.removePlayer(playerId);
-  }
+  onRemovePlayer(playerId: string) {}
   encode() {
     return new IdleStateModel();
   }
@@ -254,9 +252,7 @@ class OverState implements GameState {
     debug("Game over");
   }
   onExit() {}
-  removePlayer(playerId: string) {
-    this.playerManager.removePlayer(playerId);
-  }
+  onRemovePlayer(playerId: string) {}
   encode() {
     return new OverStateModel(this.winner.encode());
   }
@@ -400,8 +396,7 @@ class PlayState implements GameState {
     const command = new Draw(this.currentPlayer, this.gameEntity);
     command.execute();
   }
-  removePlayer(playerId: string) {
-    this.playerManager.removePlayer(playerId);
+  onRemovePlayer(playerId: string) {
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
       this.endTurn(false);
@@ -479,8 +474,7 @@ class TargetingState implements GameState {
   private randomlyTarget() {
     return this.playerManager.getRandomPlayer([this.currentPlayer]);
   }
-  removePlayer(playerId: string) {
-    this.playerManager.removePlayer(playerId);
+  onRemovePlayer(playerId: string) {
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
       this.stateManager.popState();
@@ -524,7 +518,8 @@ export default class Game {
   //  e.g. disconnect while in turn or when performing special action
   //  e.g. being favored ...
   removePlayer(playerId: string): void {
-    this.stateManager.topState.removePlayer(playerId);
+    this.playerManager.removePlayer(playerId);
+    this.stateManager.topState.onRemovePlayer(playerId);
   }
   getPlayer(playerId: string) {
     return this.playerManager.getPlayer(playerId);
