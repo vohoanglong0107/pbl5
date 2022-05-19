@@ -98,7 +98,7 @@ class PlayerManager {
   }
   isLastManStanding() {
     const activePlayers = this.getActivePlayer();
-    return activePlayers.length === 1;
+    return activePlayers.length <= 1;
   }
   reset() {
     this.players.forEach((player) => {
