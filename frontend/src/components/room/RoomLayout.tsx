@@ -8,14 +8,16 @@ import { Box, Container } from "@mui/material";
 
 const ConnectingPage = () => <h1>Connecting to game</h1>;
 
-const RoomLayout = () => {
-  const roomQueryResult = useGetRoomQuery();
+interface RoomLayoutProps {
+  gameId: string;
+}
+
+const RoomLayout = ({ gameId }: RoomLayoutProps) => {
+  const roomQueryResult = useGetRoomQuery(gameId);
   if (roomQueryResult.isLoading) return <ConnectingPage />;
   else if (roomQueryResult.isError) {
     return <div>{JSON.stringify(roomQueryResult.error)}</div>;
   } else if (roomQueryResult.isSuccess) {
-    const room = roomQueryResult.data;
-    const game = room.game;
     return (
       <Box
         width={"100wh"}
@@ -37,7 +39,7 @@ const RoomLayout = () => {
             <HandPanel />
           </Box>
           <Box sx={{ gridArea: "1 / 10 / 13 / 13" }}>
-            <ConnectedUsersPanel game={game} />
+            <ConnectedUsersPanel />
           </Box>
         </Container>
       </Box>

@@ -19,7 +19,7 @@ const Game: NextPage = () => {
     }
   }, [router]);
   if (!gameId) return <ConnectingPage />;
-  return <RoomLayout />;
+  return <RoomLayout gameId={gameId} />;
 };
 
 export default Game;
