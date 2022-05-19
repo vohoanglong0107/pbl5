@@ -19,8 +19,7 @@ export type CommandCreationInfo = {
   target?: Player;
 };
 
-//TODO: rename to Card Handler
-export default class CardConverter {
+export default class CardHandler {
   private cards?: Card[];
   private commandId?: CardCommands;
   private source?: Player;

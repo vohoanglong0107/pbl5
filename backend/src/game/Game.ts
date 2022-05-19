@@ -10,7 +10,7 @@ import {
   PlayState as PlayStateModel,
   TargetingState as TargetingStateModel,
 } from "@/model/Game";
-import CardConverter from "./command/CardConverter";
+import CardHandler from "./command/CardHandler";
 import Draw from "./command/Draw";
 import GameSetting from "./GameSetting";
 const debug = debugModule("backend:socket:game");
@@ -268,7 +268,7 @@ class PlayState implements GameState {
   private gameSetting: GameSetting;
   private eventTracker: EventTracker;
   private gameEntity: GameEntity = new GameEntity();
-  private cardConverter: CardConverter = new CardConverter(this.gameEntity);
+  private cardHandler: CardHandler = new CardHandler(this.gameEntity);
   private currentTimer!: NodeJS.Timeout;
   private timeLimit: number;
   public currentPlayer: Player;
@@ -368,9 +368,9 @@ class PlayState implements GameState {
       }
       debug(`${player.id} tried to play card ${cardIds}`);
       const cards = cardIds.map((cardId) => player.hand.get(cardId)!);
-      this.cardConverter.setSource(player);
-      this.cardConverter.setCards(cards);
-      if (this.cardConverter.isTargetRequired()) {
+      this.cardHandler.setSource(player);
+      this.cardHandler.setCards(cards);
+      if (this.cardHandler.isTargetRequired()) {
         this.stateManager.pushState(
           new TargetingState(
             this.stateManager,
@@ -378,13 +378,13 @@ class PlayState implements GameState {
             this.gameSetting,
             this.eventTracker,
             this.gameEntity,
-            this.cardConverter,
+            this.cardHandler,
             this.currentPlayer
           )
         );
         // not calling endturn here to not start new turn (and endturn, ..., blowing the stack trace)
       } else {
-        const res = this.cardConverter.play();
+        const res = this.cardHandler.play();
         this.endTurn(false);
         return res;
       }
@@ -422,7 +422,7 @@ class TargetingState implements GameState {
   private gameSetting: GameSetting;
   private eventTracker: EventTracker;
   private gameEntity: GameEntity;
-  private cardConverter: CardConverter;
+  private cardHandler: CardHandler;
   private currentTimer!: NodeJS.Timeout;
   private timeLimit: number;
   public currentPlayer: Player;
@@ -432,7 +432,7 @@ class TargetingState implements GameState {
     gameSetting: GameSetting,
     eventTracker: EventTracker,
     gameEntity: GameEntity,
-    cardConverter: CardConverter,
+    cardHandler: CardHandler,
     currentPlayer: Player
   ) {
     this.stateManager = stateManager;
@@ -442,7 +442,7 @@ class TargetingState implements GameState {
     this.timeLimit = gameSetting.targetingTime;
     this.currentPlayer = currentPlayer;
     this.gameEntity = gameEntity;
-    this.cardConverter = cardConverter;
+    this.cardHandler = cardHandler;
   }
   handlePlayerEvent(player: Player, event: string, ...data: any[]) {
     let res: unknown;
@@ -464,7 +464,7 @@ class TargetingState implements GameState {
     return res;
   }
   handlePlayerTargeting(target: Player) {
-    const response = this.cardConverter.setTarget(target).play();
+    const response = this.cardHandler.setTarget(target).play();
     this.stateManager.popState();
     return response;
   }
