@@ -97,7 +97,8 @@ export default class CardHandler {
     const commandId = cards[0].commandId;
     switch (cards.length) {
       case 1:
-        return commandId;
+        if (commandId !== CardCommands.CAT) return commandId;
+        else throw new Error("You can't play only one cat card");
       case 2:
         return CardCommands.STEAL;
       case 5:
