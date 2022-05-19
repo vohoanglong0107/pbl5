@@ -252,7 +252,18 @@ class OverState implements GameState {
     debug("Game over");
   }
   onExit() {}
-  onRemovePlayer(playerId: string) {}
+  onRemovePlayer(playerId: string) {
+    if (playerId === this.winner.id) {
+      this.stateManager.changeState(
+        new IdleState(
+          this.stateManager,
+          this.playerManager,
+          this.gameSetting,
+          this.eventTracker
+        )
+      );
+    }
+  }
   encode() {
     return new OverStateModel(this.winner.encode());
   }
