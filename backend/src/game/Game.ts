@@ -15,7 +15,7 @@ import Draw from "./command/Draw";
 import GameSetting from "./GameSetting";
 const debug = debugModule("backend:socket:game");
 
-// TODO: Change underlining data structure to Map ?
+//? Change underlining data structure to Map ?
 class PlayerManager {
   private players: Player[] = [];
   private maxPlayers: number;
@@ -307,10 +307,7 @@ class PlayState implements GameState {
     } else if (this.gameEntity.nextPlayer === true) {
       this.passTurnToNextPlayer();
     } else {
-      // FIXME: change this after gameEntity is updated
-      const nextPlayer = this.playerManager.getPlayer(
-        this.gameEntity.nextPlayer
-      );
+      const nextPlayer = this.gameEntity.nextPlayer;
       this.passTurnToNextPlayer(nextPlayer);
     }
   }

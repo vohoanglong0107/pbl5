@@ -6,7 +6,7 @@ import { CardCommands } from "./CardCommands";
 export default class TargetAttack implements Command {
   constructor(public gameEntity: GameEntity, public target: Player) {}
   execute(): Response {
-    this.gameEntity.nextPlayer = this.target.id;
+    this.gameEntity.nextPlayer = this.target;
     this.gameEntity.currentPlayerNumberOfTurns += 2;
     return {
       type: CardCommands.TARGET_ATTACK,
