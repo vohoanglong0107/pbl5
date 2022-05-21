@@ -1,7 +1,9 @@
-import { Paper, Tooltip, keyframes } from "@mui/material";
+import { Paper, Tooltip, keyframes, Box } from "@mui/material";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
 import CardInfo from "../card/CardInfo";
+import deckImage from "@/assets/CardCovers.webp";
 
 const selectCardAnimation = keyframes`
   from {
@@ -45,21 +47,39 @@ const CardView = ({ card, selected, setSelected }: CardViewProps) => {
   };
   return (
     <Tooltip title={<CardInfo card={card} />}>
-      <Paper
+      <Box
         sx={{
-          width: "60px",
-          height: "100px",
-          backgroundColor: "brown",
-          "&:hover": {
-            cursor: "pointer",
+          "&:last-child": {
+            overflow: "visible",
           },
-          animation: animation,
-          animationFillMode: "forwards",
+          "&:hover": {
+            overflow: "visible",
+          },
+          overflow: localSelectedStatus ? "visible" : "hidden",
         }}
-        onClick={select}
+        height="100%"
+        // wtf ?
+        // width="100%"
       >
-        {card.id}
-      </Paper>
+        <Box
+          sx={{
+            // width: "60px",
+            // minWidth: "60px",
+            height: "100%",
+            aspectRatio: "290/380",
+            // backgroundColor: "brown",
+            "&:hover": {
+              cursor: "pointer",
+            },
+            position: "relative",
+            animation: animation,
+            animationFillMode: "forwards",
+          }}
+          onClick={select}
+        >
+          <Image layout="fill" src={deckImage} alt={"card"}></Image>
+        </Box>
+      </Box>
     </Tooltip>
   );
 };

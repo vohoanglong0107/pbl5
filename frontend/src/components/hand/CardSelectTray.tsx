@@ -36,7 +36,13 @@ const CardSelectTray = ({ cards }: CardSelectTrayProp) => {
   };
 
   return (
-    <Box>
+    <Box
+      width="100%"
+      height="100%"
+      display="grid"
+      gridTemplateColumns={"repeat(12, 1fr)"}
+      alignItems={"center"}
+    >
       <FutureDialog
         open={futureOpen}
         onClose={() => {
@@ -46,8 +52,10 @@ const CardSelectTray = ({ cards }: CardSelectTrayProp) => {
       ></FutureDialog>
       <Stack
         direction={"row"}
-        border="1px solid brown"
-        gridArea={"4 / 1 / 13 / 13"}
+        gridColumn={"3 / 11"}
+        height="100%"
+        width="100%"
+        justifyContent={"center"}
       >
         {cards.map((card, index) => (
           <CardView
@@ -66,8 +74,9 @@ const CardSelectTray = ({ cards }: CardSelectTrayProp) => {
       </Stack>
       <Button
         sx={{
-          gridArea: "1 / 9 / 3 / 10",
+          gridColumn: "12 / 13 ",
           backgroundColor: "blue",
+          height: "20%",
         }}
         onClick={() =>
           handlePlayCard(cards.filter((_, index) => selectedCards[index]))

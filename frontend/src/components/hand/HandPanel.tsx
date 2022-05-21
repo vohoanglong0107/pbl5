@@ -12,13 +12,7 @@ const HandPanel = () => {
   const selfPlayer = useSelfPlayer();
 
   return (
-    <Box
-      width="100%"
-      height="100%"
-      display="grid"
-      gridTemplateColumns={"repeat(12, 1fr)"}
-      gridTemplateRows={"repeat(12, 1fr)"}
-    >
+    <Box width="100%" height="100%">
       {isGameInPlay ? (
         <CardSelectTray cards={selfPlayer!.hand} />
       ) : (
