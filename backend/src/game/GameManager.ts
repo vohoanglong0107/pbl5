@@ -90,7 +90,11 @@ export class GameManager {
   redirectEventToGameHandler(game: Room, event: Event, userId: string) {
     let [eventType, ...data] = event;
     debug(`user ${userId} send an event ${eventType} `);
-    if (Room.isRoomEvent(eventType) || Game.isGameEvent(eventType)) {
+    if (
+      Room.isRoomEvent(eventType) ||
+      Game.isGameEvent(eventType) ||
+      User.isUserEvent(eventType)
+    ) {
       const user = game.getUser(userId);
       if (user) {
         game.handleUserEvent(user, eventType, ...data);

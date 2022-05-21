@@ -4,6 +4,7 @@ import UserModel from "@/model/User";
 
 export enum UserEvent {
   CONNECT = "user:connect",
+  CONNECTED = "user:connected",
 }
 export default class User {
   id: string;
@@ -16,13 +17,20 @@ export default class User {
   }
   addConnection(socket: SocketType): void {
     this.connections.set(socket.id, socket);
-    this.emit(UserEvent.CONNECT, this.encode());
+    this.emit(UserEvent.CONNECTED, this.encode());
   }
   removeConnection(socket: SocketType): void {
     this.connections.delete(socket.id);
   }
   isDisconnected(): boolean {
     return this.connections.size === 0;
+  }
+  handleUserEvent(event: UserEvent, ...args: any[]) {
+    switch (event) {
+      case UserEvent.CONNECT:
+        this.emit(UserEvent.CONNECTED, this.encode());
+        break;
+    }
   }
   emit(event: string, ...data: any[]): void {
     for (let socket of this.connections.values()) {
@@ -31,5 +39,8 @@ export default class User {
   }
   encode(): UserModel {
     return new UserModel(this.id, this.username);
+  }
+  static isUserEvent(event: string): event is UserEvent {
+    return Object.values(UserEvent).includes(event as UserEvent);
   }
 }
