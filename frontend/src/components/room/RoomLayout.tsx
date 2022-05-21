@@ -5,6 +5,7 @@ import deckBackGroundImage from "@/assets/deck-image.jpg";
 import HandPanel from "../hand/HandPanel";
 import ConnectedUsersPanel from "../user/ConnectedUsersPanel";
 import { Box, Container } from "@mui/material";
+import Setting from "../setting/setting";
 
 const ConnectingPage = () => <h1>Connecting to game</h1>;
 
@@ -38,7 +39,10 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
           <Box sx={{ gridArea: "10 / 1 / 13 / 10" }}>
             <HandPanel />
           </Box>
-          <Box sx={{ gridArea: "1 / 10 / 13 / 13" }}>
+          <Box sx={{ gridArea: "2 / 10 / 13 / 13" }}>
+              <Setting />
+          </Box>
+          <Box sx={{ gridArea: "3 / 10 / 13 / 13" }}>
             <ConnectedUsersPanel />
           </Box>
         </Container>
