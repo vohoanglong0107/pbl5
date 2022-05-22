@@ -1,3 +1,5 @@
 export default class GameSetting {
-  max_players: number = 8;
+  maxPlayers: number = 8;
+  turnTime: number = 30000;
+  targetingTime: number = 15000;
 }

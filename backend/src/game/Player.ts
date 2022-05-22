@@ -1,13 +1,32 @@
 import Hand from "./Hand";
-import User from "./User";
-import Interactive from "./Interactive";
+import Card from "./Card";
+import PlayerModel from "@/model/Player";
 
-export default class Player implements Interactive, User {
+export default class Player {
   id: string;
   username: string;
   hand: Hand = new Hand();
-  constructor(id: string, username: string) {
+  exploded = false;
+  seat: number;
+  constructor(id: string, username: string, seat: number) {
     this.id = id;
     this.username = username;
+    this.seat = seat;
+  }
+  draw(card: Card) {
+    this.hand.add(card);
+  }
+  reset() {
+    this.hand.clear();
+    this.exploded = false;
+  }
+  encode(): PlayerModel {
+    return new PlayerModel(
+      this.id,
+      this.username,
+      this.hand.cards,
+      this.exploded,
+      this.seat
+    );
   }
 }
