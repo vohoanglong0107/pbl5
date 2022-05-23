@@ -10,9 +10,11 @@ import {
   PlayState as PlayStateModel,
   TargetingState as TargetingStateModel,
 } from "@/model/Game";
-import CardHandler from "./command/CardHandler";
+import CardHandler, { MechanicToCommand } from "./command/CardHandler";
 import Draw from "./command/Draw";
 import GameSetting from "./GameSetting";
+import Card from "./Card";
+import cardService from "@/service/Card";
 const debug = debugModule("backend:socket:game");
 
 //? Change underlining data structure to Map ?
@@ -182,15 +184,21 @@ class IdleState implements GameState {
     this.playerManager.reset();
     if (this.playerManager.getActivePlayer().length < 2)
       throw new Error("Not enough players");
-    this.stateManager.changeState(
-      new PlayState(
-        this.stateManager,
-        this.playerManager,
-        this.gameSetting,
-        this.eventTracker,
-        startingPlayer
-      )
-    );
+    cardService.GetMainDeckByPlayerNumber().then((cards) => {
+      const compatibleCards = cards.map(
+        (card) => new Card(card.id, MechanicToCommand[card.mechanic])
+      );
+      this.stateManager.changeState(
+        new PlayState(
+          this.stateManager,
+          this.playerManager,
+          this.gameSetting,
+          this.eventTracker,
+          startingPlayer,
+          compatibleCards
+        )
+      );
+    });
   }
   private reserveSeat(player: Player, seatId: number): void {
     this.playerManager.reserveSeat(player, seatId);
@@ -234,15 +242,21 @@ class OverState implements GameState {
     this.playerManager.reset();
     if (this.playerManager.getActivePlayer().length < 2)
       throw new Error("Not enough players");
-    this.stateManager.changeState(
-      new PlayState(
-        this.stateManager,
-        this.playerManager,
-        this.gameSetting,
-        this.eventTracker,
-        startingPlayer
-      )
-    );
+    cardService.GetMainDeckByPlayerNumber().then((cards) => {
+      const compatibleCards = cards.map(
+        (card) => new Card(card.id, MechanicToCommand[card.mechanic])
+      );
+      this.stateManager.changeState(
+        new PlayState(
+          this.stateManager,
+          this.playerManager,
+          this.gameSetting,
+          this.eventTracker,
+          startingPlayer,
+          compatibleCards
+        )
+      );
+    });
   }
   private reserveSeat(player: Player, seatId: number): void {
     this.playerManager.reserveSeat(player, seatId);
@@ -274,8 +288,8 @@ class PlayState implements GameState {
   private playerManager: PlayerManager;
   private gameSetting: GameSetting;
   private eventTracker: EventTracker;
-  private gameEntity: GameEntity = new GameEntity();
-  private cardHandler: CardHandler = new CardHandler(this.gameEntity);
+  private gameEntity: GameEntity;
+  private cardHandler: CardHandler;
   private currentTimer!: NodeJS.Timeout;
   private timeLimit: number;
   public currentPlayer: Player;
@@ -284,13 +298,16 @@ class PlayState implements GameState {
     playerManager: PlayerManager,
     gameSetting: GameSetting,
     eventTracker: EventTracker,
-    currentPlayer: Player
+    currentPlayer: Player,
+    cards: Card[]
   ) {
     this.stateManager = stateManager;
     this.playerManager = playerManager;
     this.gameSetting = gameSetting;
     this.eventTracker = eventTracker;
     this.currentPlayer = currentPlayer;
+    this.gameEntity = new GameEntity(cards);
+    this.cardHandler = new CardHandler(this.gameEntity);
     this.timeLimit = gameSetting.turnTime;
   }
   onEntry() {
@@ -354,7 +371,7 @@ class PlayState implements GameState {
     let res: unknown;
     switch (event) {
       case GameEvent.PLAY_CARD:
-        const cardIds = data[0] as string[];
+        const cardIds = (data[0] as string[]).map((cardId) => parseInt(cardId));
         res = this.handlePlayerPlayCard(player, cardIds);
         break;
 
@@ -366,7 +383,7 @@ class PlayState implements GameState {
     }
     return res;
   }
-  private handlePlayerPlayCard(player: Player, cardIds: string[]) {
+  private handlePlayerPlayCard(player: Player, cardIds: number[]) {
     try {
       // TODO: Check exception for Nope
       if (player.id !== this.currentPlayer.id) {

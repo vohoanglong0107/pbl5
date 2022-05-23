@@ -50,7 +50,7 @@ const gameApiSlice = apiSlice.injectEndpoints({
           .catch((error) => ({ error: error }));
       },
     }),
-    playCard: builder.mutation<Response, string[]>({
+    playCard: builder.mutation<Response, number[]>({
       queryFn: (cardIds) => {
         return socketClient
           .emit("game:play-card", cardIds)

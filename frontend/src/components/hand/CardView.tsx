@@ -2,7 +2,7 @@ import { Paper, Tooltip, keyframes, Box } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
-import CardInfo from "../card/CardInfo";
+import CardDetail from "../card/CardDetail";
 import deckImage from "@/assets/CardCovers.webp";
 
 const selectCardAnimation = keyframes`
@@ -22,6 +22,11 @@ const unselectCardAnimation = keyframes`
     transform: translateY(0);
   }
 `;
+
+const CardToolTip = ({ card }: { card: Card }) => {
+  return <CardDetail card={card} height="25vh" />;
+};
+
 interface CardViewProps {
   card: Card;
   selected: boolean;
@@ -46,7 +51,7 @@ const CardView = ({ card, selected, setSelected }: CardViewProps) => {
     setSelected(!selected);
   };
   return (
-    <Tooltip title={<CardInfo card={card} />}>
+    <Tooltip title={<CardToolTip card={card} />}>
       <Box
         sx={{
           "&:last-child": {
