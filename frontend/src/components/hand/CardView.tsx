@@ -1,9 +1,7 @@
-import { Paper, Tooltip, keyframes, Box } from "@mui/material";
-import Image from "next/image";
+import { Tooltip, keyframes, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
 import CardDetail from "../card/CardDetail";
-import deckImage from "@/assets/CardCovers.webp";
 
 const selectCardAnimation = keyframes`
   from {
@@ -24,15 +22,31 @@ const unselectCardAnimation = keyframes`
 `;
 
 const CardToolTip = ({ card }: { card: Card }) => {
-  return <CardDetail card={card} height="25vh" />;
+  return <CardDetail card={card} height="35vh" />;
 };
 
 interface CardViewProps {
   card: Card;
+  cardWidth: string;
+  cardHeight: string;
+  width: string;
+  height: string;
   selected: boolean;
   setSelected: (selected: boolean) => void;
+  hovering: boolean;
+  setHovering: (hovering: boolean) => void;
 }
-const CardView = ({ card, selected, setSelected }: CardViewProps) => {
+const CardView = ({
+  card,
+  cardWidth,
+  cardHeight,
+  width,
+  height,
+  selected,
+  setSelected,
+  hovering,
+  setHovering,
+}: CardViewProps) => {
   const [animation, setAnimation] = useState("");
   const [localSelectedStatus, setLocalSelectedStatus] = useState(false);
   useEffect(() => {
@@ -54,36 +68,25 @@ const CardView = ({ card, selected, setSelected }: CardViewProps) => {
     <Tooltip title={<CardToolTip card={card} />}>
       <Box
         sx={{
-          "&:last-child": {
-            overflow: "visible",
-          },
           "&:hover": {
-            overflow: "visible",
+            cursor: "pointer",
           },
-          overflow: localSelectedStatus ? "visible" : "hidden",
+          position: "relative",
+          animation: animation,
+          animationFillMode: "forwards",
+          transition: "width 0.3s",
         }}
-        height="100%"
-        // wtf ?
-        // width="100%"
+        onClick={select}
+        width={width}
+        height={height}
+        onMouseEnter={() => {
+          setHovering(true);
+        }}
+        onMouseLeave={() => {
+          setHovering(false);
+        }}
       >
-        <Box
-          sx={{
-            // width: "60px",
-            // minWidth: "60px",
-            height: "100%",
-            aspectRatio: "290/380",
-            // backgroundColor: "brown",
-            "&:hover": {
-              cursor: "pointer",
-            },
-            position: "relative",
-            animation: animation,
-            animationFillMode: "forwards",
-          }}
-          onClick={select}
-        >
-          <Image layout="fill" src={deckImage} alt={"card"}></Image>
-        </Box>
+        <CardDetail card={card} height={cardHeight} width={cardWidth} />
       </Box>
     </Tooltip>
   );

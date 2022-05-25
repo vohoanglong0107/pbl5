@@ -125,8 +125,6 @@ const GameBoard = () => {
   return (
     <Box
       sx={{
-        height: "100%",
-        gridArea: "1 / 1 / 10 / 10",
         display: "grid",
         gridTemplateRows: `repeat(${numLRSidePlayers + 2}, 1fr)`,
         gridTemplateColumns: `repeat(${numUSidePlayers + 2}, 1fr)`,

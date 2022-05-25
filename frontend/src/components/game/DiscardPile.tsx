@@ -6,7 +6,7 @@ import deckImage from "@/assets/CardCovers.webp";
 const DiscardPile = () => {
   return (
     <Box
-      width={"100%"}
+      width={"10vw"}
       height={"100%"}
       p={1}
       display={"flex"}

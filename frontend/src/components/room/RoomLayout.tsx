@@ -4,7 +4,7 @@ import deckBackGroundImage from "@/assets/deck-image.jpg";
 
 import HandPanel from "../hand/HandPanel";
 import ConnectedUsersPanel from "../user/ConnectedUsersPanel";
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 
 const ConnectingPage = () => <h1>Connecting to game</h1>;
 
@@ -20,28 +20,18 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
   } else if (roomQueryResult.isSuccess) {
     return (
       <Box
-        width={"100wh"}
+        width={"100vw"}
         height={"100vh"}
         sx={{
           backgroundImage: `url(${deckBackGroundImage.src})`,
         }}
+        display="flex"
+        flexDirection="column"
+        justifyContent={"space-between"}
       >
-        <Container
-          sx={{
-            display: "grid",
-            gridTemplateRows: "repeat(12, 1fr)",
-            gridTemplateColumns: "repeat(12, 1fr)",
-            height: "100%",
-          }}
-        >
-          <GameBoard />
-          <Box sx={{ gridArea: "10 / 1 / 13 / 10" }}>
-            <HandPanel />
-          </Box>
-          <Box sx={{ gridArea: "1 / 10 / 13 / 13" }}>
-            <ConnectedUsersPanel />
-          </Box>
-        </Container>
+        <GameBoard />
+        <HandPanel />
+        {/* <ConnectedUsersPanel /> */}
       </Box>
     );
   } else {
