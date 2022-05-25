@@ -22,6 +22,24 @@ class CardRepo {
         })
     }
 
+    getByMechanic(props: any) {
+        return this.prisma.card.findMany({
+            where: {
+                name: props
+            }
+        })
+    }
+
+    getBySetSheetMechanic(set: string, sheet: string, mechanic: string) {
+        return this.prisma.card.findMany({
+            where: {
+                set: set,
+                sheet: sheet,
+                name: mechanic
+            }
+        })
+    }
+
     updateByID(id: any, data: any) {
         return this.prisma.deck.update({
             where: {

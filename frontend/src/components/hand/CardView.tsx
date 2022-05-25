@@ -1,7 +1,9 @@
-import { Paper, Tooltip, keyframes } from "@mui/material";
+import { Paper, Tooltip, keyframes, Box } from "@mui/material";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
-import CardInfo from "../card/CardInfo";
+import CardDetail from "../card/CardDetail";
+import deckImage from "@/assets/CardCovers.webp";
 
 const selectCardAnimation = keyframes`
   from {
@@ -20,6 +22,11 @@ const unselectCardAnimation = keyframes`
     transform: translateY(0);
   }
 `;
+
+const CardToolTip = ({ card }: { card: Card }) => {
+  return <CardDetail card={card} height="25vh" />;
+};
+
 interface CardViewProps {
   card: Card;
   selected: boolean;
@@ -44,22 +51,40 @@ const CardView = ({ card, selected, setSelected }: CardViewProps) => {
     setSelected(!selected);
   };
   return (
-    <Tooltip title={<CardInfo card={card} />}>
-      <Paper
+    <Tooltip title={<CardToolTip card={card} />}>
+      <Box
         sx={{
-          width: "60px",
-          height: "100px",
-          backgroundColor: "brown",
-          "&:hover": {
-            cursor: "pointer",
+          "&:last-child": {
+            overflow: "visible",
           },
-          animation: animation,
-          animationFillMode: "forwards",
+          "&:hover": {
+            overflow: "visible",
+          },
+          overflow: localSelectedStatus ? "visible" : "hidden",
         }}
-        onClick={select}
+        height="100%"
+        // wtf ?
+        // width="100%"
       >
-        {card.id}
-      </Paper>
+        <Box
+          sx={{
+            // width: "60px",
+            // minWidth: "60px",
+            height: "100%",
+            aspectRatio: "290/380",
+            // backgroundColor: "brown",
+            "&:hover": {
+              cursor: "pointer",
+            },
+            position: "relative",
+            animation: animation,
+            animationFillMode: "forwards",
+          }}
+          onClick={select}
+        >
+          <Image layout="fill" src={deckImage} alt={"card"}></Image>
+        </Box>
+      </Box>
     </Tooltip>
   );
 };

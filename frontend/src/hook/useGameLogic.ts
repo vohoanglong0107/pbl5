@@ -42,3 +42,11 @@ export function useIsPlayerTargetable(playerId: string) {
 
   return self.id === currentPlayer.id && playerId !== currentPlayer.id;
 }
+
+export function useDeck() {
+  const currentGameState = useSelector(selectGameCurrentState);
+  if ("gameEntity" in currentGameState) {
+    return (currentGameState as PlayState).gameEntity.deck;
+  }
+  return [];
+}

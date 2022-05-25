@@ -11,8 +11,8 @@ export default class GameEntity {
   nextPlayer: null | true | Player = null;
 
   startTurn() {}
-  constructor() {
-    this.deck = new Deck();
+  constructor(cards: Card[]) {
+    this.deck = new Deck(cards);
     this.deck.shuffle();
     this.discardPile = [] as Card[];
   }

@@ -1,9 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import debugModule from "debug";
-import Player from "./Player";
 import Game, { GameEvent } from "./Game";
 import RoomSetting from "./RoomSetting";
-import User from "./User";
+import User, { UserEvent } from "./User";
 import RoomModel from "@/model/Room";
 import { Acknowledgement } from "./UserEvent";
 
@@ -46,6 +45,8 @@ export default class Room {
         res = this.handleGameEvent(user, event as GameEvent, ...data);
       } else if (Room.isRoomEvent(event)) {
         res = this.handleRoomEvent(user, event as RoomEvent, ...data);
+      } else if (User.isUserEvent(event)) {
+        res = user.handleUserEvent(event as UserEvent, ...data);
       } else {
         debug(`${user.id} tried to send unknown event ${event}`);
         throw new Error(`Unknown event ${event}`);
@@ -57,6 +58,7 @@ export default class Room {
       });
       this.broadcastStateChanged();
     } catch (error) {
+      debug(error);
       let errorMessage: string;
       if (error instanceof Error) {
         errorMessage = error.message;

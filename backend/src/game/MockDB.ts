@@ -26,7 +26,7 @@ class MockDB {
         commandId: CardCommands.SKIP,
       });
     }
-    for (let i = 24; i < 48; ++i) {
+    for (let i = 32; i < 48; ++i) {
       this.desks.cards.push({
         id: `${i}`,
         commandId: CardCommands.SEE_THE_FUTURE,

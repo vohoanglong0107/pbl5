@@ -1,4 +1,4 @@
 export default interface Card {
-  id: string;
+  id: number;
   commandId: number;
 }

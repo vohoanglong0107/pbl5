@@ -21,10 +21,11 @@ const userApiSlice = apiSlice.injectEndpoints({
         };
         try {
           await cacheDataLoaded;
-          socketClient.on("user:connect", updateCachedDataWithUser);
+          socketClient.on("user:connected", updateCachedDataWithUser);
+          socketClient.emit("user:connect");
         } catch {}
         await cacheEntryRemoved;
-        socketClient.off("user:connect", updateCachedDataWithUser);
+        socketClient.off("user:connected", updateCachedDataWithUser);
       },
     }),
   }),
