@@ -58,7 +58,7 @@ const Seat = ({
   return (
     <Box
       width={"100%"}
-      height={"100%"}
+      height={"calc(13vh + 1.5rem)"}
       display="flex"
       flexDirection="column"
       alignItems={"center"}
@@ -66,8 +66,12 @@ const Seat = ({
     >
       <Box
         display="grid"
-        gridTemplateRows={`repeat(13, 1vh)`}
-        gridTemplateColumns={`repeat(10, 1vh)`}
+        gridTemplateRows={
+          numCards !== undefined ? `repeat(13, 1vh)` : undefined
+        }
+        gridTemplateColumns={
+          numCards !== undefined ? `repeat(10, 1vh)` : undefined
+        }
         minHeight="0"
       >
         <Avatar
@@ -81,7 +85,7 @@ const Seat = ({
             },
             animation: animation,
             filter: filter,
-            gridArea: "1 / 1 / 11 / 11",
+            gridArea: numCards !== undefined ? "1 / 1 / 11 / 11" : undefined,
           }}
           variant="rounded"
           onClick={onClick}
@@ -95,7 +99,7 @@ const Seat = ({
         ) : null}
       </Box>
 
-      <Typography>{title}</Typography>
+      <Typography fontSize={"1rem"}>{title}</Typography>
     </Box>
   );
 };

@@ -8,6 +8,9 @@ const nextConfig = {
     }
     return config;
   },
+  images: {
+    domains: ["drive.google.com"],
+  },
 };
 
 module.exports = nextConfig;
