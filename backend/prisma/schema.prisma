@@ -11,20 +11,22 @@ datasource db {
 }
 
 model Deck {
-  id          Int     @id @default(autoincrement())
-  name        String?
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
 }
 
 model Card {
-  id          Int     @id @default(autoincrement())
-  name        String?
+  id          Int    @id @default(autoincrement())
+  name        String
   imgUrl      String
   description String
+  set         String
+  sheet       String
 }
 
 model Rule {
-  id          Int     @id @default(autoincrement())
-  name        String?
+  id          Int    @id @default(autoincrement())
+  name        String
   description String
 }

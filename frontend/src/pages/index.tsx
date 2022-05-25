@@ -1,9 +1,9 @@
 import homepageImage from "@/assets/homepage.jpg";
+import Options from "@/components/RoomOption";
 import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import type { NextPage } from "next";
 import { useState } from "react";
-import Options from "../components/RoomOption";
 
 const choices = ["Create room", "Join room", "Join random"];
 
@@ -53,9 +53,6 @@ const User: NextPage = () => {
         onClose={handleClose}
         choices={choices}
       />
-      {/* <a target="_blank" href="/create-game" rel="noopener noreferrer">
-        <Button className={styles.explodeButton}>Create game</Button>
-      </a> */}
     </Container>
   );
 };
