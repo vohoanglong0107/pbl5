@@ -10,7 +10,13 @@ const Table = () => {
   const isGameInPlay = useIsGameInPlay();
 
   return (
-    <Box width={"100%"} height={"100%"}>
+    <Box
+      width={"100%"}
+      height={"100%"}
+      display="flex"
+      justifyContent="center"
+      alignItems={"center"}
+    >
       {!isGameInPlay ? (
         <Button
           onClick={() =>

@@ -1,81 +1,94 @@
 import Card from "@/components/card/Card";
 import CardView from "@/components/hand/CardView";
-import { useCanSelfPlay } from "@/hook/useGameLogic";
-import { useState, useEffect } from "react";
-import FutureDialog from "./FutureDialog";
-import { Box, Stack, Button } from "@mui/material";
-import { usePlayCardMutation, Response, CardCommands } from "../game/gameSlice";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Box } from "@mui/material";
+import { CARD_IMAGE_RATIO } from "@/constant";
+import { useMeasure, useWindowSize } from "react-use";
 
 interface CardSelectTrayProp {
   cards: Card[];
+  selectedCards: boolean[];
+  setSelectedCards: Dispatch<SetStateAction<boolean[]>>;
 }
 
-const CardSelectTray = ({ cards }: CardSelectTrayProp) => {
-  const [selectedCards, setSelectedCards] = useState(cards.map(() => false));
-  useEffect(() => {
-    setSelectedCards(cards.map(() => false));
-  }, [cards]);
-  const canSelfPlay = useCanSelfPlay();
-  const [playCard] = usePlayCardMutation();
-  const [futureOpen, setFutureOpen] = useState(false);
-  const [futureCards, setFutureCards] = useState<Card[]>([]);
-  const handleResponse = (response: Response) => {
-    if (response !== null && response.type === CardCommands.SEE_THE_FUTURE) {
-      setFutureOpen(true);
-      setFutureCards(response.data as Card[]);
-    }
-  };
-  const handlePlayCard = (cards: Card[]) => {
-    playCard(cards.map((card) => card.id))
-      .unwrap()
-      .then((response) => handleResponse(response))
-      .catch((err) => {
-        alert(`Play card error: ${err}`);
-        console.log(`Play card error: `, err);
-      });
+function calculateCardWidths(
+  numCards: number,
+  maxWidth: number,
+  cardWidth: number,
+  hoveringIndex: number | undefined
+) {
+  if (hoveringIndex === undefined) hoveringIndex = numCards - 1;
+  if (cardWidth > maxWidth) {
+    return Array<number>(numCards).fill(cardWidth);
+  }
+  if (numCards * cardWidth > maxWidth) {
+    const foldedCardWidth = (maxWidth - cardWidth) / (numCards - 1);
+    const cardWidths = Array<number>(numCards).fill(foldedCardWidth);
+    cardWidths[hoveringIndex] = cardWidth;
+    return cardWidths;
+  } else {
+    return Array<number>(numCards).fill(cardWidth);
+  }
+}
+
+const CardSelectTray = ({
+  cards,
+  selectedCards,
+  setSelectedCards,
+}: CardSelectTrayProp) => {
+  const [ref, { width }] = useMeasure();
+  const { height: windowHeight } = useWindowSize();
+  const [hoveringIndex, setHoveringIndex] = useState<number | undefined>(
+    undefined
+  );
+
+  const handleHoverCard = (hovering: boolean, cardIndex: number) => {
+    if (hovering) setHoveringIndex(cardIndex);
+    else setHoveringIndex(undefined);
   };
 
+  const cardHeight = (windowHeight * 25) / 100;
+  const cardWidth = cardHeight / CARD_IMAGE_RATIO;
+  const cardWidths = calculateCardWidths(
+    cards.length,
+    width,
+    cardWidth,
+    hoveringIndex
+  );
+  console.log(cardWidths);
+
   return (
-    <Box>
-      <FutureDialog
-        open={futureOpen}
-        onClose={() => {
-          setFutureOpen(false);
-        }}
-        cards={futureCards}
-      ></FutureDialog>
-      <Stack
-        direction={"row"}
-        border="1px solid brown"
-        gridArea={"4 / 1 / 13 / 13"}
-      >
-        {cards.map((card, index) => (
-          <CardView
-            key={card.id}
-            card={card}
-            selected={selectedCards[index]}
-            setSelected={(newSelectedStatus) => {
-              setSelectedCards(
-                selectedCards.map((prevSelectedStatus, i) =>
-                  i === index ? newSelectedStatus : prevSelectedStatus
-                )
-              );
-            }}
-          />
-        ))}
-      </Stack>
-      <Button
-        sx={{
-          gridArea: "1 / 9 / 3 / 10",
-          backgroundColor: "blue",
-        }}
-        onClick={() =>
-          handlePlayCard(cards.filter((_, index) => selectedCards[index]))
-        }
-        disabled={!canSelfPlay}
-      >
-        GO!!!
-      </Button>
+    <Box
+      width="100%"
+      height={`${cardHeight}px`}
+      ref={ref}
+      display="flex"
+      justifyContent={"center"}
+      overflow={"hidden"}
+      alignItems={"flex-end"}
+    >
+      {cards.map((card, index) => (
+        <CardView
+          key={index}
+          card={card}
+          cardHeight={`${cardHeight}px`}
+          cardWidth={`${cardWidth}px`}
+          width={`${cardWidths[index]}px`}
+          height={`${(cardHeight * 80) / 100}px`}
+          selected={selectedCards[index]}
+          setSelected={(newSelectedStatus) => {
+            setSelectedCards(
+              selectedCards.map((prevSelectedStatus, i) =>
+                i === index ? newSelectedStatus : prevSelectedStatus
+              )
+            );
+          }}
+          hovering={hoveringIndex === index}
+          setHovering={(hovering: boolean) => {
+            handleHoverCard(hovering, index);
+          }}
+        />
+      ))}
     </Box>
   );
 };

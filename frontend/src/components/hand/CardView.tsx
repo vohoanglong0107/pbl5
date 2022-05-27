@@ -1,7 +1,7 @@
-import { Paper, Tooltip, keyframes } from "@mui/material";
+import { Tooltip, keyframes, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
-import CardInfo from "../card/CardInfo";
+import CardDetail from "../card/CardDetail";
 
 const selectCardAnimation = keyframes`
   from {
@@ -20,12 +20,33 @@ const unselectCardAnimation = keyframes`
     transform: translateY(0);
   }
 `;
+
+const CardToolTip = ({ card }: { card: Card }) => {
+  return <CardDetail card={card} height="35vh" />;
+};
+
 interface CardViewProps {
   card: Card;
+  cardWidth: string;
+  cardHeight: string;
+  width: string;
+  height: string;
   selected: boolean;
   setSelected: (selected: boolean) => void;
+  hovering: boolean;
+  setHovering: (hovering: boolean) => void;
 }
-const CardView = ({ card, selected, setSelected }: CardViewProps) => {
+const CardView = ({
+  card,
+  cardWidth,
+  cardHeight,
+  width,
+  height,
+  selected,
+  setSelected,
+  hovering,
+  setHovering,
+}: CardViewProps) => {
   const [animation, setAnimation] = useState("");
   const [localSelectedStatus, setLocalSelectedStatus] = useState(false);
   useEffect(() => {
@@ -44,22 +65,29 @@ const CardView = ({ card, selected, setSelected }: CardViewProps) => {
     setSelected(!selected);
   };
   return (
-    <Tooltip title={<CardInfo card={card} />}>
-      <Paper
+    <Tooltip title={<CardToolTip card={card} />}>
+      <Box
         sx={{
-          width: "60px",
-          height: "100px",
-          backgroundColor: "brown",
           "&:hover": {
             cursor: "pointer",
           },
+          position: "relative",
           animation: animation,
           animationFillMode: "forwards",
+          transition: "width 0.3s",
         }}
         onClick={select}
+        width={width}
+        height={height}
+        onMouseEnter={() => {
+          setHovering(true);
+        }}
+        onMouseLeave={() => {
+          setHovering(false);
+        }}
       >
-        {card.id}
-      </Paper>
+        <CardDetail card={card} height={cardHeight} width={cardWidth} />
+      </Box>
     </Tooltip>
   );
 };

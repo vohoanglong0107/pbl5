@@ -22,11 +22,14 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
   } else if (roomQueryResult.isSuccess) {
     return (
       <Box
-        width={"100wh"}
+        width={"100vw"}
         height={"100vh"}
         sx={{
           backgroundImage: `url(${deckBackGroundImage.src})`,
         }}
+        display="flex"
+        flexDirection="column"
+        justifyContent={"space-between"}
       >
         <Container
           sx={{

@@ -108,3 +108,18 @@ export default class CardHandler {
     }
   }
 }
+
+export const MechanicToCommand: {
+  [key: string]: CardCommands;
+} = {
+  "Exploding Kitten": CardCommands.EXPLODE,
+  Defuse: CardCommands.DEFUSE,
+  Skip: CardCommands.SKIP,
+  "Cat Card": CardCommands.CAT,
+  "See the Future 3x": CardCommands.SEE_THE_FUTURE,
+  "Draw From the Bottom": CardCommands.DRAW_FROM_BOTTOM,
+  "Attack 2x": CardCommands.ATTACK,
+  Reverse: CardCommands.REVERSE,
+  Shuffle: CardCommands.SHUFFLE,
+  "Targeted Attack 2x": CardCommands.TARGET_ATTACK,
+};

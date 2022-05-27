@@ -1,10 +1,13 @@
-import { Box, Paper } from "@mui/material";
+import Image from "next/image";
+import { Box, Tooltip } from "@mui/material";
 import { useDrawCardMutation } from "./gameSlice";
-import { useCanSelfPlay } from "@/hook/useGameLogic";
+import { useCanSelfPlay, useDeck } from "@/hook/useGameLogic";
+import deckImage from "@/assets/CardCovers.webp";
 
 const Deck = () => {
   const [drawCard] = useDrawCardMutation();
   const canSelfPlay = useCanSelfPlay();
+  const deck = useDeck();
   const handleDrawCard = () => {
     if (canSelfPlay) {
       drawCard()
@@ -14,22 +17,24 @@ const Deck = () => {
   };
   return (
     // Check for current user's turn and if the game is in play state
-    <Box
-      width={"100%"}
-      height={"100%"}
-      p={1}
-      onClick={handleDrawCard}
-      sx={{
-        "&:hover": {
-          cursor: canSelfPlay ? "pointer" : undefined,
-        },
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{ backgroundColor: "brown", width: "100%", height: "100%" }}
-      ></Paper>
-    </Box>
+    <Tooltip title={`${deck.length} cards left`}>
+      <Box
+        width={"10vw"}
+        height={"100%"}
+        p={1}
+        onClick={handleDrawCard}
+        display={"flex"}
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          "&:hover": {
+            cursor: canSelfPlay ? "pointer" : undefined,
+          },
+        }}
+      >
+        <Image alt={"Deck Cover"} src={deckImage}></Image>
+      </Box>
+    </Tooltip>
   );
 };
 

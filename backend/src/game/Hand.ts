@@ -5,7 +5,7 @@ export default class Hand {
   add(card: Card) {
     this.cards.push(card);
   }
-  get(cardId: string): Card | undefined {
+  get(cardId: number): Card | undefined {
     return this.cards.find((card) => card.id === cardId);
   }
   remove(Card: Card[]) {
