@@ -11,11 +11,37 @@ import settingImage from "@/assets/setting.png";
 import Image from "next/image";
 import { Button } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
+import NestedList from "../nestedList/NestedList";
+import KickablePlayer from "../player/KickablePlayer";
+import { Player } from "../player";
 
 const drawerWidth = 240;
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
+
+const players = [
+  "thanhcute", "honicute", "nhongannhucnhuc", "thanhnhanannhong"
+];
+
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+  open?: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create('margin', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginRight: -drawerWidth,
+  ...(open && {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: 0,
+  }),
+}));
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open"
@@ -43,8 +69,13 @@ const DrawerHeader = styled("div")(({ theme }) =>
   // ...theme.mixins.toolbar,
   justifyContent: "flex-start"
 }));
-
-export default function Setting() {
+interface GameBoard {
+  gameboard: JSX.Element;
+}
+interface NestedListProps {
+  players: Player[];
+}
+export default function Setting({gameboard} : GameBoard) {
     
     const theme = useTheme();
     const [open, setOpen] = useState(false);
@@ -59,7 +90,6 @@ export default function Setting() {
 
     return (
         <Box sx={{ display: "flex" ,
-          backgroundColor: "red",
           }}>
         <CssBaseline />
         <AppBar position="fixed" open={open}
@@ -73,7 +103,6 @@ export default function Setting() {
             justifyContent: "center",
           }}
           >
-            <Toolbar>
               <IconButton
                   color="inherit"
                   aria-label="open drawer"
@@ -91,8 +120,11 @@ export default function Setting() {
                       height={30} 
                   />
               </IconButton>
-            </Toolbar>
         </AppBar>
+        <Main open={open}>
+        <DrawerHeader />
+        {gameboard}
+      </Main>
         <Drawer
         PaperProps={{
           sx: {
@@ -148,30 +180,11 @@ export default function Setting() {
             </Box>
             <Divider style={{ background: '#00FFC6' }} variant="middle"/>
             <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                <ListItemButton>
-                    {/* <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon> */}
-                    <ListItemText primary={text} />
-                </ListItemButton>
-                </ListItem>
-            ))}
+              {/* truyền 1 cái mảng các user qua (avatar, tên) rồi ở component Kickplayer thì dùng map để show lên các player */}
+              <NestedList listName={"Players in room"} item={<KickablePlayer players={players} />} />
             </List>
             <Divider style={{ background: '#00FFC6' }} variant="middle"/>
-            <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                <ListItemButton>
-                    {/* <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon> */}
-                    <ListItemText primary={text} />
-                </ListItemButton>
-                </ListItem>
-            ))}
-            </List>
+            
         </Drawer>
         </Box>
     );

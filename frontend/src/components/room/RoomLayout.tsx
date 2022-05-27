@@ -1,11 +1,12 @@
 import { useGetRoomQuery } from "./roomSlice";
 import GameBoard from "@/components/game/GameBoard";
 import deckBackGroundImage from "@/assets/deck-image.jpg";
-
 import HandPanel from "../hand/HandPanel";
 import ConnectedUsersPanel from "../user/ConnectedUsersPanel";
 import { Box, Container } from "@mui/material";
 import Setting from "../setting/setting";
+import Chat from "@/components/chat/Chat";
+import AllChatLine from "../chat/AllChatLines";
 
 const ConnectingPage = () => <h1>Connecting to game</h1>;
 
@@ -35,15 +36,15 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
             height: "100%",
           }}
         >
-          <GameBoard />
+          <Box sx={{ gridArea: "2 / 2 / 12 / 12" }}>
+            <Setting gameboard={<GameBoard />} />
+          </Box>
+          {/* <GameBoard /> */}
           <Box sx={{ gridArea: "10 / 1 / 13 / 10" }}>
             <HandPanel />
           </Box>
-          <Box sx={{ gridArea: "2 / 10 / 13 / 13" }}>
-              <Setting />
-          </Box>
-          <Box sx={{ gridArea: "3 / 10 / 13 / 13" }}>
-            <ConnectedUsersPanel />
+          <Box sx={{ gridArea: "13 / 1 / 13 / 10" }}>
+            <Chat />
           </Box>
         </Container>
       </Box>
