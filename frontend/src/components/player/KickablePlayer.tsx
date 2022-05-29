@@ -1,28 +1,41 @@
 import Image from "next/image";
-import Avatar from "../../assets/icon.png";
-import { Box, Button } from "@mui/material";
-import Player from "@/components/player/Player"
+import AvatarImage from "../../assets/icon.png";
+import { Delete } from "@mui/icons-material";
+import {
+  Grid,
+  Button,
+  Typography,
+  ListItem,
+  IconButton,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+} from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectPlayers } from "@/lib/selector";
 
-interface KickablePlayerProps {
-    players: string[];
-  } 
-
-const KickablePlayer = ({players} : KickablePlayerProps) => {
-    return (
-        <>
-            {players.map((item, index) => {
-                return (
-                    <table key={index} style={{ width: "130%", marginLeft: -10 }}>
-                        <tr>
-                            <td><Image src={Avatar} width="50%" height="50%"alt="user-avatar" /></td>
-                            <td><label style={{textAlign: "left"}}>{item.substring(0,10)}</label></td>
-                            <td><Button>KICK</Button></td>
-                        </tr>
-                    </table>
-                )
-            })}
-            
-        </>
-    )
-}
+const KickablePlayer = () => {
+  const players = useSelector(selectPlayers);
+  return (
+    <>
+      {players.map((player, index) => {
+        return (
+          <ListItem
+            key={index}
+            secondaryAction={
+              <IconButton>
+                <Delete />
+              </IconButton>
+            }
+          >
+            <ListItemAvatar>
+              <Avatar src={AvatarImage.src} />
+            </ListItemAvatar>
+            <ListItemText primary={player.username} />
+          </ListItem>
+        );
+      })}
+    </>
+  );
+};
 export default KickablePlayer;
