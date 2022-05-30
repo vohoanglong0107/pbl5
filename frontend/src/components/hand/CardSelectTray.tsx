@@ -55,7 +55,6 @@ const CardSelectTray = ({
     cardWidth,
     hoveringIndex
   );
-  console.log(cardWidths);
 
   return (
     <Box

@@ -13,14 +13,15 @@ export interface OverState extends GameState {
   winner: Player;
 }
 
-export interface PlayState extends GameState {
-  type: "PlayState";
+export interface InGameState extends GameState {
   gameEntity: GameEntity;
   currentPlayer: Player;
 }
 
-export interface TargetingState extends GameState {
+export interface PlayState extends InGameState {
+  type: "PlayState";
+}
+
+export interface TargetingState extends InGameState {
   type: "TargetingState";
-  currentPlayer: Player;
-  gameEntity: GameEntity;
 }

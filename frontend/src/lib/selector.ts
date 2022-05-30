@@ -1,5 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "@/lib/store";
+import { InGameState } from "@/components/game/GameState";
 import gameSlice, {
   selectCurrentState,
   selectPlayers as _selectPlayers,
@@ -29,4 +30,13 @@ export const selectGameSetting = createSelector(
 export const selectConnectedUsers = createSelector(
   selectRoom,
   _selectConnectedUsers
+);
+
+export const selectDisCardPile = createSelector(
+  selectGameCurrentState,
+  (gameState) => {
+    if (gameState.type === "IdleState" || gameState.type === "OverState")
+      return [];
+    else return (gameState as InGameState).gameEntity.discardPile;
+  }
 );

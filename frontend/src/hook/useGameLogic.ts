@@ -1,7 +1,11 @@
 import { selectGameCurrentState, selectPlayers } from "@/lib/selector";
 import { selectUser } from "@/components/user/userSlice";
 import { useSelector } from "react-redux";
-import { PlayState, TargetingState } from "@/components/game/GameState";
+import {
+  PlayState,
+  TargetingState,
+  InGameState,
+} from "@/components/game/GameState";
 import { useGetUserQuery } from "@/components/user/userSlice";
 
 export function useIsGameInPlay() {
@@ -16,8 +20,7 @@ export function useIsCurrentPlayerTurn(playerId: string) {
   const currentGameState = useSelector(selectGameCurrentState);
   const isGameInPlay = useIsGameInPlay();
   // Not only PlayState but also other state like TargetingState
-  const currentPlayer = (currentGameState as PlayState | TargetingState)
-    .currentPlayer;
+  const currentPlayer = (currentGameState as InGameState).currentPlayer;
   return isGameInPlay && playerId === currentPlayer.id;
 }
 
@@ -61,7 +64,7 @@ export function useIsPlayerTargetable(playerId: string) {
 export function useDeck() {
   const currentGameState = useSelector(selectGameCurrentState);
   if ("gameEntity" in currentGameState) {
-    return (currentGameState as PlayState).gameEntity.deck;
+    return (currentGameState as InGameState).gameEntity.deck;
   }
   return [];
 }
