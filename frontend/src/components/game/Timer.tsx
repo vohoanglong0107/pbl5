@@ -3,7 +3,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import ClockImage from "@/assets/5059-removebg-preview.png";
+import ClockImage from "@/assets/timer.png";
 import { InGameState } from "./GameState";
 
 const Timer = () => {
@@ -52,9 +52,10 @@ const Timer = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Box position="relative" overflow="hidden" height="80px" width="80px">
-        <Image src={ClockImage} layout="fill" alt="Timer" />
-        <Box
+      <Box position="relative" overflow="hidden" height="120px" width="120px">
+        {/* <Image src={ClockImage} layout="fill" alt="Timer" /> */}
+        {/* <Box
+          sx={{backgroundColor: 'yellow'}}
           position="absolute"
           display="inline-flex"
           borderRadius={100}
@@ -62,31 +63,37 @@ const Timer = () => {
           left={0}
           bottom={0}
           right={0}
-          height="40px"
-          width="40px"
-          margin="23.5px auto auto"
+          height="120px"
+          width="120px"
+          margin="-10px 0px 0px 0px"
+        > */}
+        <CircularProgress
+          sx={{
+            color: "#14C38E",
+          }}
+          size={110}
+          thickness={7}
+          variant="determinate"
+          value={(timeLeft / timeLimit) * 100}
+        />
+        <Box
+          top={0}
+          left={0}
+          bottom={0}
+          right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
         >
-          <CircularProgress
-            variant="determinate"
-            value={(timeLeft / timeLimit) * 100}
-          />
-          <Box
-            top={0}
-            left={0}
-            bottom={0}
-            right={0}
-            position="absolute"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Typography
-              variant="caption"
-              component="div"
-              color="text.secondary"
-            >{`${timeLeft}s`}</Typography>
-          </Box>
+          <Typography
+            variant="caption"
+            component="div"
+            color="text.secondary"
+            sx={{ color: "#37E2D5", fontSize: '30px'}}
+          >{`${timeLeft}`}</Typography>
         </Box>
+      {/* </Box> */}
       </Box>
     </Box>
   );
