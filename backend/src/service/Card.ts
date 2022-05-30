@@ -58,16 +58,16 @@ class Card {
     });
 
     // add Exploding Kitten cards
-    var eplodingKittens = await CardRepo.getBySetSheetMechanic(
-      "Original Edition",
-      "Main Decks",
-      "Exploding Kitten"
-    );
-    eplodingKittens.forEach((card) => {
-      let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
-      decks.push(c);
-    });
-    console.log(eplodingKittens.length);
+    // var eplodingKittens = await CardRepo.getBySetSheetMechanic(
+    //   "Original Edition",
+    //   "Main Decks",
+    //   "Exploding Kitten"
+    // );
+    // eplodingKittens.forEach((card) => {
+    //   let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
+    //   decks.push(c);
+    // });
+    // console.log(eplodingKittens.length);
 
     // ! hadn't supported yet
     // add Favor cards

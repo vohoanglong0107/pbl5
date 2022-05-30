@@ -4,10 +4,10 @@ import deckBackGroundImage from "@/assets/deck-image.jpg";
 import HandPanel from "../hand/HandPanel";
 import { Box, Container } from "@mui/material";
 import Setting from "../setting/Setting";
-import Chat from "@/components/chat/Chat";
 import RoomMain from "./RoomMain";
 import { useState } from "react";
 import RoomAppBar from "./RoomAppBar";
+import ChatBubble from "../chat/ChatBubble";
 
 const ConnectingPage = () => <h1>Connecting to game</h1>;
 
@@ -37,7 +37,7 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         <RoomMain open={openSetting}>
           <GameBoard />
           <HandPanel />
-          {/* <Chat /> */}
+          <ChatBubble  />
         </RoomMain>
         <Setting open={openSetting} setOpen={setOpenSetting} />
       </Box>
