@@ -54,6 +54,9 @@ export default class CardHandler {
     const command = this.convert(this.commandId);
     const res = command.execute();
     this.source.hand.remove(this.cards);
+    this.gameEntity.discardPile = this.gameEntity.discardPile.concat(
+      this.cards
+    );
     return res;
   }
   private convert(commandId: CardCommands): Command {
