@@ -3,8 +3,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { socketClient } from "@/lib/SocketClient";
 import RoomLayout from "@/components/room/RoomLayout";
+import LoadingPage from "@/components/loading/Page";
 
-const ConnectingPage = () => <h1>Getting room ID</h1>;
+const ConnectingPage = () => <LoadingPage pageName="Getting Room ID" />
 
 const Game: NextPage = () => {
   const router = useRouter();

@@ -52,48 +52,26 @@ const Timer = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Box position="relative" overflow="hidden" height="120px" width="120px">
-        {/* <Image src={ClockImage} layout="fill" alt="Timer" /> */}
-        {/* <Box
-          sx={{backgroundColor: 'yellow'}}
-          position="absolute"
-          display="inline-flex"
-          borderRadius={100}
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
-          height="120px"
-          width="120px"
-          margin="-10px 0px 0px 0px"
-        > */}
+      <Box position="relative" right="50px" bottom="50px" >
+        <CircularProgress sx={{color: '#C2DED1', position: 'absolute'}} variant="determinate" value={100} thickness={7} size={100} />
         <CircularProgress
           sx={{
             color: "#14C38E",
+            position: 'absolute',
           }}
-          size={110}
+          size={100}
           thickness={7}
           variant="determinate"
           value={(timeLeft / timeLimit) * 100}
         />
-        <Box
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
-          position="absolute"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
           <Typography
             variant="caption"
             component="div"
             color="text.secondary"
-            sx={{ color: "#37E2D5", fontSize: '30px'}}
-          >{`${timeLeft}`}</Typography>
-        </Box>
-      {/* </Box> */}
+            sx={{ color: "#37E2D5", fontSize: '30px', position: 'absolute', top: '25px', left: '31px'}}
+          >
+            {timeLeft > 9 ? timeLeft : `0${timeLeft}` }
+            </Typography>
       </Box>
     </Box>
   );

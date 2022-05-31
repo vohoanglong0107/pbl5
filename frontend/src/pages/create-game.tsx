@@ -1,7 +1,9 @@
-import { NextPage } from "next";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
+import LoadingPage from "@/components/loading/Page";
 import { useCreateRoomMutation } from "@/components/room/roomSlice";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 
 const CreateGame: NextPage = () => {
   const router = useRouter();
@@ -10,21 +12,19 @@ const CreateGame: NextPage = () => {
 
   useEffect(() => {
     createGame()
-      .unwrap()
-      .then(({ gameId }) => {
-        router.push(`/games/${gameId}`);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    .unwrap()
+    .then(({ gameId }) => {
+      router.push(`/games/${gameId}`);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }, [createGameResponse.isError, router, createGame]);
 
   if (createGameResponse.isLoading || createGameResponse.isUninitialized)
-    return (
-      <div>
-        <h1>Starting Game</h1>
-      </div>
-    );
+  return (
+    <LoadingPage pageName="Starting Game"  />
+  );
   return null;
 };
 

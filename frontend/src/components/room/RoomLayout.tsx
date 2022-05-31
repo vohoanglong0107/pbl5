@@ -8,8 +8,9 @@ import RoomMain from "./RoomMain";
 import { useState } from "react";
 import RoomAppBar from "./RoomAppBar";
 import ChatBubble from "../chat/ChatBubble";
+import LoadingPage from "../loading/Page";
 
-const ConnectingPage = () => <h1>Connecting to game</h1>;
+const ConnectingPage = () => <LoadingPage pageName="Joinning Room" />
 
 interface RoomLayoutProps {
   gameId: string;
