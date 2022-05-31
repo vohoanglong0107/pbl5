@@ -10,6 +10,7 @@ const debug = debugModule("backend:socket:game");
 
 export enum RoomEvent {
   STATE_CHANGED = "room:state-changed",
+  CHATED = "room:chated"
 }
 
 export default class Room {
@@ -17,6 +18,7 @@ export default class Room {
   private connectedUsers: Map<string, User> = new Map<string, User>();
   private roomSetting: RoomSetting = new RoomSetting();
   private game: Game = new Game(this.roomSetting.gameSetting);
+  private chatHistory: string[] = [];
   constructor() {
     this.game.eventTracker.on("game:state-changed", () => {
       this.broadcastStateChanged();
@@ -73,6 +75,11 @@ export default class Room {
   }
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
+      case RoomEvent.CHATED:
+        const msg = (data[0] as string);
+        this.chatHistory.push(msg);
+        this.broadcastChated();
+        break;
     }
   }
   private handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
@@ -93,6 +100,11 @@ export default class Room {
       user.emit(RoomEvent.STATE_CHANGED, this.encode())
     );
   }
+  private broadcastChated(): void {
+    this.connectedUsers.forEach((user) =>
+      user.emit(RoomEvent.STATE_CHANGED, this.encode())
+    );
+  }
   encode(): RoomModel {
     const connectedUsers = [...this.connectedUsers.values()].map((user) =>
       user.encode()
@@ -101,7 +113,8 @@ export default class Room {
       this.id,
       connectedUsers,
       this.game.encode(),
-      this.roomSetting
+      this.roomSetting,
+      this.chatHistory
     );
   }
   static isRoomEvent(event: string): event is RoomEvent {

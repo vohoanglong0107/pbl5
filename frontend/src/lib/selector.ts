@@ -11,10 +11,14 @@ import settingSlice, {
 import roomSlice, {
   selectConnectedUsers as _selectConnectedUsers,
 } from "@/components/room/roomSlice";
+import chatSlice, {
+  selectChatHistory as _selectChatHistory,
+} from "@/components/chat/chatSlice";
 
 export const selectGame = (state: RootState) => state[gameSlice.name];
 export const selectSetting = (state: RootState) => state[settingSlice.name];
 export const selectRoom = (state: RootState) => state[roomSlice.name];
+export const selectChats = (state: RootState) => state[chatSlice.name];
 
 export const selectGameCurrentState = createSelector(
   selectGame,
@@ -39,4 +43,9 @@ export const selectDisCardPile = createSelector(
       return [];
     else return (gameState as InGameState).gameEntity.discardPile;
   }
+);
+
+export const selectChatHistory = createSelector(
+  selectChats,
+  _selectChatHistory
 );

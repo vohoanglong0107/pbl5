@@ -7,6 +7,7 @@ export default class Room {
     public id: string,
     public connectedUsers: User[],
     public game: Game,
-    public roomSetting: RoomSetting
-  ) {}
+    public roomSetting: RoomSetting,
+    public chatsHistory: string[]
+  ) { }
 }
