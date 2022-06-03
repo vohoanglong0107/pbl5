@@ -1,6 +1,7 @@
 import { Game } from "./Game";
 import RoomSetting from "@/game/RoomSetting";
 import User from "./User";
+import { Chat } from "./../game/Chat"
 
 export default class Room {
   constructor(
@@ -8,6 +9,6 @@ export default class Room {
     public connectedUsers: User[],
     public game: Game,
     public roomSetting: RoomSetting,
-    public chatsHistory: string[]
+    public chatHistory: Chat[]
   ) { }
 }

@@ -1,19 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import ChatHistory from "./ChatHistory"
+// import { ChatHistory } from "./ChatHistory"
 
-export const initialState: ChatHistory = { chats: [] }
+type Chat = {
+    username: string;
+    msg: string;
+}
+
+// export const initialState = { chatHistory: [] }
+export const initialState = { chatHistory: [] as Chat[] }
+
 
 const chatSlice = createSlice({
     name: "chats",
     initialState,
     reducers: {
-        settingUpdated(state, action: PayloadAction<ChatHistory>) {
-            return action.payload;
+        chatUpdated(state, action: PayloadAction<Chat[]>) {
+
+            state.chatHistory = action.payload;
+            console.log("ACTIONNNN", action)
+            // console.log("STATEEEEE", state)
+            // return action.payload;
         },
     },
 });
 
 export default chatSlice;
-export const { settingUpdated } = chatSlice.actions;
-export const { reducer: settingReducer } = chatSlice;
-export const selectChatHistory = (state: ChatHistory) => state.chats;
+export const { chatUpdated } = chatSlice.actions;
+export const { reducer: chatReducer } = chatSlice;
+export const selectChatHistory = (state: typeof initialState) => state.chatHistory;

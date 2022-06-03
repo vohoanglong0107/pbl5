@@ -5,6 +5,8 @@ import RoomSetting from "./RoomSetting";
 import User, { UserEvent } from "./User";
 import RoomModel from "@/model/Room";
 import { Acknowledgement } from "./UserEvent";
+import { type } from "os";
+import { Chat } from "./Chat"
 
 const debug = debugModule("backend:socket:game");
 
@@ -13,12 +15,13 @@ export enum RoomEvent {
   CHATED = "room:chated"
 }
 
+
 export default class Room {
   public id: string = uuidv4();
   private connectedUsers: Map<string, User> = new Map<string, User>();
   private roomSetting: RoomSetting = new RoomSetting();
   private game: Game = new Game(this.roomSetting.gameSetting);
-  private chatHistory: string[] = [];
+  private chatHistory: Chat[] = [];
   constructor() {
     this.game.eventTracker.on("game:state-changed", () => {
       this.broadcastStateChanged();
@@ -58,6 +61,13 @@ export default class Room {
       ack({
         data: res,
       });
+
+      if (isNaN(data[0]) && data[0] != null) {
+        this.chatHistory.push({ username: user.username, msg: data[0] })
+      }
+
+
+
       this.broadcastStateChanged();
     } catch (error) {
       debug(error);
@@ -75,11 +85,11 @@ export default class Room {
   }
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
-      case RoomEvent.CHATED:
-        const msg = (data[0] as string);
-        this.chatHistory.push(msg);
-        this.broadcastChated();
-        break;
+      // case RoomEvent.CHATED:
+      //   const msg = (data[0] as string);
+      //   this.chatHistory.push(msg);
+      //   this.broadcastChated();
+      //   break;
     }
   }
   private handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
@@ -100,11 +110,11 @@ export default class Room {
       user.emit(RoomEvent.STATE_CHANGED, this.encode())
     );
   }
-  private broadcastChated(): void {
-    this.connectedUsers.forEach((user) =>
-      user.emit(RoomEvent.STATE_CHANGED, this.encode())
-    );
-  }
+  // private broadcastChated(): void {
+  //   this.connectedUsers.forEach((user) =>
+  //     user.emit(RoomEvent.CHATED, this.encode())
+  //   );
+  // }
   encode(): RoomModel {
     const connectedUsers = [...this.connectedUsers.values()].map((user) =>
       user.encode()
