@@ -4,7 +4,7 @@ import CardModel from "../model/Card";
 class Card {
   constructor() {}
 
-  public async GetMainDeckByPlayerNumber() {
+  public async GetMainDeckByPlayerNumber(numPlayers: number) {
     let decks: Array<CardModel> = new Array();
 
     // add Attack x2 cards
@@ -52,22 +52,23 @@ class Card {
       "Main Decks",
       "Defuse"
     );
-    defuses.forEach((card) => {
+    for (let i = 0; i < numPlayers * 2; ++i) {
+      const card = defuses[i % defuses.length];
       let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
       decks.push(c);
-    });
+    }
 
     // add Exploding Kitten cards
-    // var eplodingKittens = await CardRepo.getBySetSheetMechanic(
-    //   "Original Edition",
-    //   "Main Decks",
-    //   "Exploding Kitten"
-    // );
-    // eplodingKittens.forEach((card) => {
-    //   let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
-    //   decks.push(c);
-    // });
-    // console.log(eplodingKittens.length);
+    var explodingKittens = await CardRepo.getBySetSheetMechanic(
+      "Original Edition",
+      "Main Decks",
+      "Exploding Kitten"
+    );
+    for (let i = 0; i < Math.max(numPlayers, explodingKittens.length); ++i) {
+      const card = explodingKittens[i % explodingKittens.length];
+      let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
+      decks.push(c);
+    }
 
     // ! hadn't supported yet
     // add Favor cards
