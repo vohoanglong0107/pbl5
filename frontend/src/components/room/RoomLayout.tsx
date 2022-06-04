@@ -1,16 +1,13 @@
 import { useGetRoomQuery } from "./roomSlice";
-import GameBoard from "@/components/game/GameBoard";
 import deckBackGroundImage from "@/assets/deck-image.jpg";
-import HandPanel from "../hand/HandPanel";
 import { Box, Container } from "@mui/material";
 import Setting from "../setting/Setting";
 import RoomMain from "./RoomMain";
 import { useState } from "react";
 import RoomAppBar from "./RoomAppBar";
-import ChatBubble from "../chat/ChatBubble";
 import LoadingPage from "../loading/Page";
 
-const ConnectingPage = () => <LoadingPage pageName="Joinning Room" />
+const ConnectingPage = () => <LoadingPage pageName="Joinning Room" />;
 
 interface RoomLayoutProps {
   gameId: string;
@@ -35,11 +32,8 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         // justifyContent={"space-between"}
       >
         <RoomAppBar open={openSetting} setOpen={setOpenSetting} />
-        <RoomMain open={openSetting}>
-          <GameBoard />
-          <HandPanel />
-          <ChatBubble  />
-        </RoomMain>
+        <RoomMain open={openSetting} />
+
         <Setting open={openSetting} setOpen={setOpenSetting} />
       </Box>
     );

@@ -59,19 +59,20 @@ const CardSelectTray = ({
   return (
     <Box
       width="100%"
-      height={`${cardHeight}px`}
+      //! Cái +30 này có thể coi là cái paddingTop nhaaa, Là để hở 1 xí ở phía trên nha.
+      //! emiu muốn chỉnh độ hở thì chỉnh cái này nhaaa
+      height={`${cardHeight + 30}px`}
       ref={ref}
       display="flex"
       justifyContent={"center"}
       overflow={"hidden"}
       alignItems={"flex-end"}
       sx={{
-        backgroundColor: '#B22727', 
-        padding: '20px',
-        borderTopLeftRadius: '1rem',
-        borderTopRightRadius: '1rem'
-
-      }} 
+        backgroundColor: "#B22727",
+        borderTopLeftRadius: "1rem",
+        borderTopRightRadius: "1rem",
+        marginTop: "50px",
+      }}
     >
       {cards.map((card, index) => (
         <CardView
