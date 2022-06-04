@@ -85,23 +85,46 @@ export default class CardHandler {
         throw new Error(`Unknown command id: ${this.commandId}`);
     }
   }
+  // the next two methods seem ugly. Should I combine them?
   private checkCardsValid(cards: Card[]) {
     if (cards.length === 0)
       throw new Error("You must select at least one card");
+    if (cards.length === 1) {
+      if (cards[0].commandId === CardCommands.CAT)
+        throw new Error("You can't play only one cat card");
+      return;
+    }
     const commandId = cards[0].commandId;
-    const checkAllCardSameCommand = (): boolean => {
+    const checkAllCardSameCommand = () => {
       return cards.every((card) => card.commandId === commandId);
     };
     if (!checkAllCardSameCommand()) {
       throw new Error("You must select cards with the same mechanic");
+    }
+    if (commandId !== CardCommands.CAT)
+      throw new Error("You can only play two or more card of type Cat");
+
+    if (cards.length === 2) {
+      const checkAllCardSameCat = () => {
+        return cards.every((card) => card.id === cards[0].id);
+      };
+      if (!checkAllCardSameCat()) {
+        throw new Error("Two Cat cards must be the same");
+      }
+    } else if (cards.length === 5) {
+      const checkAllCardUniqueCat = () => {
+        return new Set(cards.map((card) => card.id)).size === cards.length;
+      };
+      if (!checkAllCardUniqueCat()) {
+        throw new Error("Five Cat cards must be unique");
+      }
     }
   }
   private convertCardsToCommand(cards: Card[]): CardCommands {
     const commandId = cards[0].commandId;
     switch (cards.length) {
       case 1:
-        if (commandId !== CardCommands.CAT) return commandId;
-        else throw new Error("You can't play only one cat card");
+        return commandId;
       case 2:
         return CardCommands.STEAL;
       case 5:
