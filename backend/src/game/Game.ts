@@ -81,6 +81,10 @@ class PlayerManager {
     if (seatId >= this.maxPlayers) {
       throw new Error(`Seat ${seatId} is out of range`);
     }
+    // Temporary fix when Player first join game, perform both get random Seat and choose seat to that very same seat.
+    if (player.seat === seatId) {
+      return;
+    }
     if (this.isSeatVacant(seatId)) {
       player.seat = seatId;
     } else {
@@ -425,6 +429,7 @@ class PlayState implements GameState {
     command.execute();
   }
   onRemovePlayer(playerId: string) {
+    // check game over
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
       this.endTurn(false);
@@ -503,6 +508,7 @@ class TargetingState implements GameState {
     return this.playerManager.getRandomPlayer([this.currentPlayer]);
   }
   onRemovePlayer(playerId: string) {
+    // check game over
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
       this.stateManager.popState();
