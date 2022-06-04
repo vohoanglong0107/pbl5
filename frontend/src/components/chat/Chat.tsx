@@ -1,9 +1,14 @@
 import { Box, Dialog, Typography } from "@mui/material";
 import AllChats from "./AllChats";
-import { useState } from "react";
+import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { styled } from "@mui/system";
 import { TextField } from "@mui/material";
+import { useSelector } from "react-redux";
+import {
+  selectChatHistory,
+} from "@/lib/selector";
+import { socketClient } from "@/lib/SocketClient";
 
 const MessageBox = styled("div")({
   backgroundColor: "transparent",
@@ -54,7 +59,7 @@ const Button = styled("button")({
   padding: '0px',
   position: 'relative',
   right: '7px',
-  
+
   // justifyContent: 'center',
   border: "none",
   borderStyle: "2px solid #FF7800",
@@ -65,13 +70,20 @@ export interface ChatProps {
   setOpen: (value: boolean) => void;
 }
 
-const Chat = ({ setOpen }: ChatProps) => {
-  const username = "Stranger01";
-  const [chats, setChats] = useState(AllChats);
-  const [msg, setMsg] = useState("");
 
-  function handleSendMsg(newChat: any) {
-    console.log("SEND!");
+const Chat = ({ setOpen }: ChatProps) => {
+  const [msg, setMsg] = useState("");
+  const chatHistory = useSelector(selectChatHistory);
+
+  function handleSendMsg() {
+    socketClient.emit("room:chated", msg);
+    setMsg("")
+  }
+
+  function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.code === "Enter") {
+      handleSendMsg()
+    }
   }
 
   function handleTypeMsg(event: any) {
@@ -105,12 +117,13 @@ const Chat = ({ setOpen }: ChatProps) => {
         onClick={() => setOpen(false)}
       />
       <MessageBox>
-        {AllChats.map((chat, index) => {
+        {chatHistory.map((chat, index) => {
           return (
             <Box key={index} style={{ display: "inline-flex", width: "300px" }}>
               <label>
                 <span style={{ color: "yellow", fontFamily: "Josefin Sans" }}>
                   {"["}
+                  {/* {"name:"} */}
                   {chat.username}
                   {"]"}
                 </span>
@@ -133,7 +146,9 @@ const Chat = ({ setOpen }: ChatProps) => {
       <br />
       <Box sx={{ display: "inline-flex", width: "100%", marginTop: '10px' }}>
         <Input
+          onKeyDown={handleEnter}
           name="message"
+          value={msg}
           placeholder="Type something..."
           onChange={handleTypeMsg}
         />

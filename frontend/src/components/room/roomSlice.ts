@@ -6,13 +6,17 @@ import { User } from "../user";
 import { Game } from "../game";
 import RoomSetting from "../setting/RoomSetting";
 import { settingUpdated } from "../setting/settingSlice";
+import { chatUpdated } from "../chat/chatSlice";
 import { createAction, createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { Chat } from "./../chat/ChatHistory"
 
 interface RoomApi {
   id: string;
   connectedUsers: User[];
   game: Game;
   roomSetting: RoomSetting;
+  // chatHistory: ChatHistory;
+  chatHistory: Chat[];
 }
 
 const RoomStateChanged = createAction<RoomApi>("room/stateChanged");
@@ -33,9 +37,13 @@ const roomApiSlice = apiSlice.injectEndpoints({
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch }
       ) {
         const updateLocalData = (room: RoomApi) => {
+
+          console.log("ROOMMM", room)
+
           dispatch(RoomStateChanged(room));
           dispatch(gameUpdated(room.game));
           dispatch(settingUpdated(room.roomSetting));
+          dispatch(chatUpdated(room.chatHistory));
         };
         const updateCachedDataWithRoom = (room: RoomApi) => {
           updateCachedData((draft) => room);
