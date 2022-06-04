@@ -2,8 +2,10 @@ import {
   useIsCurrentPlayerTurn,
   useIsGameInPlay,
   useIsPlayerTargetable,
+  useSelfPlayer
 } from "@/hook/useGameLogic";
 import Image from "next/image";
+import UserAvatar from "@/assets/avt1.jpg";
 import {
   Box,
   Typography,
@@ -37,23 +39,24 @@ const blinkAnimation = keyframes`
 `;
 
 interface SeatProps {
-  bgcolor: string;
   hoverCursor?: string;
   onClick: () => void;
   title: string;
+  titleColor: string;
   animation?: string;
   filter?: string;
   numCards?: number;
 }
 
 const Seat = ({
-  bgcolor,
   hoverCursor,
   onClick,
   title,
+  titleColor,
   animation,
   filter,
-  numCards,
+  numCards
+  
 }: SeatProps) => {
   return (
     <Box
@@ -76,7 +79,6 @@ const Seat = ({
       >
         <Avatar
           sx={{
-            bgcolor: bgcolor,
             height: "10vh",
             width: "unset",
             aspectRatio: "1 / 1",
@@ -89,6 +91,7 @@ const Seat = ({
           }}
           variant="rounded"
           onClick={onClick}
+          src={UserAvatar.src}
         />
         {numCards !== undefined ? (
           <Tooltip title={`${numCards} left`}>
@@ -99,7 +102,11 @@ const Seat = ({
         ) : null}
       </Box>
 
-      <Typography fontSize={"1rem"}>{title}</Typography>
+      <Typography sx={{
+        fontSize: '1rem',
+        fontFamily: 'Ubuntu',
+        color: titleColor,
+      }}>{title}</Typography>
     </Box>
   );
 };
@@ -118,10 +125,10 @@ const EmptySeat = ({ seatId }: { seatId: number }) => {
 
   return (
     <Seat
-      bgcolor="brown"
+      titleColor="white"
       hoverCursor={isGameInPlay ? undefined : "pointer"}
       onClick={handleTakeSeat}
-      title="empty"
+      title="Empty"
     />
   );
 };
@@ -130,6 +137,8 @@ const SeatHavePlayer = ({ player }: { player: Player }) => {
   const isCurrentPlayerTurn = useIsCurrentPlayerTurn(player.id);
   const isPlayerTargetable = useIsPlayerTargetable(player.id);
   const isGameInPlay = useIsGameInPlay();
+  const selfPlayer = useSelfPlayer();
+  const isSelfPlayer = selfPlayer?.id === player.id;
   const [targetPlayer] = useTargetPlayerMutation();
   const handleTarget = () => {
     if (isPlayerTargetable) {
@@ -140,43 +149,16 @@ const SeatHavePlayer = ({ player }: { player: Player }) => {
   };
   return (
     <Seat
-      bgcolor="brown"
       hoverCursor={isPlayerTargetable ? "pointer" : undefined}
       onClick={handleTarget}
-      title={player.username}
+      title={isSelfPlayer ? player.username +" (Me)"  : player.username}
+      titleColor={isSelfPlayer ? 'yellow' : "white"}
       animation={
         isCurrentPlayerTurn ? `${blinkAnimation} 1s infinite` : undefined
       }
       filter={player.exploded ? "grayscale(100%)" : undefined}
       numCards={isGameInPlay ? player.hand.length : undefined}
     />
-  );
-  return (
-    <Box
-      width={"100%"}
-      height={"100%"}
-      border="1px dashed grey"
-      display="grid"
-      gridTemplateRows={"repeat(10, 1fr)"}
-      sx={{
-        animation: isCurrentPlayerTurn ? `${blinkAnimation} 1s infinite` : "",
-        "&:hover": {
-          cursor: isPlayerTargetable ? "pointer" : undefined,
-        },
-      }}
-      onClick={handleTarget}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          gridRow: "span 7",
-          backgroundColor: player && player.exploded ? "yellow" : "brown",
-        }}
-      ></Paper>
-      <Paper variant="outlined" sx={{ gridRow: "span 3" }}>
-        <Typography>{player ? player.username : "empty"}</Typography>
-      </Paper>
-    </Box>
   );
 };
 

@@ -65,6 +65,13 @@ const CardSelectTray = ({
       justifyContent={"center"}
       overflow={"hidden"}
       alignItems={"flex-end"}
+      sx={{
+        backgroundColor: '#B22727', 
+        padding: '20px',
+        borderTopLeftRadius: '1rem',
+        borderTopRightRadius: '1rem'
+
+      }} 
     >
       {cards.map((card, index) => (
         <CardView

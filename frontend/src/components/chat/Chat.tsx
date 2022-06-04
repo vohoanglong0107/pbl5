@@ -81,8 +81,8 @@ const Chat = ({ setOpen }: ChatProps) => {
   return (
     <Box
       sx={{
-        position: "absolute",
-        top: "470px",
+        position: "fixed",
+        top: "430px",
         left: "10px",
         backgroundColor: "rgba(169,113,85,0.7)",
         width: "380px",

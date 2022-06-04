@@ -1,4 +1,5 @@
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 interface StartButtonProps {
   onClick: () => void;
@@ -8,13 +9,19 @@ interface StartButtonProps {
 const PlayButton = ({ onClick, disabled }: StartButtonProps) => {
   return (
     <Button
+      variant="contained"
+      
       sx={{
-        backgroundColor: "blue",
+        backgroundColor: "orange",
+        '&:hover' : {
+          backgroundColor: '#F77E21'
+        },
+        borderRadius:"100%",
       }}
       onClick={onClick}
       disabled={disabled}
     >
-      GO!!!
+      <ArrowCircleUpIcon />
     </Button>
   );
 };

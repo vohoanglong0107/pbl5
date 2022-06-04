@@ -20,10 +20,10 @@ export default function FutureDialog({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">
-        <h1>Future</h1>
-      </DialogTitle>
-      <Stack direction={"row"} border="1px solid brown">
+      <Stack direction={"row"} border="1px solid black " sx={{
+        padding: '20px',
+        backgroundColor: '#413F42',
+      }}>
         {cards.map((card, index) => (
           <CardDetail key={index} card={card} height={"25vh"} />
         ))}

@@ -42,14 +42,14 @@ const ChatBubble = () => {
       setOpen(true);
     }
     
-    const newMessages = 2;
+    const newMessages = "";
     return (
-      <div>
+      <Box>
         {!isOpen?(<MsgBubble onClick={handleClickOpen} >
             <Image src={MessageImage} alt="message-image" width={100} height={100} onClick={() => setOpen(true)} />
             <NewMsgs>{newMessages}</NewMsgs>
         </MsgBubble>):(<Chat setOpen={setOpen} />)}
-      </div>
+      </Box>
     );
 }
 
