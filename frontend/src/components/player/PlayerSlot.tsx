@@ -1,25 +1,19 @@
+import UserAvatar from "@/assets/avt1.jpg";
+import deckImage from "@/assets/CardCovers.webp";
 import {
   useIsCurrentPlayerTurn,
   useIsGameInPlay,
   useIsPlayerTargetable,
-  useSelfPlayer
+  useSelfPlayer,
 } from "@/hook/useGameLogic";
+import { Avatar, Box, Tooltip, Typography } from "@mui/material";
+import { keyframes } from "@mui/system";
 import Image from "next/image";
-import UserAvatar from "@/assets/avt1.jpg";
-import {
-  Box,
-  Typography,
-  Paper,
-  keyframes,
-  Avatar,
-  Tooltip,
-} from "@mui/material";
 import {
   useTakeSeatMutation,
   useTargetPlayerMutation,
 } from "../game/gameSlice";
 import Player from "./Player";
-import deckImage from "@/assets/CardCovers.webp";
 
 interface PlayerSlotProps {
   player?: Player;
@@ -55,8 +49,7 @@ const Seat = ({
   titleColor,
   animation,
   filter,
-  numCards
-  
+  numCards,
 }: SeatProps) => {
   return (
     <Box
@@ -102,11 +95,15 @@ const Seat = ({
         ) : null}
       </Box>
 
-      <Typography sx={{
-        fontSize: '1rem',
-        fontFamily: 'Ubuntu',
-        color: titleColor,
-      }}>{title}</Typography>
+      <Typography
+        sx={{
+          fontSize: "1rem",
+          fontFamily: "Ubuntu",
+          color: titleColor,
+        }}
+      >
+        {title}
+      </Typography>
     </Box>
   );
 };
@@ -151,8 +148,8 @@ const SeatHavePlayer = ({ player }: { player: Player }) => {
     <Seat
       hoverCursor={isPlayerTargetable ? "pointer" : undefined}
       onClick={handleTarget}
-      title={isSelfPlayer ? player.username +" (Me)"  : player.username}
-      titleColor={isSelfPlayer ? 'yellow' : "white"}
+      title={isSelfPlayer ? player.username + " (Me)" : player.username}
+      titleColor={isSelfPlayer ? "yellow" : "white"}
       animation={
         isCurrentPlayerTurn ? `${blinkAnimation} 1s infinite` : undefined
       }

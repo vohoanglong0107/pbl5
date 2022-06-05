@@ -1,4 +1,5 @@
-import { Tooltip, keyframes, Box } from "@mui/material";
+import { Tooltip, Box } from "@mui/material";
+import { keyframes } from "@mui/system";
 import { useEffect, useState } from "react";
 import Card from "../card/Card";
 import CardDetail from "../card/CardDetail";

@@ -1,14 +1,10 @@
-import { Box, Dialog, Typography } from "@mui/material";
-import AllChats from "./AllChats";
-import React, { useState } from "react";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { styled } from "@mui/system";
-import { TextField } from "@mui/material";
-import { useSelector } from "react-redux";
-import {
-  selectChatHistory,
-} from "@/lib/selector";
+import { selectChatHistory } from "@/lib/selector";
 import { socketClient } from "@/lib/SocketClient";
+import { KeyboardArrowDown as KeyboardArrowDownIcon } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import { styled } from "@mui/system";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const MessageBox = styled("div")({
   backgroundColor: "transparent",
@@ -36,15 +32,15 @@ const MessageBox = styled("div")({
 const Input = styled("input")({
   width: "300px",
   color: "#04293A",
-  outline: 'none',
+  outline: "none",
   fontFamily: "Ubuntu",
   borderStyle: "1px solid ",
-  borderColor: 'orange',
+  borderColor: "orange",
   margin: "0 10px 5px",
   padding: "5px 10px",
   borderRadius: "0.25rem",
   backgroundColor: "#FFF6EA",
-  justifyContent: 'center',
+  justifyContent: "center",
   "&:focus": {
     outline: "none",
     backgroundColor: "white",
@@ -54,11 +50,11 @@ const Input = styled("input")({
 
 const Button = styled("button")({
   width: "15%",
-  height: '30px',
+  height: "30px",
   // margin: '5px',
-  padding: '0px',
-  position: 'relative',
-  right: '7px',
+  padding: "0px",
+  position: "relative",
+  right: "7px",
 
   // justifyContent: 'center',
   border: "none",
@@ -70,19 +66,18 @@ export interface ChatProps {
   setOpen: (value: boolean) => void;
 }
 
-
 const Chat = ({ setOpen }: ChatProps) => {
   const [msg, setMsg] = useState("");
   const chatHistory = useSelector(selectChatHistory);
 
   function handleSendMsg() {
     socketClient.emit("room:chated", msg);
-    setMsg("")
+    setMsg("");
   }
 
   function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.code === "Enter") {
-      handleSendMsg()
+      handleSendMsg();
     }
   }
 
@@ -144,7 +139,7 @@ const Chat = ({ setOpen }: ChatProps) => {
         })}
       </MessageBox>
       <br />
-      <Box sx={{ display: "inline-flex", width: "100%", marginTop: '10px' }}>
+      <Box sx={{ display: "inline-flex", width: "100%", marginTop: "10px" }}>
         <Input
           onKeyDown={handleEnter}
           name="message"
@@ -154,7 +149,12 @@ const Chat = ({ setOpen }: ChatProps) => {
         />
         <Button onClick={handleSendMsg}>
           <Typography
-            sx={{ color: "#FFF6EA", fontWeight: "bold", fontSize: "12px", fontFamily: 'Ubuntu' }}
+            sx={{
+              color: "#FFF6EA",
+              fontWeight: "bold",
+              fontSize: "12px",
+              fontFamily: "Ubuntu",
+            }}
           >
             SEND
           </Typography>
