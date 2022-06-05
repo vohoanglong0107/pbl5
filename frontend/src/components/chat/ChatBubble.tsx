@@ -41,7 +41,7 @@ const ChatBubble = () => {
 
   const newMessages = "";
   return (
-    <Box position={"absolute"}>
+    <>
       {!isOpen ? (
         <MsgBubble onClick={handleClickOpen}>
           <Image
@@ -56,7 +56,7 @@ const ChatBubble = () => {
       ) : (
         <Chat setOpen={setOpen} />
       )}
-    </Box>
+    </>
   );
 };
 

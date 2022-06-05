@@ -65,7 +65,9 @@ const CardSelectTray = ({
     
     <Box
       width="100%"
-      height={`${cardHeight}px`}
+      //! Cái +30 này có thể coi là cái paddingTop nhaaa, Là để hở 1 xí ở phía trên nha.
+      //! emiu muốn chỉnh độ hở thì chỉnh cái này nhaaa
+      height={`${cardHeight + 30}px`}
       ref={ref}
       display="flex"
       justifyContent={"center"}

@@ -186,9 +186,9 @@ class IdleState implements GameState {
   }
   private startGame(startingPlayer: Player) {
     this.playerManager.reset();
-    if (this.playerManager.getActivePlayer().length < 2)
-      throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumber().then((cards) => {
+    const activePlayer = this.playerManager.getActivePlayer().length;
+    if (activePlayer < 2) throw new Error("Not enough players");
+    cardService.GetMainDeckByPlayerNumber(activePlayer).then((cards) => {
       const compatibleCards = cards.map(
         (card) => new Card(card.id, MechanicToCommand[card.mechanic])
       );
@@ -244,9 +244,9 @@ class OverState implements GameState {
   }
   private startGame(startingPlayer: Player) {
     this.playerManager.reset();
-    if (this.playerManager.getActivePlayer().length < 2)
-      throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumber().then((cards) => {
+    const activePlayer = this.playerManager.getActivePlayer().length;
+    if (activePlayer < 2) throw new Error("Not enough players");
+    cardService.GetMainDeckByPlayerNumber(activePlayer).then((cards) => {
       const compatibleCards = cards.map(
         (card) => new Card(card.id, MechanicToCommand[card.mechanic])
       );
@@ -313,6 +313,18 @@ class PlayState implements GameState {
     this.gameEntity = new GameEntity(cards);
     this.cardHandler = new CardHandler(this.gameEntity);
     this.timeLimit = gameSetting.turnTime;
+    this.dealCardToEachPlayer();
+  }
+  private dealCardToEachPlayer() {
+    const activePlayers = this.playerManager.getActivePlayer();
+    const cards = this.gameEntity.deck.dealCardStartingGame(
+      activePlayers.length
+    );
+    activePlayers.forEach((player, index) => {
+      cards[index].forEach((card) => {
+        player.hand.add(card);
+      });
+    });
   }
   onEntry() {
     this.startTurn();
@@ -398,6 +410,7 @@ class PlayState implements GameState {
       this.cardHandler.setSource(player);
       this.cardHandler.setCards(cards);
       if (this.cardHandler.isTargetRequired()) {
+        // TODO: should pause current state's timer instead of resetting it
         this.stateManager.pushState(
           new TargetingState(
             this.stateManager,
@@ -433,6 +446,8 @@ class PlayState implements GameState {
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
       this.endTurn(false);
+    } else if (this.playerManager.isLastManStanding()) {
+      this.over();
     }
   }
   encode() {
@@ -511,6 +526,8 @@ class TargetingState implements GameState {
     // check game over
     if (playerId === this.currentPlayer.id) {
       this.gameEntity.nextPlayer = true;
+      this.stateManager.popState();
+    } else if (this.playerManager.isLastManStanding()) {
       this.stateManager.popState();
     }
   }

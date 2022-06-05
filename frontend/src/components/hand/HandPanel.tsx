@@ -12,7 +12,17 @@ import PlayButton from "./PlayButton";
 import { usePlayCardMutation, Response, CardCommands } from "../game/gameSlice";
 
 const CardStackPlaceHolder = () => {
-  return <></>;
+  // Ugly fix
+  const [selectedCards, setSelectedCards] = useState([].map(() => false));
+  return (
+    <Box gridColumn={"3 / 11"} visibility="hidden">
+      <CardSelectTray
+        cards={[]}
+        selectedCards={selectedCards}
+        setSelectedCards={setSelectedCards}
+      />
+    </Box>
+  );
 };
 
 const CardTrayAndButton = ({ cards }: { cards: Card[] }) => {

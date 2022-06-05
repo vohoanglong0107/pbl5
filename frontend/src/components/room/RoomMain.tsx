@@ -1,6 +1,10 @@
 import { styled } from "@mui/material/styles";
 import { drawerWidth } from "@/constant";
 import { ReactNode } from "react";
+import GameBoard from "@/components/game/GameBoard";
+import ChatBubble from "../chat/ChatBubble";
+import HandPanel from "../hand/HandPanel";
+import { Box, Container } from "@mui/material";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -19,18 +23,27 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     }),
     width: `calc(100vw - ${drawerWidth}px)`,
   }),
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
+  display: "grid",
+  gridTemplateRows: "1fr min-content",
+  maxHeight: "100vh",
 }));
 
 interface RoomMainProps {
   open: boolean;
-  children: ReactNode;
 }
 
-const RoomMain = ({ children, open }: RoomMainProps) => {
-  return <Main open={open}>{children}</Main>;
+const RoomMain = ({ open }: RoomMainProps) => {
+  return (
+    <Main open={open}>
+      <Box gridRow={"1 / 2"}>
+        <GameBoard />
+      </Box>
+      <Box gridRow={"2 / 3"}>
+        <HandPanel />
+      </Box>
+      <ChatBubble />
+    </Main>
+  );
 };
 
 export default RoomMain;

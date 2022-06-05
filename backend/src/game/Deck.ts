@@ -1,5 +1,5 @@
 import Card from "./Card";
-import mockDB from "./MockDB";
+import { CardCommands } from "./command/CardCommands";
 
 export default class Deck {
   cards: Card[];
@@ -21,6 +21,27 @@ export default class Deck {
       throw new Error("No more cards");
     }
     return card;
+  }
+  // FIXME: This is a hack to deal the cards when game start (called only once when game start).
+  dealCardStartingGame(numPlayers: number): Card[][] {
+    const defuses = this.cards.filter(
+      (card) => card.commandId === CardCommands.DEFUSE
+    );
+    const explodes = this.cards.filter(
+      (card) => card.commandId === CardCommands.EXPLODE
+    );
+    const others = this.cards.filter(
+      (card) =>
+        card.commandId !== CardCommands.DEFUSE &&
+        card.commandId !== CardCommands.EXPLODE
+    );
+    const cards = Array.from({ length: numPlayers }, (e) => [] as Card[]);
+    for (let i = 0; i < numPlayers; i++) {
+      cards[i].push(...defuses.splice(0, 1));
+      cards[i].push(...others.splice(0, 5));
+    }
+    this.cards = defuses.concat(explodes).concat(others);
+    return cards;
   }
 
   getBottomCard(): Card {

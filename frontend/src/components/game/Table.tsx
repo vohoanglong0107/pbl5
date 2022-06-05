@@ -23,16 +23,16 @@ const Table = () => {
           variant="contained"
           sx={{
             backgroundColor: "#F9D923",
-            borderRadius: '1rem',
-            width: '200px',
-            height: '80px',
+            borderRadius: "1rem",
+            width: "200px",
+            height: "80px",
             color: "#000000",
             fontWeight: "bold",
-            fontFamily: 'Ubuntu',
-            fontSize: '20px',
-            '&:hover': {
+            fontFamily: "Ubuntu",
+            fontSize: "20px",
+            "&:hover": {
               // TODO
-            }
+            },
           }}
           onClick={() =>
             startGame()
