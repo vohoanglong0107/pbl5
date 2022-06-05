@@ -1,14 +1,18 @@
-import { Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
-
+import { useSelector } from "react-redux";
+import { selectGameCurrentState, selectGameSetting } from "@/lib/selector";
+import { InGameState } from "../game/GameState";
 interface StartButtonProps {
   onClick: () => void;
   disabled: boolean;
 }
 
 const PlayButton = ({ onClick, disabled }: StartButtonProps) => {
+  const gameState = useSelector(selectGameCurrentState) as InGameState;
+  
   return (
-    <Button
+      <Button
       variant="contained"
       
       sx={{
@@ -23,6 +27,7 @@ const PlayButton = ({ onClick, disabled }: StartButtonProps) => {
     >
       <ArrowCircleUpIcon />
     </Button>
+    
   );
 };
 

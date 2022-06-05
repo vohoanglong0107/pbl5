@@ -73,6 +73,7 @@ const Timer = () => {
             {timeLeft > 9 ? timeLeft : `0${timeLeft}` }
             </Typography>
       </Box>
+      
     </Box>
   );
 };
