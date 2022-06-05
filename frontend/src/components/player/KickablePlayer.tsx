@@ -1,18 +1,14 @@
-import Image from "next/image";
-import AvatarImage from "../../assets/icon.png";
+import { selectPlayers } from "@/lib/selector";
 import { Delete } from "@mui/icons-material";
 import {
-  Grid,
-  Button,
-  Typography,
-  ListItem,
+  Avatar,
   IconButton,
+  ListItem,
   ListItemAvatar,
   ListItemText,
-  Avatar,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { selectPlayers } from "@/lib/selector";
+import AvatarImage from "../../assets/icon.png";
 
 const KickablePlayer = () => {
   const players = useSelector(selectPlayers);

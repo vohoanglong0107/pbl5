@@ -1,8 +1,8 @@
 import Card from "@/components/card/Card";
 import CardView from "@/components/hand/CardView";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Box } from "@mui/material";
 import { CARD_IMAGE_RATIO } from "@/constant";
+import { Box } from "@mui/material";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useMeasure, useWindowSize } from "react-use";
 
 interface CardSelectTrayProp {
@@ -68,10 +68,10 @@ const CardSelectTray = ({
       overflow={"hidden"}
       alignItems={"flex-end"}
       sx={{
-        backgroundColor: "#B22727",
+        // backgroundColor: "#B22727",
         borderTopLeftRadius: "1rem",
         borderTopRightRadius: "1rem",
-        marginTop: "50px",
+        // marginTop: "50px",
       }}
     >
       {cards.map((card, index) => (

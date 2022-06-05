@@ -1,13 +1,8 @@
-import React, { useState } from "react";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Dialog from "@mui/material/Dialog";
-import Typography from "@mui/material/Typography";
-import Chat from "./Chat";
-import Image from "next/image";
 import MessageImage from "@/assets/msg-icon.png";
 import { styled } from "@mui/system";
-import SettingOpenButton from "../setting/SettingOpenButton";
+import Image from "next/image";
+import React, { useState } from "react";
+import Chat from "./Chat";
 
 const MsgBubble = styled("button")({
   backgroundColor: "transparent",
