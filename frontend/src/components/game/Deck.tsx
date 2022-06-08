@@ -19,6 +19,8 @@ const Deck = () => {
     // Check for current user's turn and if the game is in play state
     <Tooltip title={`${deck.length} cards left`}>
       <Box
+        
+      margin={"0 auto"}
         width={"10vw"}
         height={"100%"}
         p={1}

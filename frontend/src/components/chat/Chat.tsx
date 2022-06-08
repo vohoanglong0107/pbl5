@@ -3,7 +3,7 @@ import { socketClient } from "@/lib/SocketClient";
 import { KeyboardArrowDown as KeyboardArrowDownIcon } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const MessageBox = styled("div")({
@@ -84,6 +84,11 @@ const Chat = ({ setOpen }: ChatProps) => {
   function handleTypeMsg(event: any) {
     setMsg(event.target.value);
   }
+  const messagesEndRef = useRef(0);
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+  useEffect(scrollToBottom, [chatHistory]);
 
   return (
     <Box
@@ -112,6 +117,7 @@ const Chat = ({ setOpen }: ChatProps) => {
         onClick={() => setOpen(false)}
       />
       <MessageBox>
+
         {chatHistory.map((chat, index) => {
           return (
             <Box key={index} style={{ display: "inline-flex", width: "300px" }}>
@@ -137,6 +143,7 @@ const Chat = ({ setOpen }: ChatProps) => {
             </Box>
           );
         })}
+        <Box ref={messagesEndRef} />
       </MessageBox>
       <br />
       <Box sx={{ display: "inline-flex", width: "100%", marginTop: "10px" }}>
@@ -146,6 +153,7 @@ const Chat = ({ setOpen }: ChatProps) => {
           value={msg}
           placeholder="Type something..."
           onChange={handleTypeMsg}
+          autoComplete={"off"}
         />
         <Button onClick={handleSendMsg}>
           <Typography

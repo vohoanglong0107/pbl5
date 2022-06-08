@@ -51,6 +51,7 @@ const Timer = () => {
       display={"flex"}
       justifyContent="center"
       alignItems="center"
+      margin={"0 auto"}
     >
       <Box position="relative" right="50px" bottom="50px" >
         <CircularProgress sx={{color: '#C2DED1', position: 'absolute'}} variant="determinate" value={100} thickness={7} size={100} />

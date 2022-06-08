@@ -27,7 +27,7 @@ const KickablePlayer = () => {
             <ListItemAvatar>
               <Avatar src={AvatarImage.src} />
             </ListItemAvatar>
-            <ListItemText primary={player.username} />
+            <ListItemText sx={{color: '#00FFC6', fontFamily: 'Ubuntu'}} primary={player.username} />
           </ListItem>
         );
       })}

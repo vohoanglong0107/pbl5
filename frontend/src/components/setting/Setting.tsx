@@ -37,6 +37,7 @@ const Setting = ({ open, setOpen }: SettingProps) => {
     setOpen(false);
   };
   const theme = useTheme();
+  const roomID = "roomID";
   return (
     <Drawer
       PaperProps={{
@@ -78,9 +79,11 @@ const Setting = ({ open, setOpen }: SettingProps) => {
               color: "#00FFC6",
               alignItems: "center",
               margin: "5px",
+              fontFamily: 'Josefin Sans',
+              fontWeight: 'bold'
             }}
           >
-            Setting
+            SETTING
           </Typography>
           <Image
             src={settingImage}
@@ -90,9 +93,9 @@ const Setting = ({ open, setOpen }: SettingProps) => {
           />
         </Box>
       </DrawerHeader>
-      <Box sx={{ display: "inline-flex" }}>
+      <Box sx={{ display: "inline-flex", marginLeft: '15px' }}>
         <Typography>ROOM ID: </Typography>
-        <Link href="#">Room ID/ link</Link>
+        <Link href="#">{roomID}</Link>
       </Box>
       <Divider style={{ background: "#00FFC6" }} variant="middle" />
       <List>

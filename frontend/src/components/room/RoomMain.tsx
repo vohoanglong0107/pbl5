@@ -5,6 +5,7 @@ import GameBoard from "@/components/game/GameBoard";
 import ChatBubble from "../chat/ChatBubble";
 import HandPanel from "../hand/HandPanel";
 import { Box, Container } from "@mui/material";
+import RoomSettingDialog from "../setting/RoomSettingDialog";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -35,6 +36,9 @@ interface RoomMainProps {
 const RoomMain = ({ open }: RoomMainProps) => {
   return (
     <Main open={open}>
+      <Box>
+        <RoomSettingDialog />
+      </Box>
       <Box gridRow={"1 / 2"}>
         <GameBoard />
       </Box>

@@ -13,11 +13,12 @@ const DiscardPile = () => {
     return (
       <Box
         width={"9vw"}
-        height={"70%"}
+        height={"100%"}
         p={1}
         display={"flex"}
         justifyContent="center"
         alignItems="center"
+        margin={"0 auto"}
         >
           <Image src={DiscardPileImage.src} alt="dis-pile" width="90%" height="120%" style={{borderRadius: '0.5rem'}} />
       </Box>
