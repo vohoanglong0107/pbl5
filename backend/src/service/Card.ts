@@ -19,8 +19,8 @@ class Card {
     });
 
     var targetedAttack = await CardRepo.getBySetSheetMechanic(
-      "Original Edition",
-      "Main Decks",
+      "Imploding Kittens",
+      "Expansions",
       "Targeted Attack 2x"
     );
     targetedAttack.forEach((card) => {
@@ -127,8 +127,8 @@ class Card {
     });
 
     var DrawFromBottoms = await CardRepo.getBySetSheetMechanic(
-      "Original Edition",
-      "Main Decks",
+      "Imploding Kittens",
+      "Expansions",
       "Draw From the Bottom"
     );
     DrawFromBottoms.forEach((card) => {
@@ -136,8 +136,8 @@ class Card {
       decks.push(c);
     });
     var Reverses = await CardRepo.getBySetSheetMechanic(
-      "Original Edition",
-      "Main Decks",
+      "Imploding Kittens",
+      "Expansions",
       "Reverse"
     );
     Reverses.forEach((card) => {

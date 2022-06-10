@@ -41,6 +41,7 @@ export default class Deck {
       cards[i].push(...others.splice(0, 5));
     }
     this.cards = defuses.concat(explodes).concat(others);
+    this.shuffle();
     return cards;
   }
 
@@ -48,5 +49,11 @@ export default class Deck {
     const card = this.cards.splice(0, 1)[0];
     if (!card) throw new Error("No more cards! Stop drawingggggggg");
     return card;
+  }
+
+  randomlyPushCard(card: Card) {
+    const index = Math.floor(Math.random() * this.cards.length);
+    this.cards.splice(index, 0, card);
+    return this.cards;
   }
 }
