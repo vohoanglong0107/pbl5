@@ -15,7 +15,7 @@ export default class Draw implements Command {
       const explodeCommand = new Explode(this.source, this.gameEntity);
       explodeCommand.execute();
       if (!this.source.exploded) {
-        this.gameEntity.deck.cards.push(card);
+        this.gameEntity.deck.randomlyPushCard(card);
       }
     } else {
       this.source.draw(card);
