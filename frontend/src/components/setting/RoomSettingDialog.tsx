@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,11 +10,10 @@ import Image from "next/image";
 import { Divider, Typography, Box, Slider, Grid, Input } from "@mui/material";
 import Link from "next/link";
 import SetTime from "./SetTime";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import CardItem from "./CardItem";
+import AddNewCard from "./AddNewCard";
+import AvailableCards from "./AvailableCards";
+import { useEffectOnce } from "react-use";
 
 const RoomSettingDialog = () => {
   const [open, setOpen] = useState(false);
@@ -24,8 +23,6 @@ const RoomSettingDialog = () => {
     nope: 10,
   });
 
-  const [card, setCard] = useState("Card Name");
-
   const cards = [
     "Skip",
     "Attack",
@@ -34,6 +31,7 @@ const RoomSettingDialog = () => {
     "Double Slap",
     "Defuse",
   ];
+
   const availableCards = [
     {
       name: "Defuse",
@@ -41,10 +39,20 @@ const RoomSettingDialog = () => {
     },
     {
       name: "Skip",
-      number: 1,
+      number: 2,
     },
   ];
 
+  const [ yourCards, setYourCards ] = useState(availableCards);
+  useEffect(() => {
+    //do nothing
+  }, [yourCards]);
+  
+  const chosenCards = yourCards.map((card) => card.name);
+  
+  const [ notInDeckCards, setNotInDeckCards ] = useState(cards.filter((card) => !chosenCards.includes(card)))
+  
+  
   const roomID = "roomID";
 
   const handleClickOpen = () => {
@@ -102,9 +110,6 @@ const RoomSettingDialog = () => {
     }
   };
 
-  const handleChangeCard = (event: SelectChangeEvent) => {
-    setCard(event.target.value as string);
-  };
 
   return (
     <Box>
@@ -237,76 +242,9 @@ const RoomSettingDialog = () => {
               >
                 Set Deck
               </Typography>
-              <Box sx={{ display: "inline-flex", marginBottom: "10px" }}>
-                <Typography
-                  sx={{
-                    width: "100%",
-                    margin: "auto 0",
-                    fontFamily: "Montserrat",
-                  }}
-                >
-                  Add new card
-                </Typography>
-                <Box
-                  sx={{
-                    minWidth: "120",
-                    margin: "auto 20px",
-                    borderColor: "white",
-                  }}
-                >
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Card</InputLabel>
-                    <Select
-                      sx={{
-                        color: "white",
-                        width: "200px",
-                        fontFamily: "Montserrat",
-                      }}
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={card}
-                      label="Card"
-                      onChange={handleChangeCard}
-                    >
-                      {cards.map((card, index) => (
-                        <MenuItem key={index} value={index}>
-                          {card}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Box>
-                <Button
-                  sx={{
-                    fontFamily: "Ubuntu",
-                    fontWeight: "bold",
-                    color: "#394A51",
-                    backgroundColor: "#BADFDB",
-                    "&:hover": {},
-                  }}
-                >
-                  Add
-                </Button>
-              </Box>
-              <Box>
-                <Typography
-                  sx={{ marginBottom: "10px", fontFamily: "Montserrat" }}
-                >
-                  Available cards
-                </Typography>
-                {availableCards.map((card, index) => {
-                  return (
-                    <>
-                      <CardItem
-                        key={index}
-                        cardName={card.name}
-                        numberOfCards={card.number}
-                      />
-                      <br />
-                    </>
-                  );
-                })}
-              </Box>
+              <AddNewCard yourCards={yourCards} cards={cards} setYourCards={setYourCards} 
+                notInDeckCards={notInDeckCards} setNotInDeckCards={setNotInDeckCards}/>
+              <AvailableCards yourCards={yourCards} setYourCards={setYourCards} setNotInDeckCards={setNotInDeckCards} />
             </Box>
           </DialogContentText>
         </DialogContent>

@@ -36,9 +36,7 @@ interface RoomMainProps {
 const RoomMain = ({ open }: RoomMainProps) => {
   return (
     <Main open={open}>
-      <Box>
-        <RoomSettingDialog />
-      </Box>
+      <RoomSettingDialog />
       <Box gridRow={"1 / 2"}>
         <GameBoard />
       </Box>

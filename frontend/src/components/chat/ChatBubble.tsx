@@ -3,6 +3,7 @@ import { styled } from "@mui/system";
 import Image from "next/image";
 import React, { useState } from "react";
 import Chat from "./Chat";
+import ChatTab from "./ChatTab";
 
 const MsgBubble = styled("button")({
   backgroundColor: "transparent",
@@ -34,7 +35,7 @@ const ChatBubble = () => {
     setOpen(true);
   }
 
-  const newMessages = "";
+  const newMessage = "";
   return (
     <>
       {!isOpen ? (
@@ -46,10 +47,10 @@ const ChatBubble = () => {
             height={100}
             onClick={() => setOpen(true)}
           />
-          <NewMsgs>{newMessages}</NewMsgs>
+          <NewMsgs>{newMessage}</NewMsgs>
         </MsgBubble>
       ) : (
-        <Chat setOpen={setOpen} />
+        <ChatTab setOpen={setOpen}/>
       )}
     </>
   );
