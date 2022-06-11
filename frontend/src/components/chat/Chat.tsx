@@ -12,7 +12,7 @@ const MessageBox = styled("div")({
   maxHeight: "80px",
   marginBottom: "15px",
   padding: "0px",
-  width: "347px",
+  width: "100%",
   // wordWrap: 'break-word',
   "&::-webkit-scrollbar": {
     width: 5,
@@ -27,7 +27,7 @@ const MessageBox = styled("div")({
 });
 
 const Input = styled("input")({
-  width: "300px",
+  width: "80%",
   color: "#04293A",
   outline: "none",
   fontFamily: "Ubuntu",
@@ -38,8 +38,8 @@ const Input = styled("input")({
   borderRadius: "0.25rem",
   wordWrap: 'break-word',
   wordBreak: 'break-word',
-  position: 'fixed',
-  bottom: '10px',
+  // position: 'fixed',
+  // bottom: '10px',
   "&:focus": {
     outline: "none",
     backgroundColor: "white",
@@ -51,8 +51,9 @@ const Button = styled("button")({
   width: "15%",
   height: "30px",
   padding: "0px",
-  position: 'fixed',
-  bottom: '10px',
+  position: 'relative',
+  // bottom: '10px',
+  // left: '5%',
 
   // justifyContent: 'center',
   border: "none",
@@ -106,7 +107,7 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
 
         {chatHistory.map((chat, index) => {
           return (
-            <Box key={index} style={{ display: "inline-flex", width: "300px" }}>
+            <Box key={index} style={{ display: "inline-flex", width: "100%" }}>
               <label>
                 <span style={{ color: "yellow", fontFamily: "Josefin Sans" }}>
                   {"["}
@@ -116,7 +117,7 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
                 {": "}
                 <span
                   style={{
-                    wordWrap: "break-word",
+                    wordBreak: 'break-all',
                     color: "#04293A",
                     fontFamily: "Ubuntu",
                   }}
@@ -142,13 +143,14 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
           sx={{
             backgroundColor: {bgcolor}}} 
         />
-        <Button onClick={handleSendMsg}>
+        <Button onClick={handleSendMsg} >
           <Typography
             sx={{
               color: "#FFF6EA",
               fontWeight: "bold",
               fontSize: "12px",
               fontFamily: "Ubuntu",
+              width: '100%'
             }}
           >
             SEND

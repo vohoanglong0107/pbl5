@@ -11,8 +11,8 @@ const MsgBubble = styled("button")({
   borderRadius: "100%",
   width: "60px",
   height: "60px",
-  position: "fixed",
-  bottom: "10px",
+  // position: "fixed",
+  // bottom: "10px",
   left: "10px",
   "&:hover": {
     borderColor: "transparent",
