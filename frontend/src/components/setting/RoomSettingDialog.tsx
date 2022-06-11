@@ -13,51 +13,27 @@ import SetTime from "./SetTime";
 import CardItem from "./CardItem";
 import AddNewCard from "./AddNewCard";
 import AvailableCards from "./AvailableCards";
-import { useEffectOnce } from "react-use";
+import { defaultCards, allTypeOfCards } from "./CardSetting";
 
-const RoomSettingDialog = () => {
-  const [open, setOpen] = useState(false);
+interface RoomSettingDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
+  // const [open, setOpen] = useState(false);
   const [sliderValue, setSliderValue] = useState({
     turnTime: 10,
     target: 10,
     nope: 10,
   });
-
-  const cards = [
-    "Skip",
-    "Attack",
-    "See the future",
-    "Draw from bottom",
-    "Double Slap",
-    "Defuse",
-  ];
-
-  const availableCards = [
-    {
-      name: "Defuse",
-      number: 2,
-    },
-    {
-      name: "Skip",
-      number: 2,
-    },
-  ];
-
-  const [ yourCards, setYourCards ] = useState(availableCards);
-  useEffect(() => {
-    //do nothing
-  }, [yourCards]);
-  
-  const chosenCards = yourCards.map((card) => card.name);
-  
-  const [ notInDeckCards, setNotInDeckCards ] = useState(cards.filter((card) => !chosenCards.includes(card)))
-  
-  
-  const roomID = "roomID";
-
   const handleClickOpen = () => {
     setOpen(true);
   };
+
+  const [ yourCards, setYourCards ] = useState(defaultCards);
+  
+  const roomID = "roomID";
+
 
   const handleClose = () => {
     setOpen(false);
@@ -113,7 +89,11 @@ const RoomSettingDialog = () => {
 
   return (
     <Box>
-      <Button onClick={handleClickOpen}>
+      <Button onClick={handleClickOpen}  sx={{
+        ...(open && { display: "none" }),
+        position: "relative",
+        right: "10px",
+      }}>
         <Image
           src={SettingIcon.src}
           alt="setting-icon"
@@ -242,9 +222,8 @@ const RoomSettingDialog = () => {
               >
                 Set Deck
               </Typography>
-              <AddNewCard yourCards={yourCards} cards={cards} setYourCards={setYourCards} 
-                notInDeckCards={notInDeckCards} setNotInDeckCards={setNotInDeckCards}/>
-              <AvailableCards yourCards={yourCards} setYourCards={setYourCards} setNotInDeckCards={setNotInDeckCards} />
+              <AddNewCard availableCards={yourCards} setAvailableCards={setYourCards} />
+              <AvailableCards availableCards={yourCards} setAvailableCards={setYourCards} />
             </Box>
           </DialogContentText>
         </DialogContent>

@@ -22,7 +22,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    width: `calc(100vw - ${drawerWidth}px)`,
+    // width: `calc(100vw - ${drawerWidth}px)`,
   }),
   display: "grid",
   gridTemplateRows: "1fr min-content",
@@ -36,7 +36,6 @@ interface RoomMainProps {
 const RoomMain = ({ open }: RoomMainProps) => {
   return (
     <Main open={open}>
-      <RoomSettingDialog />
       <Box gridRow={"1 / 2"}>
         <GameBoard />
       </Box>

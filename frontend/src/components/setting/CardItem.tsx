@@ -1,23 +1,27 @@
 import { Box, Grid, Input, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 interface CardItemProps {
   cardName: string;
-  numberOfCards: number;
-  yourCards: string[];
-  handleDeleteCard: any;
+  numberCards: number;
+  handleDeleteCard: (cardName: string) => void;
+  handleUpdateCard: (cardName: string, number: number) => void;
 }
 
-const CardItem = ({ cardName, numberOfCards, yourCards, handleDeleteCard }: CardItemProps) => {
-  const [numberCards, setNumberCards] = useState(numberOfCards);
+const CardItem = ({
+  cardName,
+  numberCards,
+  handleDeleteCard,
+  handleUpdateCard,
+}: CardItemProps) => {
+  console.log({ cardName, numberCards });
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const val = parseInt(event.target.value);
-    if (isNaN(val)) setNumberCards(0);
-    else setNumberCards(val);
+    if (isNaN(val)) handleUpdateCard(cardName, 0);
+    else handleUpdateCard(cardName, val);
   }
 
-  
   return (
     <Grid container spacing={2}>
       <Grid item xs={8}>
@@ -31,7 +35,10 @@ const CardItem = ({ cardName, numberOfCards, yourCards, handleDeleteCard }: Card
         />
       </Grid>
       <Grid item xs={2}>
-        <DeleteIcon sx={{ color: "#50E3C2" }} onClick={()=>handleDeleteCard(cardName)}/>
+        <DeleteIcon
+          sx={{ color: "#50E3C2" }}
+          onClick={() => handleDeleteCard(cardName)}
+        />
       </Grid>
     </Grid>
   );

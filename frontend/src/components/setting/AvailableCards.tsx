@@ -1,41 +1,50 @@
 import { Box, Typography } from "@mui/material";
-import { useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import CardItem from "./CardItem";
+import { CardSetting, allTypeOfCards } from "./CardSetting";
 
 interface AvailableCardsProps {
-  yourCards: any[];
-  setNotInDeckCards: any;
-  setYourCards: any;
+  availableCards: CardSetting[];
+  setAvailableCards: Dispatch<SetStateAction<CardSetting[]>>;
 }
 
-const AvailableCards = ({ yourCards, setNotInDeckCards, setYourCards }: AvailableCardsProps) => {
-
+const AvailableCards = ({
+  availableCards,
+  setAvailableCards,
+}: AvailableCardsProps) => {
+  // {name:string, number: number}[]
   function handleDeleteCard(cardName: string) {
-    setYourCards(yourCards.filter((card : any) => card.name !== cardName));
-    console.log({yourCards});
-    setNotInDeckCards((prevCards: any) => {
-      return [...prevCards, cardName];
-     })
+    setAvailableCards(availableCards.filter((card) => card.name !== cardName));
+    console.log({ yourCards: availableCards });
+    console.log(
+      `yourCards updated: ${JSON.stringify(
+        availableCards.filter((card: any) => card.name !== cardName)
+      )}`
+    );
+  }
+  function handleUpdateCard(cardName: string, number: number) {
+    setAvailableCards(
+      availableCards.map((card) =>
+        card.name === cardName ? { ...card, number: number } : card
+      )
+    );
   }
 
-   useEffect(() => {
-    //refresh availableCards
-    console.log("hihi");
-  }, [yourCards])
   return (
     <Box>
       <Typography sx={{ marginBottom: "10px", fontFamily: "Montserrat" }}>
         Available cards
       </Typography>
-      {yourCards.map((card, index) => {
+      {availableCards.map((card, index) => {
+        console.log(card);
         return (
           <>
             <CardItem
               key={index}
               cardName={card.name}
-              numberOfCards={card.number}
-              yourCards={yourCards}
+              numberCards={card.number}
               handleDeleteCard={handleDeleteCard}
+              handleUpdateCard={handleUpdateCard}
             />
             <br />
           </>

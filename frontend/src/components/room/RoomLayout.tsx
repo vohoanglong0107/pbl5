@@ -34,7 +34,7 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         <RoomAppBar open={openSetting} setOpen={setOpenSetting} />
         <RoomMain open={openSetting} />
 
-        <Setting open={openSetting} setOpen={setOpenSetting} />
+        {/* <Setting open={openSetting} setOpen={setOpenSetting} /> */}
       </Box>
     );
   } else {

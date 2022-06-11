@@ -4,29 +4,22 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { useState } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
+import {CardSetting, allTypeOfCards} from "./CardSetting"
 
 interface AddNewCardProps {
-  availableCards: any[];
-  cards: string[];
-  setYourCards: any;
-  notInDeckCards: string[];
-  setNotInDeckCards: any;
+  availableCards: CardSetting[];
+  setAvailableCards: Dispatch<SetStateAction<CardSetting[]>>;
 }
 
 const AddNewCard = ({
   availableCards,
-  cards,
-  setYourCards,
-  notInDeckCards,
-  setNotInDeckCards,
+  setAvailableCards,
 }: AddNewCardProps) => {
-  // const chosenCards = availableCards.map((card) => card.name);
-  // const [ notInDeckCards, setInDeckCards ] = useState()
-  // var notInDeckCards = cards.filter((card) => !chosenCards.includes(card));
-  // console.log({notInDeckCards});
+  const chosenCards = availableCards.map((card) => card.name);
+  const notInDeckCards = allTypeOfCards.filter((cardType) => !chosenCards.includes(cardType));
 
-  const [card, setCard] = useState<number | string>("");
+  const [card, setCard] = useState<number | "">("");
 
   const handleChangeCard = (event: SelectChangeEvent) => {
     const id = event.target.value;
@@ -35,10 +28,9 @@ const AddNewCard = ({
 
   const handleAddCard = () => {
     if (card !== "") {
-      setYourCards((prevCards) => {
+      setAvailableCards((prevCards) => {
         return [...prevCards, { name: notInDeckCards[card], number: 1 }];
       });
-      setNotInDeckCards(notInDeckCards.filter((_, index) => index !== card));
       setCard("");
     }
   };
@@ -73,7 +65,7 @@ const AddNewCard = ({
             id="demo-simple-select"
             label="Card"
             onChange={handleChangeCard}
-            value={card}
+            value={card.toString()}
           >
             {notInDeckCards.map((card, index) => (
               <MenuItem key={index} value={index}>

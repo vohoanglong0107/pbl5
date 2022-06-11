@@ -2,6 +2,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled } from "@mui/material/styles";
 import { drawerWidth } from "@/constant";
 import SettingOpenButton from "../setting/SettingOpenButton";
+import RoomSettingDialog from "../setting/RoomSettingDialog";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -44,7 +45,7 @@ const RoomAppBar = ({ open, setOpen }: RoomAppBarProps) => {
         justifyContent: "center",
       }}
     >
-      <SettingOpenButton open={open} setOpen={setOpen} />
+      <RoomSettingDialog open={open} setOpen={setOpen} />
     </AppBar>
   );
 };
