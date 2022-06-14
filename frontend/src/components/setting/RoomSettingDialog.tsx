@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import SettingIcon from "@/assets/setting.png";
+import { Box, Divider, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import SettingIcon from "@/assets/setting.png";
 import Image from "next/image";
-import { Divider, Typography, Box, Slider, Grid, Input } from "@mui/material";
 import Link from "next/link";
-import SetTime from "./SetTime";
-import CardItem from "./CardItem";
+import React, { useState } from "react";
 import AddNewCard from "./AddNewCard";
 import AvailableCards from "./AvailableCards";
-import { defaultCards, allTypeOfCards } from "./CardSetting";
+import { defaultCards } from "./CardSetting";
+import SetTime from "./SetTime";
 
 interface RoomSettingDialogProps {
   open: boolean;

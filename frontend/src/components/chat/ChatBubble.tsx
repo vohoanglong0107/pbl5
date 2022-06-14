@@ -2,7 +2,6 @@ import MessageImage from "@/assets/msg-icon.png";
 import { styled } from "@mui/system";
 import Image from "next/image";
 import React, { useState } from "react";
-import Chat from "./Chat";
 import ChatTab from "./ChatTab";
 
 const MsgBubble = styled("button")({
@@ -11,8 +10,8 @@ const MsgBubble = styled("button")({
   borderRadius: "100%",
   width: "60px",
   height: "60px",
-  // position: "fixed",
-  // bottom: "10px",
+  position: "fixed",
+  bottom: "10px",
   left: "10px",
   "&:hover": {
     borderColor: "transparent",

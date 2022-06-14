@@ -13,7 +13,6 @@ const MessageBox = styled("div")({
   marginBottom: "15px",
   padding: "0px",
   width: "100%",
-  // wordWrap: 'break-word',
   "&::-webkit-scrollbar": {
     width: 5,
   },
@@ -27,7 +26,7 @@ const MessageBox = styled("div")({
 });
 
 const Input = styled("input")({
-  width: "80%",
+  width: "23%",
   color: "#04293A",
   outline: "none",
   fontFamily: "Ubuntu",
@@ -38,8 +37,8 @@ const Input = styled("input")({
   borderRadius: "0.25rem",
   wordWrap: 'break-word',
   wordBreak: 'break-word',
-  // position: 'fixed',
-  // bottom: '10px',
+  position: 'fixed',
+  bottom: '10px',
   "&:focus": {
     outline: "none",
     backgroundColor: "white",
@@ -48,12 +47,12 @@ const Input = styled("input")({
 });
 
 const Button = styled("button")({
-  width: "15%",
+  width: "5%",
   height: "30px",
   padding: "0px",
-  position: 'relative',
-  // bottom: '10px',
-  // left: '5%',
+  position: 'fixed',
+  bottom: '10px',
+  left: '25%',
 
   // justifyContent: 'center',
   border: "none",
