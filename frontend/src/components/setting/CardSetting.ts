@@ -25,4 +25,21 @@ export const defaultCards: CardSetting[] = [
   //   name: "Draw from bottom",
   //   number: 2,
   // },
+  {
+    name: "Defuse",
+    number: 8,
+  },
+  {
+    name: "Explode",
+    number: 8,
+  },
+  {
+    name: "Skip",
+    number: 4,
+  },
+
+  {
+    name: "Attack",
+    number: 4,
+  },
 ];
