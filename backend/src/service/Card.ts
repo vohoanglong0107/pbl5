@@ -23,15 +23,15 @@ class Card {
       decks.push(c);
     });
 
-    var targetedAttack = await CardRepo.getBySetSheetMechanic(
-      "Imploding Kittens",
-      "Expansions",
-      "Targeted Attack 2x"
-    );
-    targetedAttack.forEach((card) => {
-      let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
-      decks.push(c);
-    });
+    // var targetedAttack = await CardRepo.getBySetSheetMechanic(
+    //   "Imploding Kittens",
+    //   "Expansions",
+    //   "Targeted Attack 2x"
+    // );
+    // targetedAttack.forEach((card) => {
+    //   let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
+    //   decks.push(c);
+    // });
 
     // add Cat Card cards
     var catCards = await CardRepo.getBySetSheetMechanic(
@@ -159,48 +159,30 @@ class Card {
 
     let mainDeck = this.GetMainDeckByPlayerNumber(numPlayers);
 
-    if (cardSetting != null) {
+    console.log("MAIN DECK LENGTH BEFORE:", (await mainDeck).length)
 
-      cardSetting.map(async cardType => {
-        var cardsToAdd = await CardRepo.getByMechanic(cardType.name);
-        if (cardsToAdd.length >= cardType.number) {
-          for (let i = 0; i < cardType.number; i++) {
-            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+    // add expansion card to main deck
+    if (cardSetting != null) {
+      for (let i = 0; i < cardSetting.length; i++) {
+        let cardsToAdd = await CardRepo.getByMechanic(cardSetting[i].name);
+
+        if (cardsToAdd.length >= cardSetting[i].number) {
+          for (let k = 0; k < cardSetting[i].number; k++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[k].id, cardsToAdd[k].name, cardsToAdd[k].description, cardsToAdd[k].imgUrl));
           }
         } else {
-          for (let i = 0; i < cardType.number / cardsToAdd.length; i++) {
-            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+          for (let k = 0; k < cardSetting[i].number / cardsToAdd.length; k++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[k].id, cardsToAdd[k].name, cardsToAdd[k].description, cardsToAdd[k].imgUrl));
           }
-          for (let i = 0; i < cardType.number % cardsToAdd.length; i++) {
-            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+          for (let k = 0; k < cardSetting[i].number % cardsToAdd.length; k++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[k].id, cardsToAdd[k].name, cardsToAdd[k].description, cardsToAdd[k].imgUrl));
           }
         }
-      })
 
-      // cardSetting.forEach(async cardType => {
-
-      //   var cardsToAdd = await CardRepo.getByMechanic(cardType.name);
-
-      //   console.log("DAY LA CARD TO ADD", cardsToAdd);
-
-      //   if (cardsToAdd.length >= cardType.number) {
-      //     for (let i = 0; i < cardType.number; i++) {
-      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
-      //     }
-      //   } else {
-      //     for (let i = 0; i < cardType.number / cardsToAdd.length; i++) {
-      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
-      //     }
-      //     for (let i = 0; i < cardType.number % cardsToAdd.length; i++) {
-      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
-      //     }
-      //   }
-
-      // });
-
+      }
     }
 
-    console.log("DAY LA CHIEU DAI BO BAI", (await mainDeck).length)
+    console.log("MAIN DECK LENGTH AFTER:", (await mainDeck).length)
 
     return mainDeck;
   }
