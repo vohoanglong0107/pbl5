@@ -12,7 +12,8 @@ const debug = debugModule("backend:socket:game");
 
 export enum RoomEvent {
   STATE_CHANGED = "room:state-changed",
-  CHATED = "room:chated"
+  CHATED = "room:chated",
+  SETTING = "room:setting"
 }
 
 
@@ -56,18 +57,10 @@ export default class Room {
         debug(`${user.id} tried to send unknown event ${event}`);
         throw new Error(`Unknown event ${event}`);
       }
-
       if (!res) res = null;
       ack({
         data: res,
       });
-
-      if (isNaN(data[0]) && data[0] != null) {
-        this.chatHistory.push({ username: user.username, msg: data[0] })
-      }
-
-
-
       this.broadcastStateChanged();
     } catch (error) {
       debug(error);
@@ -85,11 +78,16 @@ export default class Room {
   }
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
-      // case RoomEvent.CHATED:
-      //   const msg = (data[0] as string);
-      //   this.chatHistory.push(msg);
-      //   this.broadcastChated();
-      //   break;
+      case RoomEvent.CHATED: {
+        this.chatHistory.push({ username: user.username, msg: data[0] })
+        break;
+      }
+      case RoomEvent.SETTING: {
+        this.roomSetting.gameSetting.targetingTime = data[0].maxPlayers * 1000;
+        this.roomSetting.gameSetting.turnTime = data[0].turnTime * 1000;
+        this.roomSetting.gameSetting.cardSetting = data[0].cardSetting;
+        break;
+      }
     }
   }
   private handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
@@ -110,11 +108,7 @@ export default class Room {
       user.emit(RoomEvent.STATE_CHANGED, this.encode())
     );
   }
-  // private broadcastChated(): void {
-  //   this.connectedUsers.forEach((user) =>
-  //     user.emit(RoomEvent.CHATED, this.encode())
-  //   );
-  // }
+
   encode(): RoomModel {
     const connectedUsers = [...this.connectedUsers.values()].map((user) =>
       user.encode()

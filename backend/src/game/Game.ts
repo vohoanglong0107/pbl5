@@ -157,7 +157,7 @@ class StateManager {
   }
 }
 
-class EventTracker extends EventEmitter {}
+class EventTracker extends EventEmitter { }
 
 export enum IdleStateEvent {
   TAKE_SEAT = "game:take-seat",
@@ -170,7 +170,7 @@ class IdleState implements GameState {
     private playerManager: PlayerManager,
     private gameSetting: GameSetting,
     private eventTracker: EventTracker
-  ) {}
+  ) { }
   handlePlayerEvent(player: Player, event: string, ...data: any[]) {
     switch (event) {
       case IdleStateEvent.START:
@@ -188,7 +188,7 @@ class IdleState implements GameState {
     this.playerManager.reset();
     const activePlayer = this.playerManager.getActivePlayer().length;
     if (activePlayer < 2) throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumber(activePlayer).then((cards) => {
+    cardService.GetMainDeckByPlayerNumberAndCardSetting(activePlayer, this.gameSetting.cardSetting).then((cards) => {
       const compatibleCards = cards.map(
         (card) => new Card(card.id, MechanicToCommand[card.mechanic])
       );
@@ -210,8 +210,8 @@ class IdleState implements GameState {
   onEntry() {
     this.eventTracker.emit("game:state-changed");
   }
-  onExit() {}
-  onRemovePlayer(playerId: string) {}
+  onExit() { }
+  onRemovePlayer(playerId: string) { }
   encode() {
     return new IdleStateModel();
   }
@@ -229,7 +229,7 @@ class OverState implements GameState {
     private gameSetting: GameSetting,
     private eventTracker: EventTracker,
     private winner: Player
-  ) {}
+  ) { }
   handlePlayerEvent(player: Player, event: string, ...data: any[]) {
     switch (event) {
       case OverStateEvent.START:
@@ -246,7 +246,7 @@ class OverState implements GameState {
     this.playerManager.reset();
     const activePlayer = this.playerManager.getActivePlayer().length;
     if (activePlayer < 2) throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumber(activePlayer).then((cards) => {
+    cardService.GetMainDeckByPlayerNumberAndCardSetting(activePlayer, this.gameSetting.cardSetting).then((cards) => {
       const compatibleCards = cards.map(
         (card) => new Card(card.id, MechanicToCommand[card.mechanic])
       );
@@ -269,7 +269,7 @@ class OverState implements GameState {
     this.eventTracker.emit("game:state-changed");
     debug("Game over");
   }
-  onExit() {}
+  onExit() { }
   onRemovePlayer(playerId: string) {
     if (playerId === this.winner.id) {
       this.stateManager.changeState(

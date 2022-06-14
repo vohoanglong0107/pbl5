@@ -1,8 +1,13 @@
 import CardRepo from "../repository/card";
 import CardModel from "../model/Card";
 
+interface CardSetting {
+  name: string;
+  number: number;
+}
+
 class Card {
-  constructor() {}
+  constructor() { }
 
   public async GetMainDeckByPlayerNumber(numPlayers: number) {
     let decks: Array<CardModel> = new Array();
@@ -126,26 +131,80 @@ class Card {
       decks.push(c);
     });
 
-    var DrawFromBottoms = await CardRepo.getBySetSheetMechanic(
-      "Imploding Kittens",
-      "Expansions",
-      "Draw From the Bottom"
-    );
-    DrawFromBottoms.forEach((card) => {
-      let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
-      decks.push(c);
-    });
-    var Reverses = await CardRepo.getBySetSheetMechanic(
-      "Imploding Kittens",
-      "Expansions",
-      "Reverse"
-    );
-    Reverses.forEach((card) => {
-      let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
-      decks.push(c);
-    });
+    // var DrawFromBottoms = await CardRepo.getBySetSheetMechanic(
+    //   "Imploding Kittens",
+    //   "Expansions",
+    //   "Draw From the Bottom"
+    // );
+    // DrawFromBottoms.forEach((card) => {
+    //   let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
+    //   decks.push(c);
+    // });
+    // var Reverses = await CardRepo.getBySetSheetMechanic(
+    //   "Imploding Kittens",
+    //   "Expansions",
+    //   "Reverse"
+    // );
+    // Reverses.forEach((card) => {
+    //   let c = new CardModel(card.id, card.name, card.description, card.imgUrl);
+    //   decks.push(c);
+    // });
+
     return decks;
   }
+
+
+
+  public async GetMainDeckByPlayerNumberAndCardSetting(numPlayers: number, cardSetting: CardSetting[]) {
+
+    let mainDeck = this.GetMainDeckByPlayerNumber(numPlayers);
+
+    if (cardSetting != null) {
+
+      cardSetting.map(async cardType => {
+        var cardsToAdd = await CardRepo.getByMechanic(cardType.name);
+        if (cardsToAdd.length >= cardType.number) {
+          for (let i = 0; i < cardType.number; i++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+          }
+        } else {
+          for (let i = 0; i < cardType.number / cardsToAdd.length; i++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+          }
+          for (let i = 0; i < cardType.number % cardsToAdd.length; i++) {
+            (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+          }
+        }
+      })
+
+      // cardSetting.forEach(async cardType => {
+
+      //   var cardsToAdd = await CardRepo.getByMechanic(cardType.name);
+
+      //   console.log("DAY LA CARD TO ADD", cardsToAdd);
+
+      //   if (cardsToAdd.length >= cardType.number) {
+      //     for (let i = 0; i < cardType.number; i++) {
+      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+      //     }
+      //   } else {
+      //     for (let i = 0; i < cardType.number / cardsToAdd.length; i++) {
+      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+      //     }
+      //     for (let i = 0; i < cardType.number % cardsToAdd.length; i++) {
+      //       (await mainDeck).push(new CardModel(cardsToAdd[i]["id"], cardsToAdd[i]["name"], cardsToAdd[i]["description"], cardsToAdd[i]["imgUrl"]));
+      //     }
+      //   }
+
+      // });
+
+    }
+
+    console.log("DAY LA CHIEU DAI BO BAI", (await mainDeck).length)
+
+    return mainDeck;
+  }
+
 }
 
 export default new Card();

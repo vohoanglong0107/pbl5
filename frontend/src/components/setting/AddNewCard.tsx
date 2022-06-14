@@ -5,7 +5,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import React, { useState, Dispatch, SetStateAction } from "react";
-import {CardSetting, allTypeOfCards} from "./CardSetting"
+import { CardSetting, allTypeOfCards } from "./CardSetting"
 
 interface AddNewCardProps {
   availableCards: CardSetting[];

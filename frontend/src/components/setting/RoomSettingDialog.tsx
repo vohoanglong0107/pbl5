@@ -14,6 +14,8 @@ import CardItem from "./CardItem";
 import AddNewCard from "./AddNewCard";
 import AvailableCards from "./AvailableCards";
 import { defaultCards, allTypeOfCards } from "./CardSetting";
+import { socketClient } from "@/lib/SocketClient";
+import GameSetting from "./GameSetting"
 
 interface RoomSettingDialogProps {
   open: boolean;
@@ -30,12 +32,24 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
     setOpen(true);
   };
 
-  const [ yourCards, setYourCards ] = useState(defaultCards);
-  
+  const [yourCards, setYourCards] = useState(defaultCards);
+
   const roomID = "roomID";
 
 
+
   const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSave = () => {
+    let gameSetting: GameSetting = {
+      maxPlayers: 8,
+      targetingTime: sliderValue.target,
+      turnTime: sliderValue.turnTime,
+      cardSetting: yourCards
+    }
+    socketClient.emit("room:setting", gameSetting);
     setOpen(false);
   };
 
@@ -89,7 +103,7 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
 
   return (
     <Box>
-      <Button onClick={handleClickOpen}  sx={{
+      <Button onClick={handleClickOpen} sx={{
         ...(open && { display: "none" }),
         position: "relative",
         right: "10px",
@@ -231,7 +245,7 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
           <Button onClick={handleClose} sx={{ color: "#BADFDB" }}>
             Cancel
           </Button>
-          <Button onClick={handleClose} sx={{ color: "#BADFDB" }} autoFocus>
+          <Button onClick={handleSave} sx={{ color: "#BADFDB" }} autoFocus>
             Save
           </Button>
         </DialogActions>

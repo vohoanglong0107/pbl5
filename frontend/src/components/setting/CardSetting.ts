@@ -13,12 +13,16 @@ export interface CardSetting {
 }
 
 export const defaultCards: CardSetting[] = [
-  {
-    name: "Defuse",
-    number: 2,
-  },
-  {
-    name: "Skip",
-    number: 2,
-  },
+  // {
+  //   name: "Defuse",
+  //   number: 2,
+  // },
+  // {
+  //   name: "Skip",
+  //   number: 2,
+  // },
+  // {
+  //   name: "Draw from bottom",
+  //   number: 2,
+  // },
 ];
