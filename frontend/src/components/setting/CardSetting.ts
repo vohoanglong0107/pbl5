@@ -1,10 +1,14 @@
 export const allTypeOfCards = [
   "Skip",
   "Attack",
-  "See the future",
+  "Targeted Attack",
+  "See the Future",
   "Draw From the Bottom",
-  "Double Slap",
   "Defuse",
+  "Cat Card",
+  "Shuffle",
+  "Exploding Kitten",
+  "Reverse"
 ];
 
 export interface CardSetting {

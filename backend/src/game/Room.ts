@@ -7,6 +7,8 @@ import RoomModel from "@/model/Room";
 import { Acknowledgement } from "./UserEvent";
 import { type } from "os";
 import { Chat } from "./Chat"
+import cardService from "@/service/Card";
+import CardSetting from "./CardSetting";
 
 const debug = debugModule("backend:socket:game");
 
@@ -31,8 +33,37 @@ export default class Room {
   getUser(userId: string): User | undefined {
     return this.connectedUsers.get(userId);
   }
-  onConnect(user: User) {
+  async onConnect(user: User) {
     this.connectedUsers.set(user.id, user);
+
+    let cardsFixPlayerNum: Array<CardSetting> = new Array();
+    await cardService.GetDefaultCardSetting(this.connectedUsers.size).then((res) => {
+      cardsFixPlayerNum = res;
+    })
+
+    // for first player join game
+    if (this.roomSetting.gameSetting.cardSetting.length == 0) {
+      this.roomSetting.gameSetting.cardSetting = cardsFixPlayerNum;
+    }
+
+    // for n'th player join game
+    // get previous defaultCard to compare with current Cards
+    let cardsPrev: Array<CardSetting> = new Array();
+    await cardService.GetDefaultCardSetting(this.connectedUsers.size - 1).then((res) => {
+      cardsPrev = res;
+    })
+
+    // if cardsPrev = current cards => update cards with playerNum
+    let cond = true;
+    for (let i = 0; i < this.roomSetting.gameSetting.cardSetting.length; i++) {
+      if (this.roomSetting.gameSetting.cardSetting[i].number != cardsPrev[i].number) {
+        cond = false;
+      }
+    }
+    if (cond) {
+      this.roomSetting.gameSetting.cardSetting = cardsFixPlayerNum;
+    }
+
     this.broadcastStateChanged();
   }
   // TODO: add graceful disconnection
@@ -75,6 +106,8 @@ export default class Room {
         error: errorMessage,
       });
     }
+
+
   }
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
@@ -83,7 +116,7 @@ export default class Room {
         break;
       }
       case RoomEvent.SETTING: {
-        this.roomSetting.gameSetting.targetingTime = data[0].maxPlayers * 1000;
+        this.roomSetting.gameSetting.targetingTime = data[0].targetingTime * 1000;
         this.roomSetting.gameSetting.turnTime = data[0].turnTime * 1000;
         this.roomSetting.gameSetting.cardSetting = data[0].cardSetting;
         break;

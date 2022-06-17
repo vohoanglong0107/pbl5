@@ -29,12 +29,12 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         }}
         display="flex"
         flexDirection="column"
-        // justifyContent={"space-between"}
+      // justifyContent={"space-between"}
       >
         <RoomAppBar open={openSetting} setOpen={setOpenSetting} />
         <RoomMain open={openSetting} />
 
-        {/* <Setting open={openSetting} setOpen={setOpenSetting} /> */}
+        <Setting open={openSetting} setOpen={setOpenSetting} />
       </Box>
     );
   } else {

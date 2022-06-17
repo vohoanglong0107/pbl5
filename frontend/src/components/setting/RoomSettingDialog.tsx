@@ -8,34 +8,39 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddNewCard from "./AddNewCard";
 import AvailableCards from "./AvailableCards";
-import { defaultCards, allTypeOfCards } from "./CardSetting";
+import { defaultCards, allTypeOfCards, CardSetting } from "./CardSetting";
 import { socketClient } from "@/lib/SocketClient";
 import GameSetting from "./GameSetting"
 import SetTime from "./SetTime";
+import { useSelector } from "react-redux";
+import { selectGameSetting } from "@/lib/selector";
 
 interface RoomSettingDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
 }
+
 const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
+  const gameSetting = useSelector(selectGameSetting);
+
   // const [open, setOpen] = useState(false);
   const [sliderValue, setSliderValue] = useState({
-    turnTime: 10,
-    target: 10,
+    turnTime: gameSetting.turnTime > 1000 ? gameSetting.turnTime / 1000 : gameSetting.turnTime,
+    target: gameSetting.targetingTime > 1000 ? gameSetting.targetingTime / 1000 : gameSetting.targetingTime,
     nope: 10,
   });
+
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const [yourCards, setYourCards] = useState(defaultCards);
+  const [yourCards, setYourCards] = useState(gameSetting.cardSetting);
+  useEffect(() => setYourCards(gameSetting.cardSetting), [gameSetting.cardSetting])
 
   const roomID = "roomID";
-
-
 
   const handleClose = () => {
     setOpen(false);

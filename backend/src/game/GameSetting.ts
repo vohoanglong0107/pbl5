@@ -1,7 +1,4 @@
-interface CardSetting {
-  name: string;
-  number: number;
-}
+import CardSetting from "./CardSetting"
 
 export default class GameSetting {
   maxPlayers: number = 8;

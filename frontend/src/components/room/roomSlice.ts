@@ -37,9 +37,6 @@ const roomApiSlice = apiSlice.injectEndpoints({
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch }
       ) {
         const updateLocalData = (room: RoomApi) => {
-
-          console.log("ROOMMM", room)
-
           dispatch(RoomStateChanged(room));
           dispatch(gameUpdated(room.game));
           dispatch(settingUpdated(room.roomSetting));

@@ -54,7 +54,7 @@ const Timer = () => {
       margin={"0 auto"}
     >
       <Box position="relative" right="50px" bottom="50px" >
-        <CircularProgress sx={{color: '#C2DED1', position: 'absolute'}} variant="determinate" value={100} thickness={7} size={100} />
+        <CircularProgress sx={{ color: '#C2DED1', position: 'absolute' }} variant="determinate" value={100} thickness={7} size={100} />
         <CircularProgress
           sx={{
             color: "#14C38E",
@@ -65,16 +65,16 @@ const Timer = () => {
           variant="determinate"
           value={(timeLeft / timeLimit) * 100}
         />
-          <Typography
-            variant="caption"
-            component="div"
-            color="text.secondary"
-            sx={{ color: "#37E2D5", fontSize: '30px', position: 'absolute', top: '25px', left: '31px'}}
-          >
-            {timeLeft > 9 ? timeLeft : `0${timeLeft}` }
-            </Typography>
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+          sx={{ color: "#37E2D5", fontSize: '30px', position: 'absolute', top: '25px', left: '31px' }}
+        >
+          {timeLeft > 9 ? timeLeft : `0${timeLeft}`}
+        </Typography>
       </Box>
-      
+
     </Box>
   );
 };

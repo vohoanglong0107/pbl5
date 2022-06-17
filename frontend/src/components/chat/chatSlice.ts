@@ -15,11 +15,7 @@ const chatSlice = createSlice({
     initialState,
     reducers: {
         chatUpdated(state, action: PayloadAction<Chat[]>) {
-
             state.chatHistory = action.payload;
-            console.log("ACTIONNNN", action)
-            // console.log("STATEEEEE", state)
-            // return action.payload;
         },
     },
 });

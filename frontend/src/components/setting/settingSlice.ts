@@ -6,6 +6,7 @@ export const initialState: RoomSetting = {
     maxPlayers: 8,
     turnTime: 10000,
     targetingTime: 5000,
+    cardSetting: [],
   },
 };
 

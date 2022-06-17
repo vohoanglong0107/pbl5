@@ -12,7 +12,7 @@ const AvailableCards = ({
   availableCards,
   setAvailableCards,
 }: AvailableCardsProps) => {
-  // {name:string, number: number}[]
+
   function handleDeleteCard(cardName: string) {
     setAvailableCards(availableCards.filter((card) => card.name !== cardName));
     console.log({ yourCards: availableCards });
@@ -22,6 +22,7 @@ const AvailableCards = ({
       )}`
     );
   }
+
   function handleUpdateCard(cardName: string, number: number) {
     setAvailableCards(
       availableCards.map((card) =>
@@ -32,7 +33,11 @@ const AvailableCards = ({
 
   return (
     <Box>
-      <Typography sx={{ marginBottom: "10px", fontFamily: "Montserrat" }}>
+      <Typography sx={{
+        fontFamily: "Ubuntu",
+        fontWeight: "bold",
+        marginBottom: "10px",
+      }}>
         Available cards
       </Typography>
       {availableCards.map((card, index) => {
@@ -52,6 +57,7 @@ const AvailableCards = ({
       })}
     </Box>
   );
+
 };
 
 export default AvailableCards;
