@@ -36,32 +36,44 @@ export default class Room {
   async onConnect(user: User) {
     this.connectedUsers.set(user.id, user);
 
-    let cardsFixPlayerNum: Array<CardSetting> = new Array();
+    // card setting has been update by number of player
+    let UpdatedPlayerNumberCardSetting: Array<CardSetting> = new Array();
     await cardService.GetDefaultCardSetting(this.connectedUsers.size).then((res) => {
-      cardsFixPlayerNum = res;
+      UpdatedPlayerNumberCardSetting = res;
     })
 
-    // for first player join game
     if (this.roomSetting.gameSetting.cardSetting.length == 0) {
-      this.roomSetting.gameSetting.cardSetting = cardsFixPlayerNum;
-    }
+      // for first player join game
+      this.roomSetting.gameSetting.cardSetting = UpdatedPlayerNumberCardSetting;
+    } else {
+      // for n'th player join game
 
-    // for n'th player join game
-    // get previous defaultCard to compare with current Cards
-    let cardsPrev: Array<CardSetting> = new Array();
-    await cardService.GetDefaultCardSetting(this.connectedUsers.size - 1).then((res) => {
-      cardsPrev = res;
-    })
+      // set understandable name for variables
+      let RoomCardSetting = this.roomSetting.gameSetting.cardSetting; // current card setting of room 
+      let PreviousDefaultCardSetting: Array<CardSetting> = new Array();      // previous default card setting 
+      await cardService.GetDefaultCardSetting(this.connectedUsers.size - 1).then((res) => {
+        PreviousDefaultCardSetting = res;
+      })
 
-    // if cardsPrev = current cards => update cards with playerNum
-    let cond = true;
-    for (let i = 0; i < this.roomSetting.gameSetting.cardSetting.length; i++) {
-      if (this.roomSetting.gameSetting.cardSetting[i].number != cardsPrev[i].number) {
-        cond = false;
+      // if RoomCardSetting still default cardSetting 
+      // => check and update defuse, explode card by number of player
+      let isRoomCardSettingDefault = true;
+      if (RoomCardSetting.length != PreviousDefaultCardSetting.length) {
+        isRoomCardSettingDefault = false;
+      } else {
+        for (let i = 0; i < RoomCardSetting.length; i++) {
+          if (RoomCardSetting[i].number != PreviousDefaultCardSetting[i].number) {
+            isRoomCardSettingDefault = false;
+          }
+        }
       }
-    }
-    if (cond) {
-      this.roomSetting.gameSetting.cardSetting = cardsFixPlayerNum;
+      if (isRoomCardSettingDefault) {
+        this.roomSetting.gameSetting.cardSetting = UpdatedPlayerNumberCardSetting;
+      }
+
+      // if RoomCardSetting has been changed
+      // => do nothing
+      // ...
     }
 
     this.broadcastStateChanged();
