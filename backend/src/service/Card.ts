@@ -1,6 +1,8 @@
-import CardRepo from "../repository/card";
+import debugModule from "debug";
 import CardModel from "../model/Card";
-import { Interface } from "readline";
+import CardRepo from "../repository/card";
+
+const debug = debugModule("backend:socket:service:card");
 
 interface CardSetting {
   name: string;
@@ -8,7 +10,7 @@ interface CardSetting {
 }
 
 class Card {
-  constructor() { }
+  constructor() {}
 
   public async GetMainDeckByPlayerNumber(numPlayers: number) {
     let decks: Array<CardModel> = new Array();
@@ -154,29 +156,58 @@ class Card {
     return decks;
   }
 
-  private async AddCardsToDeck(decks: Array<CardModel>, set: string, sheet: string, mechanic: string, num: number) {
+  private async AddCardsToDeck(
+    decks: Array<CardModel>,
+    set: string,
+    sheet: string,
+    mechanic: string,
+    num: number
+  ) {
     // let cardRes: Array<CardModel> = new Array();
     let cards = await CardRepo.getBySetSheetMechanic(set, sheet, mechanic);
     if (cards.length >= num) {
       for (let k = 0; k < num; k++) {
-        decks.push(new CardModel(cards[k].id, cards[k].name, cards[k].description, cards[k].imgUrl));
+        decks.push(
+          new CardModel(
+            cards[k].id,
+            cards[k].name,
+            cards[k].description,
+            cards[k].imgUrl
+          )
+        );
       }
     } else {
-      for (let k = 0; k < num / cards.length; k++) {
+      for (let k = 0; k < Math.floor(num / cards.length); k++) {
         for (let z = 0; z < cards.length; z++) {
-          decks.push(new CardModel(cards[z].id, cards[z].name, cards[z].description, cards[z].imgUrl));
+          decks.push(
+            new CardModel(
+              cards[z].id,
+              cards[z].name,
+              cards[z].description,
+              cards[z].imgUrl
+            )
+          );
         }
       }
       for (let k = 0; k < num % cards.length; k++) {
-        decks.push(new CardModel(cards[k].id, cards[k].name, cards[k].description, cards[k].imgUrl));
+        decks.push(
+          new CardModel(
+            cards[k].id,
+            cards[k].name,
+            cards[k].description,
+            cards[k].imgUrl
+          )
+        );
       }
     }
+
     return decks;
   }
 
-
-
-  public async GetMainDeckByPlayerNumberAndCardSetting(numPlayers: number, cardSetting: CardSetting[]) {
+  public async GetMainDeckByPlayerNumberAndCardSetting(
+    numPlayers: number,
+    cardSetting: CardSetting[]
+  ) {
     let OriginalEdition = "Original Edition";
     let ImplodingKittens = "Imploding Kittens";
     let MainDecks = "Main Decks";
@@ -185,34 +216,94 @@ class Card {
     var decks: Array<CardModel> = new Array();
 
     for (let i = 0; i < cardSetting.length; i++) {
-      console.log("CARD NAME:", cardSetting[i].name);
+      debug("CARD NAME:", cardSetting[i].name);
       if (cardSetting[i].name == "Attack") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Attack 2x", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Attack 2x",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "See the Future") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "See the Future 3x", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "See the Future 3x",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Cat Card") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Cat Card", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Cat Card",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Defuse") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Defuse", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Defuse",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Exploding Kitten") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Exploding Kitten", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Exploding Kitten",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Shuffle") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Shuffle", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Shuffle",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Skip") {
-        await this.AddCardsToDeck(decks, OriginalEdition, MainDecks, "Skip", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          OriginalEdition,
+          MainDecks,
+          "Skip",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Targeted Attack") {
-        await this.AddCardsToDeck(decks, ImplodingKittens, Expansions, "Targeted Attack 2x", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          ImplodingKittens,
+          Expansions,
+          "Targeted Attack 2x",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Draw From the Bottom") {
-        await this.AddCardsToDeck(decks, ImplodingKittens, Expansions, "Draw From the Bottom", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          ImplodingKittens,
+          Expansions,
+          "Draw From the Bottom",
+          cardSetting[i].number
+        );
       } else if (cardSetting[i].name == "Reverse") {
-        await this.AddCardsToDeck(decks, ImplodingKittens, Expansions, "Reverse", cardSetting[i].number);
+        await this.AddCardsToDeck(
+          decks,
+          ImplodingKittens,
+          Expansions,
+          "Reverse",
+          cardSetting[i].number
+        );
       }
     }
     return decks;
   }
 
   public async GetDefaultCardSetting(numPlayers: number) {
-    const res: CardSetting[] = []
+    const res: CardSetting[] = [];
 
     // add Attack x2 cards
     var attacks = await CardRepo.getBySetSheetMechanic(
@@ -220,14 +311,14 @@ class Card {
       "Main Decks",
       "Attack 2x"
     );
-    res.push({ name: "Attack", number: attacks.length })
+    res.push({ name: "Attack", number: attacks.length });
 
     var targetedAttack = await CardRepo.getBySetSheetMechanic(
       "Imploding Kittens",
       "Expansions",
       "Targeted Attack 2x"
     );
-    res.push({ name: "Targeted Attack", number: targetedAttack.length })
+    res.push({ name: "Targeted Attack", number: targetedAttack.length });
 
     // add Cat Card cards
     var catCards = await CardRepo.getBySetSheetMechanic(
@@ -235,9 +326,9 @@ class Card {
       "Main Decks",
       "Cat Card"
     );
-    res.push({ name: "Cat Card", number: catCards.length })
+    res.push({ name: "Cat Card", number: catCards.length });
 
-    res.push({ name: "Defuse", number: numPlayers * 2 })
+    res.push({ name: "Defuse", number: numPlayers * 2 });
 
     // add Exploding Kitten cards
     var explodingKittens = await CardRepo.getBySetSheetMechanic(
@@ -245,7 +336,10 @@ class Card {
       "Main Decks",
       "Exploding Kitten"
     );
-    res.push({ name: "Exploding Kitten", number: Math.max(numPlayers, explodingKittens.length) })
+    res.push({
+      name: "Exploding Kitten",
+      number: Math.max(numPlayers, explodingKittens.length),
+    });
 
     // add See the Future 3x cards
     var SeetheFutures = await CardRepo.getBySetSheetMechanic(
@@ -253,7 +347,7 @@ class Card {
       "Main Decks",
       "See the Future 3x"
     );
-    res.push({ name: "See the Future", number: SeetheFutures.length })
+    res.push({ name: "See the Future", number: SeetheFutures.length });
 
     // add Shuffle cards
     var Shuffles = await CardRepo.getBySetSheetMechanic(
@@ -261,7 +355,7 @@ class Card {
       "Main Decks",
       "Shuffle"
     );
-    res.push({ name: "Shuffle", number: Shuffles.length })
+    res.push({ name: "Shuffle", number: Shuffles.length });
 
     // add Skip cards
     var Skips = await CardRepo.getBySetSheetMechanic(
@@ -269,25 +363,24 @@ class Card {
       "Main Decks",
       "Skip"
     );
-    res.push({ name: "Skip", number: Skips.length })
+    res.push({ name: "Skip", number: Skips.length });
 
     var DrawFromBottoms = await CardRepo.getBySetSheetMechanic(
       "Imploding Kittens",
       "Expansions",
       "Draw From the Bottom"
     );
-    res.push({ name: "Draw From the Bottom", number: DrawFromBottoms.length })
+    res.push({ name: "Draw From the Bottom", number: DrawFromBottoms.length });
 
     var Reverses = await CardRepo.getBySetSheetMechanic(
       "Imploding Kittens",
       "Expansions",
       "Reverse"
     );
-    res.push({ name: "Reverse", number: Reverses.length })
+    res.push({ name: "Reverse", number: Reverses.length });
 
     return res;
   }
-
 }
 
 export default new Card();

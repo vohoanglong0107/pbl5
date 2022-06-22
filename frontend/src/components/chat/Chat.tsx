@@ -2,7 +2,7 @@ import { selectChatHistory } from "@/lib/selector";
 import { socketClient } from "@/lib/SocketClient";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 const MessageBox = styled("div")({
@@ -30,15 +30,15 @@ const Input = styled("input")({
   color: "#04293A",
   outline: "none",
   fontFamily: "Ubuntu",
-  margin: '0px 10px 0px 0px',
-  padding: '5px 10px',
+  margin: "0px 10px 0px 0px",
+  padding: "5px 10px",
   borderStyle: "1px solid ",
   borderColor: "orange",
   borderRadius: "0.25rem",
-  wordWrap: 'break-word',
-  wordBreak: 'break-word',
-  position: 'fixed',
-  bottom: '10px',
+  wordWrap: "break-word",
+  wordBreak: "break-word",
+  position: "fixed",
+  bottom: "10px",
   "&:focus": {
     outline: "none",
     backgroundColor: "white",
@@ -50,9 +50,9 @@ const Button = styled("button")({
   width: "5%",
   height: "30px",
   padding: "0px",
-  position: 'fixed',
-  bottom: '10px',
-  left: '25%',
+  position: "fixed",
+  bottom: "10px",
+  left: "25%",
 
   // justifyContent: 'center',
   border: "none",
@@ -62,9 +62,9 @@ const Button = styled("button")({
 });
 export interface ChatProps {
   setOpen: (value: boolean) => void;
-  disable: boolean,
-  placeholder: string,
-  bgcolor: string
+  disable: boolean;
+  placeholder: string;
+  bgcolor: string;
 }
 
 const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
@@ -85,25 +85,22 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
   function handleTypeMsg(event: any) {
     setMsg(event.target.value);
   }
-  const messagesEndRef = useRef(0);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
-    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(scrollToBottom, [chatHistory]);
 
   return (
     <Box
       sx={{
-        
         backgroundColor: "transparent",
         height: "300px",
         margin: 0,
         padding: 0,
       }}
     >
-      
       <MessageBox>
-
         {chatHistory.map((chat, index) => {
           return (
             <Box key={index} style={{ display: "inline-flex", width: "100%" }}>
@@ -116,7 +113,7 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
                 {": "}
                 <span
                   style={{
-                    wordBreak: 'break-all',
+                    wordBreak: "break-all",
                     color: "#04293A",
                     fontFamily: "Ubuntu",
                   }}
@@ -127,7 +124,7 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
             </Box>
           );
         })}
-        <Box ref={messagesEndRef} />
+        <div ref={messagesEndRef} />
       </MessageBox>
       <br />
       <Box sx={{ display: "inline-flex", width: "100%" }}>
@@ -140,16 +137,17 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
           autoComplete={"off"}
           disabled={disable}
           sx={{
-            backgroundColor: {bgcolor}}} 
+            backgroundColor: { bgcolor },
+          }}
         />
-        <Button onClick={handleSendMsg} >
+        <Button onClick={handleSendMsg}>
           <Typography
             sx={{
               color: "#FFF6EA",
               fontWeight: "bold",
               fontSize: "12px",
               fontFamily: "Ubuntu",
-              width: '100%'
+              width: "100%",
             }}
           >
             SEND

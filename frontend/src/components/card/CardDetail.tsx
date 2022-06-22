@@ -1,8 +1,8 @@
-import { Paper, Box } from "@mui/material";
-import Card from "./Card";
-import Image from "next/image";
-import { useGetCardQuery } from "./cardSlice";
 import { CARD_IMAGE_RATIO } from "@/constant";
+import { Box, Paper } from "@mui/material";
+import Image from "next/image";
+import Card from "./Card";
+import { useGetCardQuery } from "./cardSlice";
 
 type CardDetailProps =
   | {

@@ -11,7 +11,7 @@ let nextConfig = {
     return config;
   },
   images: {
-    domains: ["drive.google.com"],
+    domains: [process.env.IMAGE_DOMAIN],
   },
   experimental: {
     modularizeImports: {
@@ -22,6 +22,7 @@ let nextConfig = {
         transform: "@mui/icons-material/{{member}}",
       },
     },
+    outputStandalone: true,
   },
 };
 

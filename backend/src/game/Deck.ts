@@ -36,9 +36,13 @@ export default class Deck {
         card.commandId !== CardCommands.EXPLODE
     );
     const cards = Array.from({ length: numPlayers }, (e) => [] as Card[]);
+    const eachPlayerNumOtherCards = Math.min(
+      5,
+      Math.floor(others.length / numPlayers)
+    );
     for (let i = 0; i < numPlayers; i++) {
       cards[i].push(...defuses.splice(0, 1));
-      cards[i].push(...others.splice(0, 5));
+      cards[i].push(...others.splice(0, eachPlayerNumOtherCards));
     }
     this.cards = defuses.concat(explodes).concat(others);
     this.shuffle();

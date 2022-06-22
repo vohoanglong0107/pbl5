@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 import CardItem from "./CardItem";
-import { CardSetting, allTypeOfCards } from "./CardSetting";
+import { CardSetting } from "./CardSetting";
 
 interface AvailableCardsProps {
   availableCards: CardSetting[];
@@ -12,15 +12,8 @@ const AvailableCards = ({
   availableCards,
   setAvailableCards,
 }: AvailableCardsProps) => {
-
   function handleDeleteCard(cardName: string) {
     setAvailableCards(availableCards.filter((card) => card.name !== cardName));
-    console.log({ yourCards: availableCards });
-    console.log(
-      `yourCards updated: ${JSON.stringify(
-        availableCards.filter((card: any) => card.name !== cardName)
-      )}`
-    );
   }
 
   function handleUpdateCard(cardName: string, number: number) {
@@ -33,31 +26,30 @@ const AvailableCards = ({
 
   return (
     <Box>
-      <Typography sx={{
-        fontFamily: "Ubuntu",
-        fontWeight: "bold",
-        marginBottom: "10px",
-      }}>
+      <Typography
+        sx={{
+          fontFamily: "Ubuntu",
+          fontWeight: "bold",
+          marginBottom: "10px",
+        }}
+      >
         Available cards
       </Typography>
       {availableCards.map((card, index) => {
-        console.log(card);
         return (
-          <>
+          <Box key={index}>
             <CardItem
-              key={index}
               cardName={card.name}
               numberCards={card.number}
               handleDeleteCard={handleDeleteCard}
               handleUpdateCard={handleUpdateCard}
             />
             <br />
-          </>
+          </Box>
         );
       })}
     </Box>
   );
-
 };
 
 export default AvailableCards;

@@ -1,11 +1,10 @@
-import { useGetRoomQuery } from "./roomSlice";
 import deckBackGroundImage from "@/assets/deck-image.jpg";
-import { Box, Container } from "@mui/material";
-import Setting from "../setting/Setting";
-import RoomMain from "./RoomMain";
+import { Box } from "@mui/material";
 import { useState } from "react";
-import RoomAppBar from "./RoomAppBar";
 import LoadingPage from "../loading/Page";
+import RoomAppBar from "./RoomAppBar";
+import RoomMain from "./RoomMain";
+import { useGetRoomQuery } from "./roomSlice";
 
 const ConnectingPage = () => <LoadingPage pageName="Joinning Room" />;
 
@@ -29,12 +28,12 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         }}
         display="flex"
         flexDirection="column"
-      // justifyContent={"space-between"}
+        // justifyContent={"space-between"}
       >
         <RoomAppBar open={openSetting} setOpen={setOpenSetting} />
         <RoomMain open={openSetting} />
 
-        <Setting open={openSetting} setOpen={setOpenSetting} />
+        {/* <Setting open={openSetting} setOpen={setOpenSetting} /> */}
       </Box>
     );
   } else {

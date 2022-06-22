@@ -1,22 +1,20 @@
 import SettingIcon from "@/assets/setting.png";
+import { selectGameSetting } from "@/lib/selector";
+import { socketClient } from "@/lib/SocketClient";
 import { Box, Divider, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import AddNewCard from "./AddNewCard";
 import AvailableCards from "./AvailableCards";
-import { defaultCards, allTypeOfCards, CardSetting } from "./CardSetting";
-import { socketClient } from "@/lib/SocketClient";
-import GameSetting from "./GameSetting"
+import GameSetting from "./GameSetting";
 import SetTime from "./SetTime";
-import { useSelector } from "react-redux";
-import { selectGameSetting } from "@/lib/selector";
 
 interface RoomSettingDialogProps {
   open: boolean;
@@ -26,21 +24,27 @@ interface RoomSettingDialogProps {
 const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
   const gameSetting = useSelector(selectGameSetting);
 
-  // const [open, setOpen] = useState(false);
   const [sliderValue, setSliderValue] = useState({
-    turnTime: gameSetting.turnTime > 1000 ? gameSetting.turnTime / 1000 : gameSetting.turnTime,
-    target: gameSetting.targetingTime > 1000 ? gameSetting.targetingTime / 1000 : gameSetting.targetingTime,
+    turnTime: gameSetting.turnTime / 1000,
+    target: gameSetting.targetingTime / 1000,
     nope: 10,
   });
+
+  const [yourCards, setYourCards] = useState(gameSetting.cardSetting);
+  useEffect(() => {
+    setYourCards(gameSetting.cardSetting);
+    setSliderValue({
+      turnTime: gameSetting.turnTime / 1000,
+      target: gameSetting.targetingTime / 1000,
+      nope: 10,
+    });
+  }, [gameSetting]);
+
+  const roomID = "roomID";
 
   const handleClickOpen = () => {
     setOpen(true);
   };
-
-  const [yourCards, setYourCards] = useState(gameSetting.cardSetting);
-  useEffect(() => setYourCards(gameSetting.cardSetting), [gameSetting.cardSetting])
-
-  const roomID = "roomID";
 
   const handleClose = () => {
     setOpen(false);
@@ -51,14 +55,13 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
       maxPlayers: 8,
       targetingTime: sliderValue.target,
       turnTime: sliderValue.turnTime,
-      cardSetting: yourCards
-    }
+      cardSetting: yourCards,
+    };
     socketClient.emit("room:setting", gameSetting);
     setOpen(false);
   };
 
-  const handleSliderChange = (event: Event) => {
-    const { name, value } = event.target;
+  const handleSliderChange = (event: Event, name: string, value: number) => {
     setSliderValue((prevValue) => {
       return {
         ...prevValue,
@@ -67,8 +70,11 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
     });
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    const { value } = event.target;
     setSliderValue((prevValue) => {
       return {
         ...prevValue,
@@ -77,8 +83,10 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
     });
   };
 
-  const handleBlur = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = event.target;
+  const handleBlur = (
+    event: React.FocusEvent<HTMLInputElement>,
+    name: string
+  ) => {
     if (
       sliderValue.turnTime < 10 ||
       sliderValue.target < 10 ||
@@ -104,14 +112,16 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
     }
   };
 
-
   return (
     <Box>
-      <Button onClick={handleClickOpen} sx={{
-        ...(open && { display: "none" }),
-        position: "relative",
-        right: "10px",
-      }}>
+      <Button
+        onClick={handleClickOpen}
+        sx={{
+          ...(open && { display: "none" }),
+          position: "relative",
+          right: "10px",
+        }}
+      >
         <Image
           src={SettingIcon.src}
           alt="setting-icon"
@@ -168,10 +178,7 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
             },
           }}
         >
-          <DialogContentText
-            id="alert-dialog-description"
-            sx={{ color: "white" }}
-          >
+          <DialogContent id="alert-dialog-description" sx={{ color: "white" }}>
             <Box sx={{ display: "inline-flex", padding: "15px" }}>
               <Typography sx={{ fontFamily: "Ubuntu", fontWeight: "bold" }}>
                 ROOM ID:
@@ -240,10 +247,16 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
               >
                 Set Deck
               </Typography>
-              <AddNewCard availableCards={yourCards} setAvailableCards={setYourCards} />
-              <AvailableCards availableCards={yourCards} setAvailableCards={setYourCards} />
+              <AddNewCard
+                availableCards={yourCards}
+                setAvailableCards={setYourCards}
+              />
+              <AvailableCards
+                availableCards={yourCards}
+                setAvailableCards={setYourCards}
+              />
             </Box>
-          </DialogContentText>
+          </DialogContent>
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "rgba(6, 40, 61, 0.9)" }}>
           <Button onClick={handleClose} sx={{ color: "#BADFDB" }}>
