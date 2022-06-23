@@ -40,7 +40,7 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
       target: gameSetting.targetingTime / 1000,
       nope: 10,
     });
-  }, [gameSetting]);
+  }, [gameSetting, open]);
 
   const roomID = "roomID";
 

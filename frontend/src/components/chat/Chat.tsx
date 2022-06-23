@@ -10,7 +10,7 @@ const MessageBox = styled("div")({
   backgroundColor: "transparent",
   display: "inline-grid",
   overflowY: "scroll",
-  maxHeight: "80px",
+  height: "25vh",
   marginBottom: "15px",
   padding: "0px",
   width: "100%",
@@ -99,7 +99,6 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
     <Box
       sx={{
         backgroundColor: "transparent",
-        height: "300px",
         margin: 0,
         padding: 0,
       }}

@@ -23,7 +23,7 @@ const ChatTab = ({ setOpen }: ChatTabProps) => {
         width: "30%",
         typography: "body1",
         position: "fixed",
-        top: "430px",
+        bottom: "0px",
         left: "10px",
         borderStyle: "none",
         borderRadius: "1rem",
