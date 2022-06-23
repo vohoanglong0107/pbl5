@@ -1,9 +1,10 @@
-import { selectChatHistory } from "@/lib/selector";
+import { selectChatHistory, selectSystemMessages } from "@/lib/selector";
 import { socketClient } from "@/lib/SocketClient";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { Chat } from "./ChatHistory";
 
 const MessageBox = styled("div")({
   backgroundColor: "transparent",
@@ -62,6 +63,7 @@ const Button = styled("button")({
 });
 export interface ChatProps {
   setOpen: (value: boolean) => void;
+  // to find out if this is system event history or user chat history
   disable: boolean;
   placeholder: string;
   bgcolor: string;
@@ -69,7 +71,9 @@ export interface ChatProps {
 
 const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
   const [msg, setMsg] = useState("");
-  const chatHistory = useSelector(selectChatHistory);
+  const chatHistory = useSelector(
+    !disable ? selectChatHistory : selectSystemMessages
+  );
 
   function handleSendMsg() {
     socketClient.emit("room:chated", msg);
@@ -107,7 +111,7 @@ const Chat = ({ setOpen, disable, placeholder, bgcolor }: ChatProps) => {
               <label>
                 <span style={{ color: "yellow", fontFamily: "Josefin Sans" }}>
                   {"["}
-                  {chat.username}
+                  {(chat as Chat).username ? (chat as Chat).username : "System"}
                   {"]"}
                 </span>
                 {": "}

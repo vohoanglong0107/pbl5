@@ -1,17 +1,17 @@
 import Card from "@/game/Card";
+import GameEntity from "../GameEntity";
+import Player from "../Player";
+import Attack from "./Attack";
+import { CardCommands } from "./CardCommands";
 import Command from "./Command";
 import Defuse from "./Defuse";
-import Explode from "./Explode";
-import Skip from "./Skip";
-import { CardCommands } from "./CardCommands";
-import Player from "../Player";
-import GameEntity from "../GameEntity";
-import SeeTheFuture from "./SeeTheFuture";
-import Steal from "./Steal";
 import DrawFromBottom from "./DrawFromBottom";
-import Attack from "./Attack";
-import Shuffle from "./Shuffle";
+import Explode from "./Explode";
 import Reverse from "./Reverse";
+import SeeTheFuture from "./SeeTheFuture";
+import Shuffle from "./Shuffle";
+import Skip from "./Skip";
+import Steal from "./Steal";
 import TargetAttack from "./TargetAttack";
 
 export type CommandCreationInfo = {
@@ -21,7 +21,7 @@ export type CommandCreationInfo = {
 
 export default class CardHandler {
   private cards?: Card[];
-  private commandId?: CardCommands;
+  public commandId?: CardCommands;
   private source?: Player;
   private target?: Player;
   constructor(public gameEntity: GameEntity) {}
@@ -149,3 +149,7 @@ export const MechanicToCommand: {
   Shuffle: CardCommands.SHUFFLE,
   "Targeted Attack 2x": CardCommands.TARGET_ATTACK,
 };
+
+export const CommandToMechanic = Object.fromEntries(
+  Object.entries(MechanicToCommand).map(([k, v]) => [v, k])
+);

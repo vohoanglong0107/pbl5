@@ -1,4 +1,5 @@
 import SettingIcon from "@/assets/setting.png";
+import { useIsGameInPlay } from "@/hook/useGameLogic";
 import { selectGameSetting } from "@/lib/selector";
 import { socketClient } from "@/lib/SocketClient";
 import { Box, Divider, Typography } from "@mui/material";
@@ -23,6 +24,7 @@ interface RoomSettingDialogProps {
 
 const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
   const gameSetting = useSelector(selectGameSetting);
+  const isGameInPlay = useIsGameInPlay();
 
   const [sliderValue, setSliderValue] = useState({
     turnTime: gameSetting.turnTime / 1000,
@@ -262,7 +264,12 @@ const RoomSettingDialog = ({ open, setOpen }: RoomSettingDialogProps) => {
           <Button onClick={handleClose} sx={{ color: "#BADFDB" }}>
             Cancel
           </Button>
-          <Button onClick={handleSave} sx={{ color: "#BADFDB" }} autoFocus>
+          <Button
+            onClick={handleSave}
+            sx={{ color: "#BADFDB" }}
+            autoFocus
+            disabled={isGameInPlay}
+          >
             Save
           </Button>
         </DialogActions>

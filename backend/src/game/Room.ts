@@ -3,7 +3,7 @@ import cardService from "@/service/Card";
 import debugModule from "debug";
 import { v4 as uuidv4 } from "uuid";
 import CardSetting from "./CardSetting";
-import { Chat } from "./Chat";
+import { Chat, SystemMessage } from "./Chat";
 import Game, { GameEvent } from "./Game";
 import RoomSetting from "./RoomSetting";
 import User, { UserEvent } from "./User";
@@ -22,9 +22,19 @@ export default class Room {
   private connectedUsers: Map<string, User> = new Map<string, User>();
   private roomSetting: RoomSetting = new RoomSetting();
   private game: Game = new Game(this.roomSetting.gameSetting);
-  private chatHistory: Chat[] = [];
+  private chat: {
+    chatHistory: Chat[];
+    systemMessages: SystemMessage[];
+  } = {
+    chatHistory: [],
+    systemMessages: [],
+  };
   constructor() {
-    this.game.eventTracker.on("game:state-changed", () => {
+    this.game.eventTracker.on("game:state-changed", (msg) => {
+      if (msg)
+        this.chat.systemMessages.push({
+          msg: msg,
+        });
       this.broadcastStateChanged();
     });
   }
@@ -128,7 +138,7 @@ export default class Room {
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
       case RoomEvent.CHATED: {
-        this.chatHistory.push({ username: user.username, msg: data[0] });
+        this.chat.chatHistory.push({ username: user.username, msg: data[0] });
         break;
       }
       case RoomEvent.SETTING: {
@@ -168,7 +178,7 @@ export default class Room {
       connectedUsers,
       this.game.encode(),
       this.roomSetting,
-      this.chatHistory
+      this.chat
     );
   }
   static isRoomEvent(event: string): event is RoomEvent {

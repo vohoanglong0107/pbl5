@@ -1,7 +1,7 @@
-import { Game } from "./Game";
 import RoomSetting from "@/game/RoomSetting";
+import { Chat, SystemMessage } from "./../game/Chat";
+import { Game } from "./Game";
 import User from "./User";
-import { Chat } from "./../game/Chat"
 
 export default class Room {
   constructor(
@@ -9,6 +9,9 @@ export default class Room {
     public connectedUsers: User[],
     public game: Game,
     public roomSetting: RoomSetting,
-    public chatHistory: Chat[]
-  ) { }
+    public chat: {
+      chatHistory: Chat[];
+      systemMessages: SystemMessage[];
+    }
+  ) {}
 }

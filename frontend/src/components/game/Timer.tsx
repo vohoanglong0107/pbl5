@@ -1,9 +1,7 @@
 import { selectGameCurrentState, selectGameSetting } from "@/lib/selector";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import ClockImage from "@/assets/timer.png";
 import { InGameState } from "./GameState";
 
 const Timer = () => {
@@ -37,9 +35,11 @@ const Timer = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [
+    // FIXME: Johnny Debt: This is a hack to make sure the timer is updated when the game state changes.
     gameState.type,
     gameState.gameEntity.currentPlayerNumberOfTurns,
     gameState.currentPlayer.id,
+    gameState.currentPlayer.hand.length,
     gameSetting.turnTime,
     gameSetting.targetingTime,
   ]);
@@ -53,12 +53,18 @@ const Timer = () => {
       alignItems="center"
       margin={"0 auto"}
     >
-      <Box position="relative" right="50px" bottom="50px" >
-        <CircularProgress sx={{ color: '#C2DED1', position: 'absolute' }} variant="determinate" value={100} thickness={7} size={100} />
+      <Box position="relative" right="50px" bottom="50px">
+        <CircularProgress
+          sx={{ color: "#C2DED1", position: "absolute" }}
+          variant="determinate"
+          value={100}
+          thickness={7}
+          size={100}
+        />
         <CircularProgress
           sx={{
             color: "#14C38E",
-            position: 'absolute',
+            position: "absolute",
           }}
           size={100}
           thickness={7}
@@ -69,12 +75,17 @@ const Timer = () => {
           variant="caption"
           component="div"
           color="text.secondary"
-          sx={{ color: "#37E2D5", fontSize: '30px', position: 'absolute', top: '25px', left: '31px' }}
+          sx={{
+            color: "#37E2D5",
+            fontSize: "30px",
+            position: "absolute",
+            top: "25px",
+            left: "31px",
+          }}
         >
           {timeLeft > 9 ? timeLeft : `0${timeLeft}`}
         </Typography>
       </Box>
-
     </Box>
   );
 };

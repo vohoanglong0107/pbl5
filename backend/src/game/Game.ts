@@ -1,7 +1,3 @@
-import debugModule from "debug";
-import EventEmitter from "events";
-import GameEntity from "./GameEntity";
-import Player from "./Player";
 import {
   Game as GameModel,
   GameState as GameStateModel,
@@ -10,11 +6,18 @@ import {
   PlayState as PlayStateModel,
   TargetingState as TargetingStateModel,
 } from "@/model/Game";
-import CardHandler, { MechanicToCommand } from "./command/CardHandler";
-import Draw from "./command/Draw";
-import GameSetting from "./GameSetting";
-import Card from "./Card";
 import cardService from "@/service/Card";
+import debugModule from "debug";
+import EventEmitter from "events";
+import Card from "./Card";
+import CardHandler, {
+  CommandToMechanic,
+  MechanicToCommand,
+} from "./command/CardHandler";
+import Draw from "./command/Draw";
+import GameEntity from "./GameEntity";
+import GameSetting from "./GameSetting";
+import Player from "./Player";
 const debug = debugModule("backend:socket:game");
 
 //? Change underlining data structure to Map ?
@@ -157,7 +160,7 @@ class StateManager {
   }
 }
 
-class EventTracker extends EventEmitter { }
+class EventTracker extends EventEmitter {}
 
 export enum IdleStateEvent {
   TAKE_SEAT = "game:take-seat",
@@ -170,7 +173,7 @@ class IdleState implements GameState {
     private playerManager: PlayerManager,
     private gameSetting: GameSetting,
     private eventTracker: EventTracker
-  ) { }
+  ) {}
   handlePlayerEvent(player: Player, event: string, ...data: any[]) {
     switch (event) {
       case IdleStateEvent.START:
@@ -188,21 +191,27 @@ class IdleState implements GameState {
     this.playerManager.reset();
     const activePlayer = this.playerManager.getActivePlayer().length;
     if (activePlayer < 2) throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumberAndCardSetting(activePlayer, this.gameSetting.cardSetting).then((cards) => {
-      const compatibleCards = cards.map(
-        (card) => new Card(card.id, MechanicToCommand[card.mechanic])
-      );
-      this.stateManager.changeState(
-        new PlayState(
-          this.stateManager,
-          this.playerManager,
-          this.gameSetting,
-          this.eventTracker,
-          startingPlayer,
-          compatibleCards
-        )
-      );
-    });
+    cardService
+      .GetMainDeckByPlayerNumberAndCardSetting(
+        activePlayer,
+        this.gameSetting.cardSetting
+      )
+      .then((cards) => {
+        const compatibleCards = cards.map(
+          (card) => new Card(card.id, MechanicToCommand[card.mechanic])
+        );
+        this.eventTracker.emit("game:state-changed", "Game Start !!!");
+        this.stateManager.changeState(
+          new PlayState(
+            this.stateManager,
+            this.playerManager,
+            this.gameSetting,
+            this.eventTracker,
+            startingPlayer,
+            compatibleCards
+          )
+        );
+      });
   }
   private reserveSeat(player: Player, seatId: number): void {
     this.playerManager.reserveSeat(player, seatId);
@@ -210,8 +219,8 @@ class IdleState implements GameState {
   onEntry() {
     this.eventTracker.emit("game:state-changed");
   }
-  onExit() { }
-  onRemovePlayer(playerId: string) { }
+  onExit() {}
+  onRemovePlayer(playerId: string) {}
   encode() {
     return new IdleStateModel();
   }
@@ -229,7 +238,7 @@ class OverState implements GameState {
     private gameSetting: GameSetting,
     private eventTracker: EventTracker,
     private winner: Player
-  ) { }
+  ) {}
   handlePlayerEvent(player: Player, event: string, ...data: any[]) {
     switch (event) {
       case OverStateEvent.START:
@@ -246,30 +255,39 @@ class OverState implements GameState {
     this.playerManager.reset();
     const activePlayer = this.playerManager.getActivePlayer().length;
     if (activePlayer < 2) throw new Error("Not enough players");
-    cardService.GetMainDeckByPlayerNumberAndCardSetting(activePlayer, this.gameSetting.cardSetting).then((cards) => {
-      const compatibleCards = cards.map(
-        (card) => new Card(card.id, MechanicToCommand[card.mechanic])
-      );
-      this.stateManager.changeState(
-        new PlayState(
-          this.stateManager,
-          this.playerManager,
-          this.gameSetting,
-          this.eventTracker,
-          startingPlayer,
-          compatibleCards
-        )
-      );
-    });
+    cardService
+      .GetMainDeckByPlayerNumberAndCardSetting(
+        activePlayer,
+        this.gameSetting.cardSetting
+      )
+      .then((cards) => {
+        const compatibleCards = cards.map(
+          (card) => new Card(card.id, MechanicToCommand[card.mechanic])
+        );
+        this.eventTracker.emit("game:state-changed", "Game Start !!!");
+        this.stateManager.changeState(
+          new PlayState(
+            this.stateManager,
+            this.playerManager,
+            this.gameSetting,
+            this.eventTracker,
+            startingPlayer,
+            compatibleCards
+          )
+        );
+      });
   }
   private reserveSeat(player: Player, seatId: number): void {
     this.playerManager.reserveSeat(player, seatId);
   }
   onEntry() {
-    this.eventTracker.emit("game:state-changed");
+    this.eventTracker.emit(
+      "game:state-changed",
+      `Game over!!! ${this.winner.username} won!`
+    );
     debug("Game over");
   }
-  onExit() { }
+  onExit() {}
   onRemovePlayer(playerId: string) {
     if (playerId === this.winner.id) {
       this.stateManager.changeState(
@@ -336,7 +354,10 @@ class PlayState implements GameState {
     }, this.timeLimit);
     this.updateFromGameEntity();
     debug(`Player ${this.currentPlayer.id} is starting turn`);
-    this.eventTracker.emit("game:state-changed");
+    this.eventTracker.emit(
+      "game:state-changed",
+      `Player ${this.currentPlayer.username}'s turn`
+    );
   }
   private updateFromGameEntity() {
     if (this.gameEntity.nextPlayer === null) {
@@ -409,6 +430,12 @@ class PlayState implements GameState {
       const cards = cardIds.map((cardId) => player.hand.get(cardId)!);
       this.cardHandler.setSource(player);
       this.cardHandler.setCards(cards);
+      this.eventTracker.emit(
+        "game:state-changed",
+        `Player ${player.username} played ${
+          CommandToMechanic[this.cardHandler.commandId!]
+        } card`
+      );
       if (this.cardHandler.isTargetRequired()) {
         // TODO: should pause current state's timer instead of resetting it
         this.stateManager.pushState(
@@ -440,6 +467,17 @@ class PlayState implements GameState {
   private currentPlayerDrawCard() {
     const command = new Draw(this.currentPlayer, this.gameEntity);
     command.execute();
+    if (this.currentPlayer.exploded) {
+      this.eventTracker.emit(
+        "game:state-changed",
+        `Player ${this.currentPlayer.username} exploded`
+      );
+    } else {
+      this.eventTracker.emit(
+        "game:state-changed",
+        `Player ${this.currentPlayer.username} drew a card`
+      );
+    }
   }
   onRemovePlayer(playerId: string) {
     // check game over
@@ -507,6 +545,10 @@ class TargetingState implements GameState {
   }
   handlePlayerTargeting(target: Player) {
     const response = this.cardHandler.setTarget(target).play();
+    this.eventTracker.emit(
+      "game:state-changed",
+      `Player ${this.currentPlayer.username} set their eyes on player ${this.currentPlayer.username}`
+    );
     this.stateManager.popState();
     return response;
   }
@@ -514,7 +556,10 @@ class TargetingState implements GameState {
     this.currentTimer = setTimeout(() => {
       this.handlePlayerTargeting(this.randomlyTarget());
     }, this.timeLimit);
-    this.eventTracker.emit("game:state-changed");
+    this.eventTracker.emit(
+      "game:state-changed",
+      `Player ${this.currentPlayer.username} is finding their victim`
+    );
   }
   onExit() {
     clearTimeout(this.currentTimer);
