@@ -148,6 +148,7 @@ export const MechanicToCommand: {
   Reverse: CardCommands.REVERSE,
   Shuffle: CardCommands.SHUFFLE,
   "Targeted Attack 2x": CardCommands.TARGET_ATTACK,
+  Steal: CardCommands.STEAL,
 };
 
 export const CommandToMechanic = Object.fromEntries(
