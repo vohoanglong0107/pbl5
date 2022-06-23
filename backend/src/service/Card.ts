@@ -326,7 +326,7 @@ class Card {
       "Main Decks",
       "Cat Card"
     );
-    res.push({ name: "Cat Card", number: catCards.length });
+    res.push({ name: "Cat Card", number: catCards.length * 2 });
 
     res.push({ name: "Defuse", number: numPlayers * 2 });
 

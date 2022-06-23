@@ -1,12 +1,10 @@
 import Card from "@/components/card/Card";
 import CardView from "@/components/hand/CardView";
-import { Box, Typography } from "@mui/material";
 import { CARD_IMAGE_RATIO } from "@/constant";
+import { useShouldShowTargeting } from "@/hook/useGameLogic";
+import { Box, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useMeasure, useWindowSize } from "react-use";
-import { useSelector } from "react-redux";
-import { selectGameCurrentState, selectGameSetting } from "@/lib/selector";
-import { InGameState } from "../game/GameState";
 interface CardSelectTrayProp {
   cards: Card[];
   selectedCards: boolean[];
@@ -57,53 +55,59 @@ const CardSelectTray = ({
     cardWidth,
     hoveringIndex
   );
-  const gameState = useSelector(selectGameCurrentState) as InGameState;
-  
+  const shouldShowTargeting = useShouldShowTargeting();
+
   return (
     <>
-    <Typography sx={{textAlign: 'center', color: '#F8CB2E', fontSize: '20px', fontFamily: 'Ubuntu'}}>{gameState.type==="TargetingState"?"CHOOSE TARGET!" : ""}</Typography>
-    
-    <Box
-      width="100%"
-      //! Cái +30 này có thể coi là cái paddingTop nhaaa, Là để hở 1 xí ở phía trên nha.
-      //! emiu muốn chỉnh độ hở thì chỉnh cái này nhaaa
-      height={`${cardHeight + 30}px`}
-      ref={ref}
-      display="flex"
-      justifyContent={"center"}
-      overflow={"hidden"}
-      alignItems={"flex-end"}
-      sx={{
-        // backgroundColor: "#B22727",
-        borderTopLeftRadius: "1rem",
-        borderTopRightRadius: "1rem",
-        // marginTop: "50px",
-      }}
-    >
-      
-      {cards.map((card, index) => (
-        <CardView
-          key={index}
-          card={card}
-          cardHeight={`${cardHeight}px`}
-          cardWidth={`${cardWidth}px`}
-          width={`${cardWidths[index]}px`}
-          height={`${(cardHeight * 80) / 100}px`}
-          selected={selectedCards[index]}
-          setSelected={(newSelectedStatus) => {
-            setSelectedCards(
-              selectedCards.map((prevSelectedStatus, i) =>
-                i === index ? newSelectedStatus : prevSelectedStatus
-              )
-            );
-          }}
-          hovering={hoveringIndex === index}
-          setHovering={(hovering: boolean) => {
-            handleHoverCard(hovering, index);
-          }}
-        />
-      ))}
-    </Box>
+      <Typography
+        sx={{
+          textAlign: "center",
+          color: "#F8CB2E",
+          fontSize: "20px",
+          fontFamily: "Ubuntu",
+        }}
+      >
+        {shouldShowTargeting ? "CHOOSE TARGET!" : ""}
+      </Typography>
+
+      <Box
+        width="100%"
+        //! Cái +30 này có thể coi là cái paddingTop nhaaa, Là để hở 1 xí ở phía trên nha.
+        //! emiu muốn chỉnh độ hở thì chỉnh cái này nhaaa
+        height={`${cardHeight + 30}px`}
+        ref={ref}
+        display="flex"
+        justifyContent={"center"}
+        overflow={"hidden"}
+        alignItems={"flex-end"}
+        sx={{
+          borderTopLeftRadius: "1rem",
+          borderTopRightRadius: "1rem",
+        }}
+      >
+        {cards.map((card, index) => (
+          <CardView
+            key={index}
+            card={card}
+            cardHeight={`${cardHeight}px`}
+            cardWidth={`${cardWidth}px`}
+            width={`${cardWidths[index]}px`}
+            height={`${(cardHeight * 80) / 100}px`}
+            selected={selectedCards[index]}
+            setSelected={(newSelectedStatus) => {
+              setSelectedCards(
+                selectedCards.map((prevSelectedStatus, i) =>
+                  i === index ? newSelectedStatus : prevSelectedStatus
+                )
+              );
+            }}
+            hovering={hoveringIndex === index}
+            setHovering={(hovering: boolean) => {
+              handleHoverCard(hovering, index);
+            }}
+          />
+        ))}
+      </Box>
     </>
   );
 };
