@@ -7,7 +7,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register ./src/index.ts",
+    "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register -r dotenv/config ./src/index.ts",
     "dev": "DEBUG=backend:* nodemon -r tsconfig-paths/register -r dotenv/config ./src/index.ts"
   },
   "dependencies": {

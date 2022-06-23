@@ -91,7 +91,7 @@ function getThreeSidePlayerLists(players: (Player | undefined)[]) {
   let currentNumPlayers = 0;
   let currentDirection = 0;
   const threeSideNumPlayers = calculateThreeSideNumPlayers(players.length);
-  console.log(threeSideNumPlayers);
+  // console.log(threeSideNumPlayers);
   const threeSidePlayerLists = [] as JSX.Element[];
   for (const size of threeSideNumPlayers) {
     threeSidePlayerLists.push(

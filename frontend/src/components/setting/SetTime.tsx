@@ -1,15 +1,17 @@
-import { Divider, Typography, Box, Slider, Grid, Input } from "@mui/material";
+import { Box, Grid, Input, Typography } from "@mui/material";
 import PrettoSlider from "./Slider";
 
 interface SetTimeProps {
   title: string;
   name: string;
-  value: Number;
-  handleSliderChange: any;
-  handleInputChange: any;
-  handleBlur: any;
+  value: number;
+  handleSliderChange: (event: Event, name: string, value: number) => void;
+  handleInputChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => void;
+  handleBlur: (event: React.FocusEvent<HTMLInputElement>, name: string) => void;
 }
-
 
 const SetTime = ({
   title,
@@ -19,15 +21,15 @@ const SetTime = ({
   handleInputChange,
   handleBlur,
 }: SetTimeProps) => {
-    
   return (
     <Box>
-      <Typography sx={{fontFamily: 'Montserrat'}}>{title}</Typography>
+      <Typography sx={{ fontFamily: "Montserrat" }}>{title}</Typography>
       <Grid item xs sx={{ width: "90%", display: "inline-flex" }}>
         <PrettoSlider
-          name={name}
-          value={typeof value === "number" ? value : 0}
-          onChange={handleSliderChange}
+          value={value}
+          onChange={(event, value) =>
+            handleSliderChange(event, name, value as number)
+          }
           valueLabelDisplay="auto"
           aria-label="pretto slider"
           step={10}
@@ -37,17 +39,20 @@ const SetTime = ({
           color="secondary"
           sx={{
             marginRight: "20px",
-            fontFamily: 'Montserrat'
+            fontFamily: "Montserrat",
           }}
         />
         <Input
-        sx={{color: '#1de9b6', fontSize: '1.25rem'}}
+          sx={{ color: "#1de9b6", fontSize: "1.25rem" }}
           color="warning"
-          name={name}
           value={value}
           size="small"
-          onChange={handleInputChange}
-          onBlur={handleBlur}
+          onChange={(e) =>
+            handleInputChange(e as React.ChangeEvent<HTMLInputElement>, name)
+          }
+          onBlur={(e) =>
+            handleBlur(e as React.FocusEvent<HTMLInputElement>, name)
+          }
           inputProps={{
             step: 10,
             min: 10,

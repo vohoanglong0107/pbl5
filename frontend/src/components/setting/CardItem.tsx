@@ -1,6 +1,6 @@
-import { Box, Grid, Input, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { Grid, Input, Typography } from "@mui/material";
+import { ChangeEvent } from "react";
 interface CardItemProps {
   cardName: string;
   numberCards: number;
@@ -14,8 +14,6 @@ const CardItem = ({
   handleDeleteCard,
   handleUpdateCard,
 }: CardItemProps) => {
-  console.log({ cardName, numberCards });
-
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const val = parseInt(event.target.value);
     if (isNaN(val)) handleUpdateCard(cardName, 0);
