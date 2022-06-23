@@ -1,17 +1,17 @@
 import Card from "@/game/Card";
+import GameEntity from "../GameEntity";
+import Player from "../Player";
+import Attack from "./Attack";
+import { CardCommands } from "./CardCommands";
 import Command from "./Command";
 import Defuse from "./Defuse";
-import Explode from "./Explode";
-import Skip from "./Skip";
-import { CardCommands } from "./CardCommands";
-import Player from "../Player";
-import GameEntity from "../GameEntity";
-import SeeTheFuture from "./SeeTheFuture";
-import Steal from "./Steal";
 import DrawFromBottom from "./DrawFromBottom";
-import Attack from "./Attack";
-import Shuffle from "./Shuffle";
+import Explode from "./Explode";
 import Reverse from "./Reverse";
+import SeeTheFuture from "./SeeTheFuture";
+import Shuffle from "./Shuffle";
+import Skip from "./Skip";
+import Steal from "./Steal";
 import TargetAttack from "./TargetAttack";
 
 export type CommandCreationInfo = {
@@ -21,7 +21,7 @@ export type CommandCreationInfo = {
 
 export default class CardHandler {
   private cards?: Card[];
-  private commandId?: CardCommands;
+  public commandId?: CardCommands;
   private source?: Player;
   private target?: Player;
   constructor(public gameEntity: GameEntity) {}
@@ -54,6 +54,9 @@ export default class CardHandler {
     const command = this.convert(this.commandId);
     const res = command.execute();
     this.source.hand.remove(this.cards);
+    this.gameEntity.discardPile = this.gameEntity.discardPile.concat(
+      this.cards
+    );
     return res;
   }
   private convert(commandId: CardCommands): Command {
@@ -82,23 +85,46 @@ export default class CardHandler {
         throw new Error(`Unknown command id: ${this.commandId}`);
     }
   }
+  // the next two methods seem ugly. Should I combine them?
   private checkCardsValid(cards: Card[]) {
     if (cards.length === 0)
       throw new Error("You must select at least one card");
+    if (cards.length === 1) {
+      if (cards[0].commandId === CardCommands.CAT)
+        throw new Error("You can't play only one cat card");
+      return;
+    }
     const commandId = cards[0].commandId;
-    const checkAllCardSameCommand = (): boolean => {
+    const checkAllCardSameCommand = () => {
       return cards.every((card) => card.commandId === commandId);
     };
     if (!checkAllCardSameCommand()) {
       throw new Error("You must select cards with the same mechanic");
+    }
+    if (commandId !== CardCommands.CAT)
+      throw new Error("You can only play two or more card of type Cat");
+
+    if (cards.length === 2) {
+      const checkAllCardSameCat = () => {
+        return cards.every((card) => card.id === cards[0].id);
+      };
+      if (!checkAllCardSameCat()) {
+        throw new Error("Two Cat cards must be the same");
+      }
+    } else if (cards.length === 5) {
+      const checkAllCardUniqueCat = () => {
+        return new Set(cards.map((card) => card.id)).size === cards.length;
+      };
+      if (!checkAllCardUniqueCat()) {
+        throw new Error("Five Cat cards must be unique");
+      }
     }
   }
   private convertCardsToCommand(cards: Card[]): CardCommands {
     const commandId = cards[0].commandId;
     switch (cards.length) {
       case 1:
-        if (commandId !== CardCommands.CAT) return commandId;
-        else throw new Error("You can't play only one cat card");
+        return commandId;
       case 2:
         return CardCommands.STEAL;
       case 5:
@@ -122,4 +148,9 @@ export const MechanicToCommand: {
   Reverse: CardCommands.REVERSE,
   Shuffle: CardCommands.SHUFFLE,
   "Targeted Attack 2x": CardCommands.TARGET_ATTACK,
+  Steal: CardCommands.STEAL,
 };
+
+export const CommandToMechanic = Object.fromEntries(
+  Object.entries(MechanicToCommand).map(([k, v]) => [v, k])
+);

@@ -1,9 +1,9 @@
 import { NEXT_PUBLIC_API_URL } from "@/constant";
-import { Socket, io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import {
+  AckResponse,
   ClientToServerEvents,
   ServerToClientEvents,
-  AckResponse,
 } from "./events";
 
 export default class SocketClient {
@@ -47,7 +47,7 @@ export default class SocketClient {
       console.log(err);
     });
     this.socket.onAny((event, ...args) => {
-      console.log(event, args);
+      console.log(event, ...args);
     });
   }
 }

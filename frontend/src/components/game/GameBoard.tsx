@@ -58,39 +58,43 @@ const PlayerStack = ({
   );
 };
 
-function calculateFourSideNumPlayers(maxPlayers: number) {
+function calculateThreeSideNumPlayers(maxPlayers: number) {
   // North, East, South, West
-  const baseFourSideNumPlayers = Array<number>(4).fill(
-    Math.floor(maxPlayers / 4)
-  );
+  const threeSideNumPlayers = Array<number>(3);
+  const basePlayerOneSide = Math.floor(maxPlayers / 4);
+  threeSideNumPlayers[0] = basePlayerOneSide;
+  threeSideNumPlayers[1] = basePlayerOneSide * 2;
+  threeSideNumPlayers[2] = basePlayerOneSide;
   switch (maxPlayers % 4) {
     case 0:
       break;
     case 1:
-      baseFourSideNumPlayers[0]++;
+      threeSideNumPlayers[1]++;
       break;
     case 2:
-      baseFourSideNumPlayers[1]++;
-      baseFourSideNumPlayers[3]++;
+      threeSideNumPlayers[0]++;
+      threeSideNumPlayers[2]++;
       break;
     case 3:
-      baseFourSideNumPlayers[0]++;
-      baseFourSideNumPlayers[1]++;
-      baseFourSideNumPlayers[3]++;
+      threeSideNumPlayers[0]++;
+      threeSideNumPlayers[1]++;
+      threeSideNumPlayers[2]++;
       break;
     default:
       throw new Error(`Maximum players ${maxPlayers} is not integer`);
   }
-  return baseFourSideNumPlayers;
+
+  return threeSideNumPlayers;
 }
 
-function getFourSidePlayerLists(players: (Player | undefined)[]) {
+function getThreeSidePlayerLists(players: (Player | undefined)[]) {
   let currentNumPlayers = 0;
-  let currentDirection = 1;
-  const fourSideNumPlayers = calculateFourSideNumPlayers(players.length);
-  const fourSidePlayerLists = [] as JSX.Element[];
-  for (const size of fourSideNumPlayers) {
-    fourSidePlayerLists.push(
+  let currentDirection = 0;
+  const threeSideNumPlayers = calculateThreeSideNumPlayers(players.length);
+  // console.log(threeSideNumPlayers);
+  const threeSidePlayerLists = [] as JSX.Element[];
+  for (const size of threeSideNumPlayers) {
+    threeSidePlayerLists.push(
       <PlayerStack
         players={players.slice(currentNumPlayers, currentNumPlayers + size)}
         direction={currentDirection ? "row" : "column"}
@@ -100,7 +104,7 @@ function getFourSidePlayerLists(players: (Player | undefined)[]) {
     currentNumPlayers += size;
     currentDirection ^= 1;
   }
-  return fourSidePlayerLists;
+  return threeSidePlayerLists;
 }
 
 const GameBoard = () => {
@@ -108,57 +112,49 @@ const GameBoard = () => {
   const { maxPlayers } = gameSetting;
   const players = useSelector(selectPlayers);
   const slots = getSeat(players, maxPlayers);
-  const fourSideNumPlayers = calculateFourSideNumPlayers(maxPlayers);
-  const fourSidePlayerLists = getFourSidePlayerLists(slots);
-  const numLRSidePlayers = fourSideNumPlayers[1];
-  const numUSidePlayers = fourSideNumPlayers[0];
-  const middleGrid = (
-    <Box
-      alignItems="center"
-      sx={{
-        gridArea: `2 / 2 / -2 / -2`,
-      }}
-    >
-      <Table />
-    </Box>
-  );
+  const fourSideNumPlayers = calculateThreeSideNumPlayers(maxPlayers);
+  const fourSidePlayerLists = getThreeSidePlayerLists(slots);
+  const numLRSidePlayers = fourSideNumPlayers[0];
+  const numUSidePlayers = fourSideNumPlayers[1];
   return (
     <Box
       sx={{
+        height: "100%",
         display: "grid",
-        gridTemplateRows: `repeat(${numLRSidePlayers + 2}, 1fr)`,
+        gridTemplateRows: `auto repeat(${numLRSidePlayers}, 1fr)`,
         gridTemplateColumns: `repeat(${numUSidePlayers + 2}, 1fr)`,
+        // alignContent: "stretch",
       }}
     >
       <Box
         sx={{
-          gridArea: `1 / 2 / 2 / -2`,
+          gridArea: "2 / 1 / -1 / 2",
         }}
       >
         {fourSidePlayerLists[0]}
       </Box>
       <Box
         sx={{
-          gridArea: `2 / -2 / -2 / -1`,
+          gridArea: `1 / 2 / 2 / -2`,
         }}
       >
         {fourSidePlayerLists[1]}
       </Box>
       <Box
         sx={{
-          gridArea: `-2 / 2 / -1 / -2`,
+          gridArea: `2 / -2 / -1 / -1`,
         }}
       >
         {fourSidePlayerLists[2]}
       </Box>
       <Box
+        alignItems="center"
         sx={{
-          gridArea: "2 / 1 / -2 / 2",
+          gridArea: `2 / 2 / -1 / -2`,
         }}
       >
-        {fourSidePlayerLists[3]}
+        <Table />
       </Box>
-      {middleGrid}
     </Box>
   );
 };

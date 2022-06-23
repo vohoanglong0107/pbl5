@@ -1,18 +1,20 @@
-import apiSlice from "../apiSlice";
 import { socketClient } from "@/lib/SocketClient";
-import Room from "./Room";
-import { gameUpdated } from "../game/gameSlice";
-import { User } from "../user";
+import { createAction, createSlice, isAnyOf } from "@reduxjs/toolkit";
+import apiSlice from "../apiSlice";
+import { chatUpdated, State as chatState } from "../chat/chatSlice";
 import { Game } from "../game";
+import { gameUpdated } from "../game/gameSlice";
 import RoomSetting from "../setting/RoomSetting";
 import { settingUpdated } from "../setting/settingSlice";
-import { createAction, createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { User } from "../user";
+import Room from "./Room";
 
 interface RoomApi {
   id: string;
   connectedUsers: User[];
   game: Game;
   roomSetting: RoomSetting;
+  chat: chatState;
 }
 
 const RoomStateChanged = createAction<RoomApi>("room/stateChanged");
@@ -36,6 +38,7 @@ const roomApiSlice = apiSlice.injectEndpoints({
           dispatch(RoomStateChanged(room));
           dispatch(gameUpdated(room.game));
           dispatch(settingUpdated(room.roomSetting));
+          dispatch(chatUpdated(room.chat));
         };
         const updateCachedDataWithRoom = (room: RoomApi) => {
           updateCachedData((draft) => room);

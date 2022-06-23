@@ -1,15 +1,20 @@
-import { v4 as uuidv4 } from "uuid";
+import RoomModel from "@/model/Room";
+import cardService from "@/service/Card";
 import debugModule from "debug";
+import { v4 as uuidv4 } from "uuid";
+import CardSetting from "./CardSetting";
+import { Chat, SystemMessage } from "./Chat";
 import Game, { GameEvent } from "./Game";
 import RoomSetting from "./RoomSetting";
 import User, { UserEvent } from "./User";
-import RoomModel from "@/model/Room";
 import { Acknowledgement } from "./UserEvent";
 
 const debug = debugModule("backend:socket:game");
 
 export enum RoomEvent {
   STATE_CHANGED = "room:state-changed",
+  CHATED = "room:chated",
+  SETTING = "room:setting",
 }
 
 export default class Room {
@@ -17,16 +22,76 @@ export default class Room {
   private connectedUsers: Map<string, User> = new Map<string, User>();
   private roomSetting: RoomSetting = new RoomSetting();
   private game: Game = new Game(this.roomSetting.gameSetting);
+  private chat: {
+    chatHistory: Chat[];
+    systemMessages: SystemMessage[];
+  } = {
+    chatHistory: [],
+    systemMessages: [],
+  };
   constructor() {
-    this.game.eventTracker.on("game:state-changed", () => {
+    this.game.eventTracker.on("game:state-changed", (msg) => {
+      if (msg)
+        this.chat.systemMessages.push({
+          msg: msg,
+        });
       this.broadcastStateChanged();
     });
   }
   getUser(userId: string): User | undefined {
     return this.connectedUsers.get(userId);
   }
-  onConnect(user: User) {
+  async onConnect(user: User) {
     this.connectedUsers.set(user.id, user);
+
+    // card setting has been update by number of player
+    let UpdatedPlayerNumberCardSetting: Array<CardSetting> = new Array();
+    await cardService
+      .GetDefaultCardSetting(this.connectedUsers.size)
+      .then((res) => {
+        UpdatedPlayerNumberCardSetting = res;
+      });
+
+    if (this.roomSetting.gameSetting.cardSetting.length == 0) {
+      // for first player join game
+
+      this.roomSetting.gameSetting.cardSetting = UpdatedPlayerNumberCardSetting;
+    } else {
+      // for n'th player join game
+
+      // set understandable name for variables
+      let RoomCardSetting = this.roomSetting.gameSetting.cardSetting; // current card setting of room
+      let PreviousDefaultCardSetting: Array<CardSetting> = new Array(); // previous default card setting
+      await cardService
+        .GetDefaultCardSetting(this.connectedUsers.size - 1)
+        .then((res) => {
+          PreviousDefaultCardSetting = res;
+        });
+
+      // if RoomCardSetting still default cardSetting
+      // => check and update defuse, explode card by number of player
+      let isRoomCardSettingDefault = true;
+      if (RoomCardSetting.length != PreviousDefaultCardSetting.length) {
+        isRoomCardSettingDefault = false;
+      } else {
+        for (let i = 0; i < RoomCardSetting.length; i++) {
+          if (
+            RoomCardSetting[i].number != PreviousDefaultCardSetting[i].number
+          ) {
+            isRoomCardSettingDefault = false;
+          }
+        }
+      }
+      if (isRoomCardSettingDefault) {
+        this.roomSetting.gameSetting.cardSetting =
+          UpdatedPlayerNumberCardSetting;
+      }
+
+      // if RoomCardSetting has been changed
+      // => do nothing
+      // ...
+    }
+
     this.broadcastStateChanged();
   }
   // TODO: add graceful disconnection
@@ -51,7 +116,6 @@ export default class Room {
         debug(`${user.id} tried to send unknown event ${event}`);
         throw new Error(`Unknown event ${event}`);
       }
-
       if (!res) res = null;
       ack({
         data: res,
@@ -73,6 +137,17 @@ export default class Room {
   }
   private handleRoomEvent(user: User, event: RoomEvent, ...data: any[]) {
     switch (event) {
+      case RoomEvent.CHATED: {
+        this.chat.chatHistory.push({ username: user.username, msg: data[0] });
+        break;
+      }
+      case RoomEvent.SETTING: {
+        this.roomSetting.gameSetting.targetingTime =
+          data[0].targetingTime * 1000;
+        this.roomSetting.gameSetting.turnTime = data[0].turnTime * 1000;
+        this.roomSetting.gameSetting.cardSetting = data[0].cardSetting;
+        break;
+      }
     }
   }
   private handleGameEvent(user: User, event: GameEvent, ...data: any[]) {
@@ -93,6 +168,7 @@ export default class Room {
       user.emit(RoomEvent.STATE_CHANGED, this.encode())
     );
   }
+
   encode(): RoomModel {
     const connectedUsers = [...this.connectedUsers.values()].map((user) =>
       user.encode()
@@ -101,7 +177,8 @@ export default class Room {
       this.id,
       connectedUsers,
       this.game.encode(),
-      this.roomSetting
+      this.roomSetting,
+      this.chat
     );
   }
   static isRoomEvent(event: string): event is RoomEvent {

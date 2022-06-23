@@ -62,3 +62,6 @@ typings/
 
 # Typescript build output
 dist
+
+# seed data
+data

@@ -5,8 +5,8 @@
 import debugModule from "debug";
 import http from "http";
 import app from "./app";
-import logger from "./util/logger";
 import registerCookie from "./cookie";
+import logger from "./util/logger";
 
 const debug = debugModule("backend:server");
 
@@ -69,11 +69,9 @@ function onError(error: NodeJS.ErrnoException) {
     case "EACCES":
       logger.error(`${bind} requires elevated privileges`);
       process.exit(1);
-      break;
     case "EADDRINUSE":
       logger.error(`${bind} is already in use`);
       process.exit(1);
-      break;
     default:
       throw error;
   }

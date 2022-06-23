@@ -1,15 +1,14 @@
 import { PrismaClient } from "@prisma/client";
+import { parse } from "csv-parse";
 import * as fs from "fs";
 import * as path from "path";
 import { URL } from "url";
-import { parse } from "csv-parse";
-import e from "cors";
 
 const prisma = new PrismaClient();
 
 async function main() {
   (() => {
-    const csvFilePath = path.resolve(`../backend/data/MasterCardList.csv`);
+    const csvFilePath = path.resolve(`./data/MasterCardList.csv`);
 
     const headers = [
       "promt",
@@ -42,27 +41,21 @@ async function main() {
         }> = new Array();
 
         for (let i = 1; i < result.length; i++) {
-          // if (result[i]['mechanic'] == 'See the Future 3x' ||
-          //     result[i]['mechanic'] == 'See the Future 5x' ||
-          //     result[i]['mechanic'] == 'Defuse' ||
-          //     result[i]['mechanic'] == 'Shuffle' ||
-          //     result[i]['mechanic'] == 'Attack 2x' ||
-          //     result[i]['mechanic'] == 'Attack 3x' ||
-          //     result[i]['mechanic'] == 'Skip' ||
-          //     result[i]['mechanic'] == 'Super Skip') {
-          //     datas.push({ name: result[i]['mechanic'], description: result[i]['promt'], imgUrl: result[i]['originLink'], set: result[i]['set'], sheet: result[i]['sheet']  })
-          // }
           if (!result[i]["originLink"]) continue;
           const googleDriveImgUrl = new URL(result[i]["originLink"]);
 
           const googleDriveImgFileId = path.basename(
             path.dirname(googleDriveImgUrl.pathname)
           );
-          const googleDriveViewableImgUrl = `https://drive.google.com/uc?id=${googleDriveImgFileId}`;
+          path.join();
+          const selfHostedImages = path.join(
+            process.env.IMAGE_PREFIX_URL as string,
+            `${googleDriveImgFileId}.jpeg`
+          );
           datas.push({
             name: result[i]["mechanic"],
             description: result[i]["promt"],
-            imgUrl: googleDriveViewableImgUrl,
+            imgUrl: selfHostedImages,
             set: result[i]["set"],
             sheet: result[i]["sheet"],
           });

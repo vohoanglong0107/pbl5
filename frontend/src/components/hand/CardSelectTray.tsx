@@ -1,10 +1,12 @@
 import Card from "@/components/card/Card";
 import CardView from "@/components/hand/CardView";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { CARD_IMAGE_RATIO } from "@/constant";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useMeasure, useWindowSize } from "react-use";
-
+import { useSelector } from "react-redux";
+import { selectGameCurrentState, selectGameSetting } from "@/lib/selector";
+import { InGameState } from "../game/GameState";
 interface CardSelectTrayProp {
   cards: Card[];
   selectedCards: boolean[];
@@ -55,18 +57,30 @@ const CardSelectTray = ({
     cardWidth,
     hoveringIndex
   );
-  console.log(cardWidths);
-
+  const gameState = useSelector(selectGameCurrentState) as InGameState;
+  
   return (
+    <>
+    <Typography sx={{textAlign: 'center', color: '#F8CB2E', fontSize: '20px', fontFamily: 'Ubuntu'}}>{gameState.type==="TargetingState"?"CHOOSE TARGET!" : ""}</Typography>
+    
     <Box
       width="100%"
-      height={`${cardHeight}px`}
+      //! Cái +30 này có thể coi là cái paddingTop nhaaa, Là để hở 1 xí ở phía trên nha.
+      //! emiu muốn chỉnh độ hở thì chỉnh cái này nhaaa
+      height={`${cardHeight + 30}px`}
       ref={ref}
       display="flex"
       justifyContent={"center"}
       overflow={"hidden"}
       alignItems={"flex-end"}
+      sx={{
+        // backgroundColor: "#B22727",
+        borderTopLeftRadius: "1rem",
+        borderTopRightRadius: "1rem",
+        // marginTop: "50px",
+      }}
     >
+      
       {cards.map((card, index) => (
         <CardView
           key={index}
@@ -90,6 +104,7 @@ const CardSelectTray = ({
         />
       ))}
     </Box>
+    </>
   );
 };
 

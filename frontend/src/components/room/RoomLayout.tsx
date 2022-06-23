@@ -1,18 +1,19 @@
-import { useGetRoomQuery } from "./roomSlice";
-import GameBoard from "@/components/game/GameBoard";
 import deckBackGroundImage from "@/assets/deck-image.jpg";
-
-import HandPanel from "../hand/HandPanel";
-import ConnectedUsersPanel from "../user/ConnectedUsersPanel";
 import { Box } from "@mui/material";
+import { useState } from "react";
+import LoadingPage from "../loading/Page";
+import RoomAppBar from "./RoomAppBar";
+import RoomMain from "./RoomMain";
+import { useGetRoomQuery } from "./roomSlice";
 
-const ConnectingPage = () => <h1>Connecting to game</h1>;
+const ConnectingPage = () => <LoadingPage pageName="Joinning Room" />;
 
 interface RoomLayoutProps {
   gameId: string;
 }
 
 const RoomLayout = ({ gameId }: RoomLayoutProps) => {
+  const [openSetting, setOpenSetting] = useState(false);
   const roomQueryResult = useGetRoomQuery(gameId);
   if (roomQueryResult.isLoading) return <ConnectingPage />;
   else if (roomQueryResult.isError) {
@@ -27,11 +28,12 @@ const RoomLayout = ({ gameId }: RoomLayoutProps) => {
         }}
         display="flex"
         flexDirection="column"
-        justifyContent={"space-between"}
+        // justifyContent={"space-between"}
       >
-        <GameBoard />
-        <HandPanel />
-        {/* <ConnectedUsersPanel /> */}
+        <RoomAppBar open={openSetting} setOpen={setOpenSetting} />
+        <RoomMain open={openSetting} />
+
+        {/* <Setting open={openSetting} setOpen={setOpenSetting} /> */}
       </Box>
     );
   } else {

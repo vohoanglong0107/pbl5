@@ -1,22 +1,19 @@
-import cors from "cors";
-import cookie from "cookie";
-import debug from "debug";
-import express from "express";
-import path from "path";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
 import morgan from "morgan";
 import { Server } from "socket.io";
 
-import { stream } from "./util/logger";
-import { registerRoutes } from "./route";
+import { COOKIE_NAME, FRONTEND_DOMAIN } from "@/constants";
 import {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
   SocketData,
 } from "@/events";
-import { COOKIE_NAME, FRONTEND_DOMAIN } from "@/constants";
 import GameManager from "@/game/GameManager";
+import { registerRoutes } from "./route";
+import { stream } from "./util/logger";
 
 morgan.token("date", (req, res, tz) => {
   return new Date().toLocaleString("en-US", {
@@ -37,12 +34,12 @@ morgan.format(
 );
 const app = express();
 
-app.use(cors({ origin: `http://${FRONTEND_DOMAIN}:3000` }));
+app.use(cors({ origin: `http://${FRONTEND_DOMAIN}` }));
 app.use(morgan("myformat", { stream }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/public", express.static("public"));
 
 registerRoutes(app);
 
@@ -53,7 +50,7 @@ const io = new Server<
   SocketData
 >({
   cors: {
-    origin: `http://${FRONTEND_DOMAIN}:3000`,
+    origin: `http://${FRONTEND_DOMAIN}`,
     credentials: true,
   },
   cookie: {

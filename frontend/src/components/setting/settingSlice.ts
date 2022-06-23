@@ -5,6 +5,8 @@ export const initialState: RoomSetting = {
   gameSetting: {
     maxPlayers: 8,
     turnTime: 10000,
+    targetingTime: 5000,
+    cardSetting: [],
   },
 };
 
@@ -13,7 +15,7 @@ const settingSlice = createSlice({
   initialState,
   reducers: {
     settingUpdated(state, action: PayloadAction<RoomSetting>) {
-      state = action.payload;
+      return action.payload;
     },
   },
 });
