@@ -1,9 +1,9 @@
 import homepageImage from "@/assets/homepage.jpg";
-import Options from "@/components/RoomOption";
 import { Container } from "@mui/material";
 import Button from "@mui/material/Button";
 import type { NextPage } from "next";
 import { useState } from "react";
+import { Link } from "@mui/material";
 
 const choices = ["Create room", "Join room", "Join random"];
 
@@ -30,6 +30,13 @@ const User: NextPage = () => {
       }}
       maxWidth={false}
     >
+      <Link
+        target="_blank"
+        href="/create-game"
+        rel="noopener noreferrer"
+        underline="none"
+        color="inherit"
+      >
       <Button
         sx={{
           position: "absolute",
@@ -47,12 +54,7 @@ const User: NextPage = () => {
       >
         Explode now!
       </Button>
-      <Options
-        selectedValue={selectedValue}
-        open={open}
-        onClose={handleClose}
-        choices={choices}
-      />
+      </Link>
     </Container>
   );
 };
