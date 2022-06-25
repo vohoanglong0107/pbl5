@@ -61,8 +61,8 @@ const io = new Server<
     secure: true,
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365 * 1),
   },
-  pingTimeout: 2000,
-  pingInterval: 3000,
+  pingTimeout: 30000,
+  pingInterval: 10000,
 });
 
 const gameManager = new GameManager(io);
